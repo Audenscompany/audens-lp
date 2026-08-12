@@ -172,7 +172,7 @@
   });});
 
   /* ---- config form ---- */
-  function fillForm(){var c=getCfg();el("ghRepo").value=c.repo||"";el("ghBranch").value=c.branch||"main";el("ghToken").value=c.token||"";refreshBadge();refreshView();}
+  function fillForm(){var c=getCfg();el("ghRepo").value=c.repo||"Audenscompany/audens-lp";el("ghBranch").value=c.branch||"main";el("ghToken").value=c.token||"";refreshBadge();refreshView();}
   function readForm(){return {repo:el("ghRepo").value.trim().replace(/^https?:\/\/github\.com\//,"").replace(/\.git$/,"").replace(/\/$/,""),branch:el("ghBranch").value.trim()||"main",token:el("ghToken").value.trim()};}
   function refreshBadge(){var c=getCfg();var b=el("ghBadge");if(c.repo&&c.token){b.textContent="GitHub: "+c.repo;b.classList.add("ok");}else{b.textContent="GitHub: não conectado";b.classList.remove("ok");}}
   function refreshView(){var c=getCfg();var v=el("btnView");if(c.repo&&c.repo.indexOf("/")>0){var p=c.repo.split("/");v.href="https://"+p[0]+".github.io/"+p[1]+"/";v.style.display="inline-flex";}else{v.style.display="none";}}
