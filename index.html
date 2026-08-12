@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audens Company — Marketing de delivery feito por operador</title>
+<meta name="description" content="Marketing de delivery feito por quem opera +R$500 mil/mês no próprio caixa. Da aquisição à recompra, um sistema para transformar marketing em pedido. +200 clientes ativos, +50 cidades.">
+<link rel="icon" type="image/png" href="images/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="image" href="images/founders-1050.webp" imagesrcset="images/founders-760.webp 760w, images/founders-1050.webp 1050w" imagesizes="(max-width:920px) 90vw, 46vw" fetchpriority="high">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   AUDENS COMPANY · LP V4 · Conceito "Operação em Ascensão"
+   Sistema gráfico proprietário derivado da montanha da marca.
+   ===================================================================== */
+:root{
+  --bg:#07060B; --bg-2:#0E0A16; --surface:#14101F;
+  --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.05);
+  --purple:#7C34F0; --purple-2:#A66BFF; --purple-deep:#5A22C0;
+  --silver:#C7C2D6; --white:#F5F2FA; --muted:#9C93B4; --muted-2:#6E6685;
+  --success:#3AD07E;
+  --r-in:10px; --r-btn:12px; --r-md:16px; --r-lg:18px;
+  --sh:0 30px 70px rgba(0,0,0,.5);
+  --ff-d:"Space Grotesk", system-ui, sans-serif;
+  --ff-b:"Inter", system-ui, -apple-system, sans-serif;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-6:24px;--sp-8:32px;--sp-12:48px;--sp-16:64px;--sp-24:96px;--sp-32:128px;
+  --wrap:1240px; --gutter:32px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font-family:var(--ff-b);background:var(--bg);color:var(--white);line-height:1.62;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+/* subtle cinematic grain */
+body::before{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.035;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 var(--gutter)}
+@media(max-width:600px){:root{--gutter:20px}}
+section{position:relative;z-index:2;padding:var(--sp-24) 0}
+@media(max-width:768px){section{padding:var(--sp-16) 0}}
+
+/* Typography scale (4 levels) */
+h1,h2,h3,.display{font-family:var(--ff-d);font-weight:700;line-height:1.02;letter-spacing:-.02em}
+.display{font-size:clamp(44px,7.4vw,84px)}
+h1{font-size:clamp(38px,5.6vw,58px)}
+h2{font-size:clamp(30px,4.4vw,44px);letter-spacing:-.015em}
+h3{font-family:var(--ff-d);font-weight:600;font-size:clamp(20px,2.4vw,26px);letter-spacing:-.01em}
+.eyebrow{font-family:var(--ff-b);font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--purple-2);display:inline-flex;align-items:center;gap:10px}
+.eyebrow .pk{width:14px;height:11px;flex:none;color:var(--purple-2)}
+.lead{font-size:clamp(17px,1.7vw,19px);color:var(--muted);max-width:56ch}
+.small{font-size:13px;color:var(--muted-2)}
+.silver-txt{background:linear-gradient(180deg,#fff,#9A93AD);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.pp{color:var(--purple-2)}
+.mark-txt{color:var(--purple-2)}
+b,strong{color:var(--white);font-weight:600}
+
+/* proprietary: summit point + peak line */
+.summit{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:8px solid var(--purple-2);display:inline-block;vertical-align:middle}
+.peak-divider{height:1px;width:100%;background:linear-gradient(90deg,transparent,var(--line) 20%,var(--line) 80%,transparent);position:relative}
+.peak-divider::after{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent 30%,rgba(124,52,240,.5) 50%,transparent 70%);transform:translateY(0)}
+
+/* buttons — signature (not glowy pill) */
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--ff-b);font-weight:600;font-size:16px;cursor:pointer;border:none;border-radius:var(--r-btn);padding:15px 26px;min-height:52px;transition:transform .18s var(--ease),background .2s,box-shadow .2s}
+.btn-primary{background:var(--purple);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
+.btn-primary:hover{transform:translateY(-1px);background:#8a44ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 10px 30px rgba(124,52,240,.28)}
+.btn-line{background:transparent;color:var(--white);border:1px solid var(--line);border-radius:var(--r-btn)}
+.btn-line:hover{border-color:var(--purple-2);color:var(--purple-2)}
+.btn .ar{width:16px;height:16px;flex:none}
+.btn:focus-visible,a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--purple-2);outline-offset:3px}
+.btn-block{width:100%;justify-content:center}
+.textlink{color:var(--muted);font-weight:600;font-size:15px;display:inline-flex;gap:7px;align-items:center}
+.textlink:hover{color:var(--purple-2)}
+
+/* reveal-on-scroll */
+[data-reveal]{opacity:0;transform:translateY(18px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+[data-reveal].in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){[data-reveal]{opacity:1;transform:none;transition:none}}
+
+/* ===== HEADER ===== */
+header{position:fixed;top:0;left:0;right:0;z-index:50;padding:16px 0;transition:background .3s,padding .3s,border-color .3s;border-bottom:1px solid transparent}
+header.scrolled{background:rgba(7,6,11,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-2);padding:11px 0}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.logo{display:flex;align-items:center;gap:11px;font-family:var(--ff-d);font-weight:700;font-size:18px;letter-spacing:.02em;color:var(--white)}
+.logo .mk{width:30px;height:23px;color:var(--silver)}
+.nav-links{display:flex;gap:28px;font-size:14.5px;color:var(--muted);font-weight:500}
+.nav-links a:hover{color:var(--white)}
+.header-cta{padding:10px 20px;min-height:42px;font-size:14.5px;white-space:nowrap}
+@media(max-width:940px){.nav-links{display:none}}
+@media(max-width:420px){.logo span{display:none}.header-cta{padding:9px 15px}}
+
+/* ===== HERO ===== */
+.hero{padding:150px 0 90px;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:52% 48%;align-items:center;gap:20px}
+.hero-copy{max-width:600px;position:relative;z-index:3}
+.hero h1{margin:20px 0 22px}
+.hero .lead{color:#D9CFEC;margin-bottom:30px;max-width:48ch}
+.hero-cta-row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.hero-photo{position:relative;justify-self:end;width:100%;max-width:560px;aspect-ratio:5/5.4;z-index:2}
+.hero-photo img{position:absolute;bottom:0;right:-6%;width:112%;height:100%;object-fit:contain;object-position:bottom;filter:drop-shadow(0 30px 60px rgba(0,0,0,.6))}
+.hero-photo .proof-tab{position:absolute;left:-4%;bottom:16%;z-index:4;background:rgba(14,10,22,.82);backdrop-filter:blur(8px);border-left:2px solid var(--purple);padding:12px 18px;border-radius:0 var(--r-in) var(--r-in) 0}
+.hero-photo .proof-tab .n{font-family:var(--ff-d);font-weight:700;font-size:26px;color:var(--white)}
+.hero-photo .proof-tab .l{font-size:12px;color:var(--muted);max-width:180px;line-height:1.35;margin-top:2px}
+/* proprietary backdrop: contour + localized light, NOT 5 radial gradients */
+.hero-atmo{position:absolute;inset:0;z-index:0;pointer-events:none}
+.hero-atmo .light{position:absolute;top:-10%;right:8%;width:60%;height:80%;background:radial-gradient(closest-side,rgba(124,52,240,.26),transparent 72%);filter:blur(10px)}
+.hero-atmo .contour{position:absolute;inset:0;opacity:.5}
+@media(max-width:920px){
+  .hero{padding:120px 0 56px}
+  .hero-grid{grid-template-columns:1fr;gap:8px}
+  .hero-copy{order:1}.hero-photo{order:2;justify-self:center;max-width:420px;margin-top:8px}
+  .hero-photo img{right:0;width:100%}
+  .hero-photo .proof-tab{left:0}
+}
+
+/* ===== PROOF BAR (linha editorial, sem cards) ===== */
+.proofbar{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-2)}
+.proofbar .row{display:grid;grid-template-columns:repeat(3,1fr);align-items:center}
+.pb{padding:34px 30px;position:relative;display:flex;flex-direction:column;gap:4px}
+.pb + .pb{border-left:1px solid var(--line)}
+.pb .n{font-family:var(--ff-d);font-weight:700;font-size:clamp(30px,4vw,44px);line-height:1;display:flex;align-items:center;gap:10px}
+.pb .n .summit{margin-top:-14px}
+.pb .l{font-size:13.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.pb .foot{font-size:11.5px;color:var(--muted-2);margin-top:2px}
+@media(max-width:720px){.proofbar .row{grid-template-columns:1fr}.pb+.pb{border-left:none;border-top:1px solid var(--line)}.pb{padding:24px 4px}}
+
+/* ===== OPERADORES ===== */
+.ops{padding-top:var(--sp-24)}
+.ops .head{max-width:760px;margin-bottom:44px}
+.ops .huge-n{font-family:var(--ff-d);font-weight:700;font-size:clamp(64px,12vw,150px);line-height:.86;letter-spacing:-.03em}
+.ops .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:center}
+@media(max-width:920px){.ops .grid{grid-template-columns:1fr;gap:26px}}
+.ops p{color:var(--muted);font-size:16.5px;margin-bottom:16px;max-width:52ch}
+.ops .sig{color:var(--muted-2);font-size:14px}
+/* documental photo slot (foto real da operação) */
+.op-photo{position:relative;aspect-ratio:4/3.4;border-radius:var(--r-md);overflow:hidden;background:
+  linear-gradient(120deg,#161022,#0B0812);border:1px solid var(--line)}
+.op-photo .contour{position:absolute;inset:0;opacity:.5}
+.op-photo .marker{position:absolute;inset:auto 16px 16px 16px;font-size:12.5px;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;background:rgba(7,6,11,.4)}
+.op-photo .diag{position:absolute;inset:0;pointer-events:none}
+
+/* ===== CASE (editorial + timeline) ===== */
+.case{background:var(--bg-2);border-top:1px solid var(--line)}
+.case .top{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;margin-bottom:8px}
+@media(max-width:720px){.case .top{grid-template-columns:1fr}}
+.case .meta{font-size:13.5px;color:var(--muted)}
+.case .dom{display:flex;align-items:baseline;gap:16px;margin:26px 0 8px;flex-wrap:wrap}
+.case .dom .big{font-family:var(--ff-d);font-weight:700;font-size:clamp(56px,10vw,120px);line-height:.82;color:var(--success);letter-spacing:-.03em}
+.case .dom .sub{font-size:15px;color:var(--muted);max-width:34ch}
+.case .dom .sub b{color:var(--white)}
+.case .body{display:grid;grid-template-columns:1.25fr .75fr;gap:40px;margin-top:30px;align-items:start}
+@media(max-width:880px){.case .body{grid-template-columns:1fr;gap:26px}}
+/* timeline */
+.tl{margin:6px 0 20px}
+.tl .bars{display:flex;align-items:flex-end;gap:10px;height:150px;border-bottom:1px solid var(--line);padding-bottom:0}
+.tl .c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;height:100%;position:relative}
+.tl .bar{width:100%;max-width:42px;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--purple-2),var(--purple));transform-origin:bottom;transition:transform 1s var(--ease)}
+.tl .c.pre .bar{background:#2A2340}
+.tl .v{font-size:11px;color:var(--white);font-weight:600}
+.tl .m{font-size:11px;color:var(--muted-2);margin-top:8px}
+.tl .flag{position:absolute;top:-6px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:10.5px;font-weight:600;color:var(--purple-2);background:rgba(124,52,240,.12);border:1px solid rgba(124,52,240,.4);padding:3px 8px;border-radius:6px}
+.tl .marker-row{display:flex;justify-content:center;margin-top:10px}
+.case .cred{font-size:12.5px;color:var(--muted-2);line-height:1.5;border-left:2px solid var(--line);padding-left:14px;margin-top:16px}
+.case-shot{border-radius:var(--r-md);border:1px solid var(--line);overflow:hidden;background:var(--surface)}
+.case-shot img{width:100%}
+.case-shot .cap{padding:10px 14px;font-size:12px;color:var(--muted-2)}
+.recline{display:flex;gap:26px;flex-wrap:wrap;margin-top:24px;padding-top:20px;border-top:1px solid var(--line)}
+.recline .r{display:flex;flex-direction:column}
+.recline .r .n{font-family:var(--ff-d);font-weight:700;font-size:26px;color:var(--white)}
+.recline .r .l{font-size:12px;color:var(--muted)}
+
+/* ===== 05 · MÉTODO OPERADOR (imagem de referência) ===== */
+.mtd-img{position:relative;padding:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#050308}
+.mtd-img .frame{position:relative;width:100%;max-width:1500px;margin:0 auto;aspect-ratio:1600/900;overflow:hidden}
+.mtd-img .frame>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.mtd-img-pulse{position:absolute;left:50%;top:57%;width:26%;aspect-ratio:1;transform:translate(-50%,-50%);
+  border-radius:50%;pointer-events:none;mix-blend-mode:screen;
+  background:radial-gradient(closest-side,rgba(139,61,245,.28),transparent 70%);
+  animation:mtdImgBreathe 6.8s ease-in-out infinite}
+@keyframes mtdImgBreathe{0%,100%{opacity:.25;transform:translate(-50%,-50%) scale(.92)}50%{opacity:.55;transform:translate(-50%,-50%) scale(1.06)}}
+.mtd-img-cta{position:absolute;left:29%;width:42%;top:86.5%;height:10.5%;border:0;background:transparent;cursor:pointer;
+  border-radius:16px;transition:box-shadow .2s ease,background .2s ease}
+.mtd-img-cta:hover{background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(181,139,255,.45)}
+.mtd-img-cta:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.mtd-img-mcta{display:none;padding:20px 20px 6px;text-align:center}
+.mtd-img-mcta .btn{width:100%;justify-content:center}
+@media(prefers-reduced-motion:reduce){.mtd-img-pulse{animation:none}}
+@media(max-width:640px){
+  .mtd-img-cta{display:none}
+  .mtd-img-mcta{display:block}
+}
+
+/* ===== O QUE MUDA ===== */
+.change .split{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:34px 0 10px}
+@media(max-width:768px){.change .split{grid-template-columns:1fr;gap:8px}}
+.pres,.oper{padding:26px 0}
+.pres h3,.oper h3{font-family:var(--ff-b);font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+.pres h3{color:var(--muted-2)}.oper h3{color:var(--purple-2)}
+.pres ul,.oper ul{list-style:none;display:flex;flex-wrap:wrap;gap:10px 18px}
+.pres li,.oper li{font-family:var(--ff-d);font-weight:500;font-size:clamp(18px,2.4vw,24px)}
+.pres li{color:#5C5470}.oper li{color:var(--white)}
+.change .fecho{font-family:var(--ff-d);font-weight:600;font-size:clamp(20px,2.8vw,30px);color:var(--white);max-width:22ch;line-height:1.15}
+.change .fecho b{color:var(--purple-2)}
+.change .chapters{margin-top:64px;display:flex;flex-direction:column;gap:0}
+.chapter{display:grid;grid-template-columns:120px 1fr 1fr;gap:30px;padding:36px 0;border-top:1px solid var(--line);align-items:start}
+@media(max-width:820px){.chapter{grid-template-columns:1fr;gap:12px;padding:28px 0}}
+.chapter .cn{font-family:var(--ff-d);font-weight:700;font-size:38px;color:var(--purple-2);line-height:1}
+.chapter h3{color:var(--white);margin-bottom:8px}
+.chapter .prob{font-size:15px;color:var(--muted)}
+.chapter .res{font-size:15px;color:var(--white);border-left:2px solid var(--success);padding-left:14px}
+.chapter .res .k{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--success);margin-bottom:4px;font-weight:600}
+
+/* ===== PROVAS (3 números grandes) ===== */
+.proofs{background:var(--bg-2);border-top:1px solid var(--line)}
+.proof-row{display:grid;grid-template-columns:auto 1fr auto;gap:36px;align-items:center;padding:44px 0;border-top:1px solid var(--line)}
+.proof-row:first-of-type{border-top:none}
+@media(max-width:860px){.proof-row{grid-template-columns:1fr;gap:18px;padding:34px 0}}
+.proof-row .pn{font-family:var(--ff-d);font-weight:700;font-size:clamp(64px,11vw,128px);line-height:.82;letter-spacing:-.03em;color:var(--white)}
+.proof-row .pt{max-width:30ch}
+.proof-row .pt .ctx{font-size:clamp(18px,2.2vw,22px);font-family:var(--ff-d);font-weight:500;color:var(--white);line-height:1.15}
+.proof-row .pt .who{font-size:13px;color:var(--muted);margin-top:8px}
+.proof-row .ps{width:270px;max-width:100%;border-radius:12px;overflow:hidden;border:1px solid var(--line);justify-self:end}
+@media(max-width:860px){.proof-row .ps{width:100%;max-width:340px;justify-self:start}}
+.proof-more{margin-top:36px;display:none;grid-template-columns:repeat(3,1fr);gap:16px}
+.proof-more.show{display:grid}
+@media(max-width:760px){.proof-more.show{grid-template-columns:1fr}}
+.pm{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.pm img{width:100%}.pm .cap{padding:9px 12px;font-size:12px;color:var(--muted)}
+.proofs .more-btn{margin-top:28px;text-align:center}
+.proofs .auth{margin-top:22px;font-size:12px;color:var(--muted-2);text-align:center}
+
+/* ===== CLIENTES / MARCAS (trilho + modal de case) ===== */
+.clients{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--bg),var(--bg-2))}
+.clients .head{text-align:center;max-width:680px;margin:0 auto 34px}
+.rail-wrap{position:relative}
+.rail{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;
+  padding:6px 2px 18px;-webkit-overflow-scrolling:touch;scrollbar-width:none;cursor:grab}
+.rail::-webkit-scrollbar{display:none}
+.rail.drag{cursor:grabbing;scroll-behavior:auto}
+.brand-card{scroll-snap-align:start;flex:0 0 auto;width:156px;height:156px;border-radius:var(--r-lg);
+  background:linear-gradient(180deg,var(--surface),#100B1C);border:1px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;
+  position:relative;transition:transform .2s var(--ease),border-color .2s,box-shadow .2s;padding:16px;color:var(--white)}
+.brand-card:hover{transform:translateY(-4px);border-color:rgba(166,107,255,.5);box-shadow:0 16px 40px rgba(124,52,240,.22)}
+.brand-card:focus-visible{outline:2px solid var(--purple-2);outline-offset:2px}
+.brand-badge{position:relative;width:78px;height:78px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(closest-side,rgba(124,52,240,.16),#0C0816);border:1px solid rgba(255,255,255,.08)}
+.brand-badge img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.brand-peak{width:34px;height:26px;color:var(--silver);opacity:.72}
+.brand-name{font-family:var(--ff-d);font-weight:600;font-size:12.5px;color:var(--muted);text-align:center;line-height:1.18;max-width:132px}
+.brand-card:hover .brand-name{color:#fff}
+.brand-see{position:absolute;bottom:8px;font-size:10px;color:var(--purple-2);opacity:0;transition:opacity .2s;font-weight:600}
+.brand-card:hover .brand-see{opacity:1}
+.rail-btn{position:absolute;top:calc(50% - 12px);transform:translateY(-50%);z-index:5;width:44px;height:44px;border-radius:50%;
+  background:rgba(20,16,31,.92);border:1px solid var(--line);color:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);transition:background .2s,border-color .2s,color .2s}
+.rail-btn:hover{border-color:var(--purple-2);color:var(--purple-2)}
+.rail-btn.prev{left:-8px}.rail-btn.next{right:-8px}
+.rail-btn svg{width:18px;height:18px}
+.clients .note{text-align:center;font-size:12px;color:var(--muted-2);margin-top:16px}
+@media(max-width:680px){.rail-btn{display:none}.brand-card{width:132px;height:142px}.brand-badge{width:66px;height:66px}}
+
+/* modal de case (independente do modal principal) */
+.cmodal{position:fixed;inset:0;z-index:110;display:none;align-items:center;justify-content:center;padding:20px;
+  background:rgba(4,3,8,.82);backdrop-filter:blur(6px)}
+.cmodal.open{display:flex}
+.cmodal-card{background:linear-gradient(180deg,#120C1F,#0B0714);border:1px solid var(--line);border-radius:20px;
+  width:100%;max-width:900px;max-height:92vh;overflow:auto;position:relative;
+  transform:translateY(14px) scale(.985);opacity:0;transition:transform .3s var(--ease),opacity .3s}
+.cmodal.open .cmodal-card{transform:none;opacity:1}
+.cmodal-x{position:absolute;top:14px;right:14px;z-index:6;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--muted);
+  font-size:22px;cursor:pointer;line-height:1;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.cmodal-x:hover{color:#fff;border-color:var(--purple-2)}
+.cm-top{display:grid;grid-template-columns:290px 1fr;gap:34px;padding:40px 40px 26px}
+@media(max-width:760px){.cm-top{grid-template-columns:1fr;gap:22px;padding:28px 20px 18px}}
+.cm-phone{justify-self:center}
+.phone{position:relative;width:240px;max-width:100%;aspect-ratio:240/500;border-radius:34px;background:#05040A;border:2px solid #241a38;
+  box-shadow:0 30px 70px rgba(0,0,0,.55);overflow:hidden;padding:9px}
+.phone::before{content:"";position:absolute;top:9px;left:50%;transform:translateX(-50%);width:78px;height:15px;background:#05040A;border-radius:0 0 12px 12px;z-index:3}
+.phone .screen{width:100%;height:100%;border-radius:26px;overflow:hidden;background:#0C0816;display:flex;align-items:center;justify-content:center;position:relative}
+.phone .screen img{width:100%;height:100%;object-fit:cover}
+.ph-fallback{color:var(--muted-2);font-size:12px;text-align:center;padding:16px}
+.cm-logo{width:62px;height:62px;border-radius:50%;overflow:hidden;background:#0C0816;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;margin-bottom:16px;position:relative}
+.cm-logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cm-logo span{font-family:var(--ff-d);font-weight:700;font-size:12px;color:var(--purple-2);text-align:center;padding:4px}
+.cm-info h3{font-family:var(--ff-d);font-weight:700;font-size:clamp(23px,3.2vw,32px);text-transform:none;margin-bottom:12px;color:#fff}
+.cm-info p{color:var(--muted);font-size:15.5px;line-height:1.6;margin-bottom:22px;max-width:52ch}
+.cm-cta{display:inline-flex}
+.cm-gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 40px 40px}
+@media(max-width:760px){.cm-gallery{grid-template-columns:repeat(2,1fr);padding:0 20px 26px}}
+.cm-gallery .g{aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#0C0816}
+.cm-gallery .g img{width:100%;height:100%;object-fit:cover}
+.gf{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted-2);font-size:11px;text-align:center;padding:8px}
+.cm-ba{padding:0 40px 40px}
+@media(max-width:760px){.cm-ba{padding:0 20px 26px}}
+.cm-ba h4{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--purple-2);margin-bottom:14px;font-weight:600}
+.cm-ba .pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.cm-ba .pair{grid-template-columns:1fr}}
+.cm-ba .col span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted-2);margin-bottom:6px}
+.cm-ba .col .img{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#0C0816}
+.cm-ba .col .img img{width:100%;height:auto;display:block}
+.cm-ba img,.cm-gallery img{cursor:zoom-in}
+.cm-lightbox{position:fixed;inset:0;z-index:130;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.93);padding:24px;cursor:zoom-out}
+.cm-lightbox.open{display:flex}
+.cm-lightbox img{max-width:100%;max-height:100%;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.cm-lightbox .lbx{position:absolute;top:16px;right:18px;color:#fff;font-size:28px;line-height:1;background:none;border:none;cursor:pointer}
+.cm-ba .cap{color:var(--muted);font-size:13px;margin-top:12px}
+
+/* ===== RAIO-X (redesign · timeline + card de diagnóstico) ===== */
+.rx{background:radial-gradient(80% 90% at 88% 8%, rgba(124,52,240,.12), transparent 60%), var(--bg)}
+.rx .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:52px;align-items:start}
+@media(max-width:960px){.rx .grid{grid-template-columns:1fr;gap:36px}}
+.rx-title{font-family:var(--ff-d);font-weight:700;text-transform:uppercase;line-height:1.05;letter-spacing:-.01em;
+  font-size:clamp(26px,3.5vw,40px);margin:16px 0 14px;max-width:none}
+.rx-title .pp{color:var(--purple-2)}
+.rx-sub{color:var(--muted);font-size:16px;max-width:620px;line-height:1.6}
+/* timeline */
+.rx-tl{margin-top:36px}
+.rx-step{position:relative;display:grid;grid-template-columns:30px 30px 1fr;gap:16px;padding-bottom:30px}
+.rx-step:last-child{padding-bottom:0}
+.rx-step .num{font-family:var(--ff-d);font-weight:700;font-size:15px;color:var(--purple-2);padding-top:3px}
+.rx-step .rail{position:relative;display:flex;justify-content:center}
+.rx-step .rail::before{content:"";position:absolute;top:16px;bottom:-30px;left:50%;transform:translateX(-50%);width:1px;background:rgba(166,107,255,.24)}
+.rx-step:last-child .rail::before{display:none}
+.rx-step .dot{width:30px;height:30px;border-radius:50%;border:1px solid rgba(166,107,255,.5);background:rgba(124,52,240,.12);
+  display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(124,52,240,.28);position:relative;z-index:2}
+.rx-step .dot svg{width:15px;height:15px;color:var(--purple-2)}
+.rx-step .tx h3{color:#fff;font-family:var(--ff-d);font-weight:700;font-size:18px;text-transform:none;margin-bottom:5px}
+.rx-step .tx p{color:var(--muted);font-size:14.5px;line-height:1.55;max-width:46ch}
+/* card diagnóstico */
+.rx-card{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:18px;padding:26px 26px 28px;
+  background:linear-gradient(145deg,rgba(124,52,240,.10),transparent 46%), var(--surface);
+  box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.rx-card::after{content:"";position:absolute;top:-40%;right:-20%;width:60%;height:80%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(124,52,240,.16),transparent 70%)}
+.rx-chead{display:flex;align-items:center;gap:12px;position:relative;padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.rx-chead .logo{width:38px;height:29px;color:var(--silver);flex:none}
+.rx-brand{font-family:var(--ff-d);font-weight:700;font-size:18px;color:#fff;line-height:1.1}
+.rx-brand .pp{color:var(--purple-2)}
+.rx-bsub{font-size:10.5px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-top:3px}
+.rx-chart{position:absolute;top:-2px;right:0;width:118px;height:52px}
+.rx-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--purple-2);margin:16px 0 12px}
+.rx-lbl:first-of-type{margin-top:0}
+.rx-bars{display:flex;flex-direction:column;gap:11px}
+.rx-bar{display:grid;grid-template-columns:20px 96px 1fr;gap:10px;align-items:center}
+.rx-bar .ic{width:18px;height:18px;color:var(--muted);flex:none}
+.rx-bar .lb{font-size:13px;color:var(--text)}
+.rx-bar .track{display:block;height:8px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}
+.rx-bar .fill{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--purple-2));box-shadow:0 0 10px rgba(124,52,240,.35);transform:scaleX(0);transform-origin:left;transition:transform 1s var(--ease)}
+.rx-card.rx-go .rx-bar:nth-child(1) .fill{transform:scaleX(1);transition-delay:.12s}
+.rx-card.rx-go .rx-bar:nth-child(2) .fill{transform:scaleX(1);transition-delay:.26s}
+.rx-card.rx-go .rx-bar:nth-child(3) .fill{transform:scaleX(1);transition-delay:.40s}
+.rx-card.rx-go .rx-bar:nth-child(4) .fill{transform:scaleX(1);transition-delay:.54s}
+.rx-card.rx-go .rx-bar:nth-child(5) .fill{transform:scaleX(1);transition-delay:.68s}
+@media(prefers-reduced-motion:reduce){.rx-bar .fill{transform:scaleX(1);transition:none}}
+.rx-prio{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rx-prio .p{display:grid;grid-template-columns:32px 1fr;gap:8px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--text)}
+.rx-prio .p:last-child{border-bottom:none}
+.rx-prio .p .k{font-family:var(--ff-d);font-weight:700;color:var(--purple-2);font-size:13px}
+.rx-recebe{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:11px 16px}
+@media(max-width:520px){.rx-recebe{grid-template-columns:1fr}}
+.rx-recebe li{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--text);line-height:1.35}
+.rx-recebe .ck{width:19px;height:19px;flex:none;border-radius:50%;border:1px solid rgba(166,107,255,.5);display:flex;align-items:center;justify-content:center;color:var(--purple-2);margin-top:1px}
+.rx-recebe .ck svg{width:11px;height:11px}
+.rx-cta{width:100%;justify-content:center;margin-top:22px}
+.rx-micro{text-align:center;font-size:12.5px;color:var(--muted);margin-top:12px}
+.rx-micro2{text-align:center;font-size:12px;color:var(--muted-2);margin-top:6px;max-width:48ch;margin-left:auto;margin-right:auto;line-height:1.5}
+
+/* ===== FAQ ===== */
+.faq .wrap{max-width:860px}
+.faq .head{margin-bottom:34px}
+.qa{border-top:1px solid var(--line)}
+.qa:last-child{border-bottom:1px solid var(--line)}
+.qa button{width:100%;text-align:left;background:none;border:none;color:var(--white);font-family:var(--ff-b);font-weight:600;font-size:17px;padding:22px 0;cursor:pointer;display:flex;justify-content:space-between;gap:16px;align-items:center;min-height:48px}
+.qa .ic{flex:none;width:18px;height:18px;position:relative;transition:transform .25s var(--ease)}
+.qa .ic::before,.qa .ic::after{content:"";position:absolute;background:var(--purple-2);border-radius:2px}
+.qa .ic::before{top:8px;left:0;width:18px;height:2px}
+.qa .ic::after{left:8px;top:0;width:2px;height:18px;transition:opacity .25s}
+.qa.open .ic::after{opacity:0}
+.qa .a{max-height:0;overflow:hidden;transition:max-height .3s var(--ease);color:var(--muted);font-size:15px}
+.qa .a p{padding:0 0 22px;max-width:70ch}
+.qa .a .val{color:var(--purple-2)}
+
+/* ===== FORM + CTA FINAL ===== */
+.final{background:radial-gradient(80% 100% at 50% 0%,#0F0A1E,var(--bg-2));border-top:1px solid var(--line)}
+.final .top{text-align:center;max-width:680px;margin:0 auto 44px}
+.form-card{max-width:560px;margin:0 auto;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:34px}
+@media(max-width:600px){.form-card{padding:24px}}
+.form-card h3{font-size:22px;margin-bottom:4px;text-transform:none}
+.form-card .sub{font-size:14px;color:var(--muted);margin-bottom:22px}
+.prog{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.prog .track{flex:1;height:4px;background:#221B33;border-radius:99px;overflow:hidden}
+.prog .fill{height:100%;width:50%;background:var(--purple);border-radius:99px;transition:width .35s var(--ease)}
+.prog .lbl{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
+.pane{display:none}.pane.on{display:block}
+.fld{margin-bottom:15px}
+.fld label{display:block;font-size:13px;font-weight:500;color:var(--white);margin-bottom:7px}
+.fld input,.fld select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-in);padding:14px 15px;color:var(--white);font-family:var(--ff-b);font-size:15px;min-height:52px;transition:border-color .15s}
+.fld input::placeholder{color:#5C5470}
+.fld input:focus,.fld select:focus{outline:none;border-color:var(--purple-2)}
+.fld input[aria-invalid="true"],.fld select[aria-invalid="true"]{border-color:#F0576B}
+.fld select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23A66BFF' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 15px center}
+.err{font-size:12px;color:#F58098;margin-top:5px;display:none}
+.err.on{display:block}
+.hint{font-size:11.5px;color:var(--muted-2);margin-top:5px}
+.form-nav{display:flex;gap:12px;align-items:center;margin-top:6px}
+.back{background:none;border:none;color:var(--muted);font-weight:600;font-size:14px;cursor:pointer;padding:8px}
+.back:hover{color:var(--purple-2)}
+.consent{display:flex;gap:9px;align-items:flex-start;margin:14px 0 4px;font-size:12px;color:var(--muted-2)}
+.consent input{margin-top:2px;width:16px;height:16px;flex:none;accent-color:var(--purple)}
+.consent a{color:var(--purple-2);text-decoration:underline}
+.form-status{margin-top:14px;font-size:13px}
+.form-done{display:none;text-align:center;padding:16px 4px}
+.form-done .ok{color:var(--success);font-weight:600;font-size:17px}
+.form-done p{color:var(--muted);font-size:13px;margin-top:8px}
+
+/* ===== FOOTER (assinatura) ===== */
+footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
+.foot-sig{text-align:center;padding-bottom:40px;border-bottom:1px solid var(--line)}
+.foot-sig .mk{width:64px;height:48px;color:var(--silver);margin:0 auto 18px}
+.foot-sig .big{font-family:var(--ff-d);font-weight:700;font-size:clamp(56px,16vw,180px);line-height:.9;letter-spacing:-.02em;background:linear-gradient(180deg,#fff,#7A7290);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.foot-sig .msg{font-family:var(--ff-d);font-weight:500;font-size:clamp(15px,2vw,20px);color:var(--purple-2);letter-spacing:.02em;margin-top:6px}
+.foot-info{display:flex;justify-content:space-between;gap:26px;flex-wrap:wrap;padding:34px 0}
+.foot-info .col b{display:block;color:var(--white);font-size:14px;margin-bottom:10px}
+.foot-info .col a{display:block;color:var(--muted);font-size:14px;margin-bottom:7px}
+.foot-info .col a:hover{color:var(--purple-2)}
+.legal{font-size:12px;color:var(--muted-2);padding-bottom:40px}
+
+/* ===== STICKY CTA ===== */
+.sticky{position:fixed;left:0;right:0;bottom:0;z-index:40;transform:translateY(130%);transition:transform .3s var(--ease);padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(7,6,11,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+.sticky.show{transform:none}
+.sticky .btn{width:100%;justify-content:center}
+@media(min-width:769px){.sticky{display:none}}
+@media(max-width:768px){body{padding-bottom:76px}}
+
+/* ===== MODAL ===== */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,3,8,.8);backdrop-filter:blur(5px)}
+.modal.open{display:flex}
+.modal-card{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px;width:100%;max-width:520px;max-height:92vh;overflow:auto;position:relative}
+.modal-card h3{font-size:22px;text-transform:none;margin-bottom:4px}
+.modal-x{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:26px;cursor:pointer;line-height:1;min-width:44px;min-height:44px}
+.modal-x:hover{color:var(--white)}
+
+.contour svg{width:100%;height:100%}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+/* ===== DOR / PROBLEMAS ===== */
+.pain2{background:linear-gradient(180deg,var(--bg-2),var(--bg))}
+.pain2 .head{max-width:720px;margin:0 auto 34px}
+.pain2 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:820px){.pain2 .grid{grid-template-columns:1fr}}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;position:relative;overflow:hidden}
+.pcard::before{content:"";position:absolute;left:0;top:0;width:3px;height:100%;background:linear-gradient(180deg,var(--purple),transparent)}
+.pcard .k{font-family:var(--ff-d);font-weight:700;font-size:14px;color:var(--purple-2);letter-spacing:.04em}
+.pcard h3{color:#fff;text-transform:uppercase;font-size:16px;margin:10px 0 8px}
+.pcard p{color:var(--muted);font-size:14.5px}
+.pain2 .bridge{text-align:center;margin-top:34px}
+.pain2 .bridge p{font-family:var(--ff-d);font-weight:600;font-size:clamp(19px,2.6vw,26px);color:#fff;max-width:720px;margin:0 auto 22px;text-transform:uppercase}
+.pain2 .bridge b{color:var(--purple-2)}
+
+/* ===== DEPOIMENTOS EM VÍDEO ===== */
+.vids{background:var(--bg)}
+.vids .head{max-width:680px;margin:0 auto 34px}
+.vids .rail{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:900px){.vids .rail{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.vids .rail{grid-template-columns:1fr}}
+.vcard{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.vcard .media{position:relative;aspect-ratio:9/16;background:#0C0816;display:flex;align-items:center;justify-content:center}
+.vcard .media video,.vcard .media img,.vcard .media iframe{width:100%;height:100%;object-fit:cover;background:#0C0816;border:0}
+.vcard .media .ph{color:var(--muted-2);font-size:12px;text-align:center;padding:16px}
+.vcard .info{padding:16px 18px}
+.vcard .info .nm{font-family:var(--ff-d);font-weight:700;font-size:16px;color:#fff}
+.vcard .info .rl{font-size:12.5px;color:var(--muted)}
+.vcard .info .q{font-size:13.5px;color:var(--muted);margin-top:10px;font-style:italic;line-height:1.5}
+.vids .note{text-align:center;font-size:12px;color:var(--muted-2);margin-top:16px}
+
+/* ===== LOGO REAL (imagem) ===== */
+.logo .mk{height:26px;width:auto;display:block}
+.rx-chead .logo{width:auto;height:30px}
+
+.foot-sig .foot-logo{width:min(340px,72vw);height:auto;margin:0 auto 14px;display:block;filter:drop-shadow(0 6px 26px rgba(124,52,240,.35))}
+</style>
+</head>
+<body>
+
+<!-- ===== SPRITE (símbolo Audens · placeholder do SVG oficial) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="silverG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#CFC9DE"/><stop offset="1" stop-color="#8E86A6"/>
+    </linearGradient>
+    <symbol id="peak" viewBox="0 0 120 88">
+      <path d="M4 84 L46 22 L64 46 L82 16 L116 84 Z" fill="url(#silverG)"/>
+      <path d="M46 22 L64 46 L55 58 L38 36 Z" fill="#0C0813" opacity=".22"/>
+      <path d="M4 84 L46 22 L64 46 L82 16 L116 84 Z" fill="none" stroke="#7C34F0" stroke-width="1.4" opacity=".55"/>
+    </symbol>
+    <symbol id="peakline" viewBox="0 0 14 11"><path d="M1 10 L6 2 L9 6 L13 1" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="arrow" viewBox="0 0 16 16"><path d="M2 8 H13 M9 4 L13 8 L9 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<!-- ===== HEADER ===== -->
+<header id="hdr">
+  <div class="wrap nav">
+    <a href="#top" class="logo"><img class="mk" src="images/logo-mark.webp" alt="Audens Company" width="57" height="26"> <span>AUDENS</span></a>
+    <nav class="nav-links" aria-label="Seções">
+      <a href="#operadores">Operadores</a>
+      <a href="#case">Resultado</a>
+      <a href="#metodo">Método</a>
+      <a href="#raiox">Raio-X</a>
+      <a href="#faq">Dúvidas</a>
+    </nav>
+    <button class="btn btn-primary header-cta" data-open data-ev="hero_cta_click">Quero o Raio-X</button>
+  </div>
+</header>
+
+<main id="top">
+<!-- ===== 01 · HERO ===== -->
+<section class="hero" aria-label="Apresentação">
+  <div class="hero-atmo" aria-hidden="true">
+    <div class="light"></div>
+    <div class="contour"><svg viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice" fill="none">
+      <g stroke="#A66BFF" stroke-width="1" opacity="0.06">
+        <path d="M-100 620 C 300 560 520 360 760 300 C 1000 240 1240 300 1560 180"/>
+        <path d="M-100 680 C 300 620 520 420 760 360 C 1000 300 1240 360 1560 240"/>
+        <path d="M-100 740 C 300 680 520 480 760 420 C 1000 360 1240 420 1560 300"/>
+      </g></svg></div>
+  </div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Marketing para delivery · hamburgueria &amp; pizzaria</span>
+      <h1>Marketing de delivery feito por quem opera <span class="pp">+R$500 mil/mês</span> no próprio caixa.</h1>
+      <p class="lead">Os fundadores operam hamburgueria e pizzaria próprias. A gente aplica no seu delivery o mesmo sistema de aquisição, canal direto e recompra que roda no nosso caixa.</p>
+      <div class="hero-cta-row">
+        <button class="btn btn-primary" data-open data-ev="hero_cta_click">Quero o Raio-X da minha operação <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button>
+        <a class="textlink" href="#metodo">Ver o método</a>
+      </div>
+    </div>
+    <div class="hero-photo">
+      <img src="images/founders-1050.webp" srcset="images/founders-760.webp 760w, images/founders-1050.webp 1050w" sizes="(max-width:920px) 86vw, 46vw" width="1050" height="1132" fetchpriority="high" alt="Lucas e Arthur, fundadores da Audens Company, donos de operações de delivery">
+      <div class="proof-tab">
+        <div class="n">+R$500 mil<span style="font-size:14px;color:var(--muted)">/mês</span></div>
+        <div class="l">nas operações próprias dos fundadores — não de um cliente</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 · PROOF BAR ===== -->
+<div class="proofbar">
+  <div class="wrap"><div class="row">
+    <div class="pb"><div class="n"><span class="summit"></span>+200</div><div class="l">clientes ativos</div></div>
+    <div class="pb"><div class="n"><span class="summit"></span>+50</div><div class="l">cidades atendidas</div></div>
+    <div class="pb"><div class="n"><span class="summit"></span>+R$50 mi</div><div class="l">em vendas acompanhadas</div><div class="foot">faturamento acompanhado nas operações atendidas · <span style="color:var(--purple-2)">[validar forma final]</span></div></div>
+  </div></div>
+</div>
+
+<!-- ===== 03 · OPERADORES ===== -->
+<section class="ops" id="operadores">
+  <div class="wrap">
+    <div class="head" data-reveal>
+      <span class="eyebrow"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> A vantagem que não se copia</span>
+      <h2 style="margin-top:16px">Antes de sermos agência,<br>somos <span class="silver-txt">operadores</span>.</h2>
+    </div>
+    <div class="grid">
+      <div data-reveal>
+        <div class="huge-n silver-txt" data-count="500" data-suffix=" mil/mês" data-prefix="+R$ ">+R$500 mil/mês</div>
+        <p style="margin-top:20px">A maioria das agências aprendeu delivery em curso. A gente aprendeu tocando operação de verdade — hamburgueria e pizzaria próprias — e descobrindo na prática o que faz o cliente voltar.</p>
+        <p>Cada estratégia que entra no seu delivery já passou primeiro pelo nosso próprio caixa. Não é teoria de agência: é o que a gente precisa fazer funcionar todo mês pra fechar o mês.</p>
+        <p class="sig">— Lucas &amp; Arthur, fundadores da Audens · donos de operação de food service</p>
+      </div>
+      <div class="op-photo" data-reveal aria-label="Foto real da operação (a inserir)">
+        <div class="contour" aria-hidden="true"><svg viewBox="0 0 600 500" preserveAspectRatio="xMidYMid slice" fill="none"><g stroke="#A66BFF" stroke-width="1" opacity="0.08"><path d="M-40 380 C 160 340 260 220 380 190 C 500 160 620 190 760 120"/><path d="M-40 430 C 160 390 260 270 380 240 C 500 210 620 240 760 170"/></g></svg></div>
+        <svg class="diag" viewBox="0 0 600 500" preserveAspectRatio="none" aria-hidden="true"><path d="M0 500 L600 60" stroke="#7C34F0" stroke-width="1.5" opacity=".4"/></svg>
+        <div class="marker">📷 [FOTO REAL: Lucas/Arthur dentro da operação — cozinha, expedição, pedidos saindo. Documental, luz lateral violeta, horizontal.]</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 08 · CLIENTES / MARCAS (trilho + modal de case) ===== -->
+<section id="clientes" class="clients">
+  <div class="wrap">
+    <div class="head" data-reveal>
+      <span class="eyebrow" style="justify-content:center"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Marcas que já passaram por aqui</span>
+      <h2 style="margin-top:16px">Algumas empresas que já ajudamos a crescer</h2>
+      <p class="lead" style="margin:12px auto 0">Resultados reais. Parcerias que geram crescimento no delivery e no food service. Clique numa marca pra abrir o case.</p>
+    </div>
+    <div class="rail-wrap">
+      <button class="rail-btn prev" id="railPrev" type="button" aria-label="Ver marcas anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="rail" id="brandRail" role="list" aria-label="Marcas atendidas pela Audens"></div>
+      <button class="rail-btn next" id="railNext" type="button" aria-label="Ver mais marcas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+    <p class="note">Arraste para o lado para ver mais marcas. <span style="color:var(--purple-2)">[Adicione o logo de cada cliente em <code>images/clientes/&lt;slug&gt;/logo.webp</code> — enquanto isso, o card mostra o nome.]</span></p>
+  </div>
+
+  <!-- Modal de case (separado do modal principal de lead) -->
+  <div class="cmodal" id="caseModal" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
+    <div class="cmodal-card">
+      <button class="cmodal-x" data-cclose type="button" aria-label="Fechar case">×</button>
+      <div id="caseBody"></div>
+    </div>
+  </div>
+
+  <!-- dados dos clientes (gerado pelo painel-clientes.html). Se o arquivo não existir, a LP usa a lista embutida abaixo. -->
+  <script src="clientes-data.js" onerror="void 0"></script>
+  <script>
+  (function(){
+    "use strict";
+    function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[m];});}
+    window.cmImgErr=function(img,label,cls){var d=document.createElement("div");d.className=cls||"gf";d.textContent=label;if(img&&img.parentNode)img.parentNode.replaceChild(d,img);};
+
+    /* =========================================================
+       CADASTRO DE CLIENTES — edite / adicione aqui.
+       Campos: slug, name, (title), description, ctaLabel, ctaHref,
+               gallery:[...], beforeAfter:{before,after,caption}
+       Caminhos de imagem preenchidos automaticamente por slug:
+         images/clientes/<slug>/logo.webp
+         images/clientes/<slug>/instagram.webp
+       (troque adicionando os campos logo / phoneImage se quiser outro caminho)
+       ========================================================= */
+    var clientCases=[
+      {slug:"burguer-fc",name:"Burguer FC",description:"Operação própria dos fundadores da Audens. [Edite: conte a estratégia aplicada e o resultado real quando puder comprovar.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox",gallery:["images/clientes/burguer-fc/01.webp","images/clientes/burguer-fc/02.webp","images/clientes/burguer-fc/03.webp","images/clientes/burguer-fc/04.webp"]},
+      {slug:"pizza-fc",name:"Pizza FC",description:"Operação própria dos fundadores da Audens. [Edite este texto do case.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"perto-do-fogo",name:"Perto do Fogo",description:"Parceria da Audens no marketing de delivery — aquisição, canal direto e recompra. [Edite e adicione o resultado real.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox",beforeAfter:{before:"images/clientes/perto-do-fogo/antes.webp",after:"images/clientes/perto-do-fogo/depois.webp",caption:"[Legenda do antes/depois — descreva a mudança, sem número que não dê pra comprovar.]"}},
+      {slug:"gerra",name:"Gerrá Burguer",description:"[Edite: contexto e o que a Audens fez para a Gerrá Burguer.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"texas",name:"Texas Hamburgueria",description:"[Edite: case da Texas Hamburgueria.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"dom-costela",name:"Dom Costela Defumada",description:"[Edite: case da Dom Costela.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"johnnie-jack",name:"Johnnie Jack",description:"[Edite: case da Johnnie Jack.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"paiol",name:"Paiol Hamburgueria",description:"[Edite: case da Paiol.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"delicias-brasil",name:"Delícias Brasil",description:"[Edite: case da Delícias Brasil.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"dark",name:"Dark Smash Burguer",description:"[Edite: case da Dark Smash Burguer.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"georges",name:"George's",description:"[Edite: case da George's.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"croc",name:"Croc",description:"[Edite: case da Croc.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"minas-burguer",name:"Minas Burguer BH",description:"[Edite: case da Minas Burguer BH.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+      {slug:"chapa-quente",name:"Chapa Quente",description:"[Edite: case da Chapa Quente.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"}
+    ];
+    /* Fonte dos clientes (na ordem): 1) edições do painel salvas no navegador (mesmo PC — só recarregar a LP);
+       2) arquivo clientes-data.js gerado pelo painel (para publicar); 3) lista embutida acima (reserva). */
+    var _src=null;
+    try{ var _ls=localStorage.getItem("audens_clientes_v1"); if(_ls){ var _a=JSON.parse(_ls); if(_a&&_a.length)_src=_a; } }catch(e){}
+    if(!_src && window.AUDENS_CLIENTES && window.AUDENS_CLIENTES.length){ _src=window.AUDENS_CLIENTES; }
+    if(_src){ clientCases=_src; }
+    clientCases.forEach(function(c){
+      if(!c.logo)c.logo="images/clientes/"+c.slug+"/logo.webp";
+      if(!c.phoneImage)c.phoneImage="images/clientes/"+c.slug+"/instagram.webp";
+      if(!c.title)c.title=c.name;
+    });
+
+    /* ==== render do trilho ==== */
+    var rail=document.getElementById("brandRail");
+    clientCases.forEach(function(c,i){
+      var b=document.createElement("button");
+      b.className="brand-card";b.type="button";b.setAttribute("role","listitem");b.setAttribute("aria-label","Ver case: "+c.name);
+      b.innerHTML='<span class="brand-badge"><svg class="brand-peak" viewBox="0 0 120 88" aria-hidden="true"><use href="#peak"></use></svg><img src="'+esc(c.logo)+'" alt="" onerror="this.remove()"></span><span class="brand-name">'+esc(c.name)+'</span><span class="brand-see">Ver case &#8594;</span>';
+      b.addEventListener("click",function(){ if(suppress){suppress=false;return;} openCase(i); });
+      rail.appendChild(b);
+    });
+
+    /* ==== setas + arraste ==== */
+    var prev=document.getElementById("railPrev"), next=document.getElementById("railNext");
+    function stepPx(){var card=rail.querySelector(".brand-card");return card?(card.offsetWidth+16)*3:420;}
+    if(prev)prev.addEventListener("click",function(){rail.scrollBy({left:-stepPx(),behavior:"smooth"});});
+    if(next)next.addEventListener("click",function(){rail.scrollBy({left:stepPx(),behavior:"smooth"});});
+    var down=false,sx=0,sl=0,suppress=false;
+    rail.addEventListener("mousedown",function(e){down=true;suppress=false;rail.classList.add("drag");sx=e.pageX;sl=rail.scrollLeft;});
+    window.addEventListener("mouseup",function(){down=false;rail.classList.remove("drag");});
+    rail.addEventListener("mouseleave",function(){down=false;rail.classList.remove("drag");});
+    rail.addEventListener("mousemove",function(e){if(!down)return;e.preventDefault();var dx=e.pageX-sx;if(Math.abs(dx)>6)suppress=true;rail.scrollLeft=sl-dx;});
+
+    /* ==== modal de case ==== */
+    var cmodal=document.getElementById("caseModal"), cbody=document.getElementById("caseBody"), clast=null;
+    /* move o modal para o <body> — evita que o overflow:hidden da seção corte/desloque o popup ao rolar */
+    if(cmodal&&cmodal.parentNode!==document.body)document.body.appendChild(cmodal);
+    /* lightbox: clicar numa imagem (antes/depois ou galeria) abre em tela cheia */
+    var lb=document.createElement("div"); lb.className="cm-lightbox"; lb.innerHTML='<button class="lbx" aria-label="Fechar">&times;</button><img alt="">'; document.body.appendChild(lb);
+    var lbImg=lb.querySelector("img");
+    function closeLb(){ lb.classList.remove("open"); }
+    lb.addEventListener("click",closeLb);
+    cbody.addEventListener("click",function(e){ var t=e.target; if(t&&t.tagName==="IMG"&&(t.closest(".cm-ba")||t.closest(".cm-gallery"))){ lbImg.src=t.src; lb.classList.add("open"); } });
+    document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&lb.classList.contains("open"))closeLb(); });
+    function track(name,params){ if(typeof pushEvent==="function")pushEvent(name,params); }
+    function openCaseModal(){clast=document.activeElement;cmodal.classList.add("open");document.body.style.overflow="hidden";var x=cmodal.querySelector(".cmodal-x");if(x)x.focus();}
+    function closeCase(){cmodal.classList.remove("open");document.body.style.overflow="";if(clast&&clast.focus)clast.focus();}
+    function imgOr(src,label){return src?'<img src="'+esc(src)+'" alt="" loading="lazy" onerror="cmImgErr(this,&#39;'+esc(label)+'&#39;)">':'<div class="gf">'+esc(label)+'</div>';}
+    function openCase(i){
+      var c=clientCases[i];
+      var phone='<div class="cm-phone"><div class="phone"><div class="screen"><img src="'+esc(c.phoneImage)+'" alt="Instagram '+esc(c.name)+'" loading="lazy" onerror="cmImgErr(this,&#39;[Print do Instagram]&#39;,&#39;ph-fallback&#39;)"></div></div></div>';
+      var info='<div class="cm-info"><div class="cm-logo"><span>'+esc(c.name)+'</span><img src="'+esc(c.logo)+'" alt="" onerror="this.remove()"></div>'
+        +'<h3 id="cmTitle">'+esc(c.title)+'</h3><p>'+esc(c.description)+'</p>'
+        +'<a class="btn btn-primary cm-cta" href="'+esc(c.ctaHref||"#raiox")+'" data-cclose>'+esc(c.ctaLabel||"Falar com a Audens")+'</a></div>';
+      var extra="";
+      if(c.beforeAfter){
+        extra='<div class="cm-ba"><h4>Antes e depois</h4><div class="pair">'
+          +'<div class="col"><span>Antes</span><div class="img">'+imgOr(c.beforeAfter.before,"[antes]")+'</div></div>'
+          +'<div class="col"><span>Depois</span><div class="img">'+imgOr(c.beforeAfter.after,"[depois]")+'</div></div></div>'
+          +(c.beforeAfter.caption?'<p class="cap">'+esc(c.beforeAfter.caption)+'</p>':"")+'</div>';
+      } else if(c.gallery&&c.gallery.length){
+        extra='<div class="cm-gallery">'+c.gallery.map(function(g){return '<div class="g">'+imgOr(g,"[imagem]")+'</div>';}).join("")+'</div>';
+      }
+      cbody.innerHTML='<div class="cm-top">'+phone+info+'</div>'+extra;
+      cbody.querySelectorAll("[data-cclose]").forEach(function(el){el.addEventListener("click",closeCase);});
+      openCaseModal();
+      track("client_case_view",{client:c.slug});
+    }
+    cmodal.addEventListener("click",function(e){if(e.target===cmodal)closeCase();});
+    var staticX=cmodal.querySelector(".cmodal-x"); if(staticX)staticX.addEventListener("click",closeCase);
+    document.addEventListener("keydown",function(e){
+      if(!cmodal.classList.contains("open"))return;
+      if(e.key==="Escape")closeCase();
+      if(e.key==="Tab"){var f=cmodal.querySelectorAll("button,a[href]");if(!f.length)return;var first=f[0],last=f[f.length-1];
+        if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+        else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
+    });
+  })();
+  </script>
+</section>
+
+<!-- ===== 05 · DEPOIMENTOS EM VÍDEO ===== -->
+<section id="depoimentos" class="vids">
+  <div class="wrap">
+    <div class="head" data-reveal>
+      <span class="eyebrow" style="justify-content:center"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Donos falando com donos</span>
+      <h2 style="margin-top:16px">Quem já é da Audens conta o resultado.</h2>
+      <p class="lead" style="margin:12px auto 0">Depoimento de dono de operação vale mais que qualquer promessa. Estes são reais.</p>
+    </div>
+    <div class="rail" id="vidRail"></div>
+    <p class="note">Adicione/edite os depoimentos no <code>painel-depoimentos.html</code>. <span style="color:var(--purple-2)">[Suba o pôster e coloque o arquivo do vídeo na pasta videos/ do site.]</span></p>
+  </div>
+  <script src="depoimentos-data.js" onerror="void 0"></script>
+  <script>
+  (function(){
+    function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[m];});}
+    var DEF=[
+      {name:"[Nome do dono]",role:"[Operação · Cidade]",quote:"[Depoimento — uma frase forte, citando a objeção que tinha antes e o número que mudou.]",video:"",poster:""},
+      {name:"[Nome do dono]",role:"[Operação · Cidade]",quote:"[Depoimento em vídeo do cliente.]",video:"",poster:""},
+      {name:"[Nome do dono]",role:"[Operação · Cidade]",quote:"[Depoimento em vídeo do cliente.]",video:"",poster:""}
+    ];
+    var list=DEF, usedLS=false;
+    try{var s=localStorage.getItem("audens_depoimentos_v1");if(s){var a=JSON.parse(s);if(a&&a.length){list=a;usedLS=true;}}}catch(e){}
+    if(!usedLS && window.AUDENS_DEPOIMENTOS && window.AUDENS_DEPOIMENTOS.length)list=window.AUDENS_DEPOIMENTOS;
+    var rail=document.getElementById("vidRail");
+    rail.innerHTML=list.map(function(v){
+      var media = v.video ? (function(u){var yt=u.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]{11})/);if(yt)return '<iframe src="https://www.youtube.com/embed/'+yt[1]+'" title="'+esc(v.name)+'" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>';return '<video controls preload="metadata" playsinline'+(v.poster?' poster="'+esc(v.poster)+'"':'')+'><source src="'+esc(u)+'" type="video/mp4"></video>';})(v.video)
+        : (v.poster? '<img src="'+esc(v.poster)+'" alt="" style="width:100%;height:100%;object-fit:cover">' : '<div class="ph">▶ [Adicione o vídeo no painel de depoimentos]</div>');
+      return '<article class="vcard"><div class="media">'+media+'</div><div class="info"><div class="nm">'+esc(v.name||"")+'</div><div class="rl">'+esc(v.role||"")+'</div>'+(v.quote?'<div class="q">"'+esc(v.quote)+'"</div>':'')+'</div></article>';
+    }).join("");
+  })();
+  </script>
+</section>
+
+<!-- ===== 06 · DOR / PROBLEMAS ===== -->
+<section id="dor" class="pain2">
+  <div class="wrap">
+    <div class="head" data-reveal>
+      <span class="eyebrow" style="justify-content:center"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Se você é dono de delivery, provavelmente vive isso</span>
+      <h2 style="margin-top:16px">Três coisas que corroem o seu delivery em silêncio.</h2>
+    </div>
+    <div class="grid">
+      <div class="pcard" data-reveal><span class="k">01</span><h3>Refém do marketplace</h3><p>As taxas do marketplace comprimem a sua margem — e o relacionamento com o cliente continua dentro da plataforma. Você entrega a comida; o dado é deles.</p></div>
+      <div class="pcard" data-reveal><span class="k">02</span><h3>Anúncio que não vira pedido</h3><p>Você já gastou em tráfego sem saber quantos pedidos aquilo trouxe. Dinheiro no escuro, decisão no achismo.</p></div>
+      <div class="pcard" data-reveal><span class="k">03</span><h3>Agência que nunca fechou um caixa</h3><p>Te vendem "estratégia" bonita, mas nunca lidaram com cozinha lotada, entregador atrasado ou CMV subindo.</p></div>
+    </div>
+    <div class="bridge" data-reveal>
+      <p>É exatamente por viver esses três problemas todo mês que <b>a Audens existe.</b></p>
+      <button class="btn btn-primary" data-open data-ev="offer_cta_click">Quero resolver isso com quem entende <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 05 · MÉTODO OPERADOR (imagem de referência) ===== -->
+<section id="metodo" class="mtd-img" data-ev-view="method_view" aria-label="O Método Operador">
+  <h2 class="sr-only">O Método Operador — existe um método pro seu delivery vender com mais previsibilidade. Os 6 pilares: Diagnóstico de Operação, Oferta &amp; Canal Direto, Aquisição que vira Pedido, Conversão, Recompra &amp; LTV e Dados &amp; Rotina.</h2>
+  <div class="frame">
+    <img src="images/method-ref.webp" width="1600" height="900" loading="lazy" decoding="async"
+      alt="Método Audens: o símbolo da montanha Audens ao centro, cercado pelos seis pilares do método — Diagnóstico de Operação, Oferta e Canal Direto, Aquisição que vira Pedido, Conversão, Recompra e LTV, e Dados e Rotina.">
+    <div class="mtd-img-pulse" aria-hidden="true"></div>
+    <button class="mtd-img-cta" data-open data-ev="method_cta_click" aria-label="Quero aplicar o Método Audens no meu delivery"></button>
+  </div>
+  <div class="mtd-img-mcta">
+    <button class="btn btn-primary" data-open data-ev="method_cta_click">Quero aplicar o Método Audens</button>
+  </div>
+</section>
+
+<!-- ===== 06 · O QUE MUDA ===== -->
+<section class="change">
+  <div class="wrap">
+    <div class="split">
+      <div class="pres" data-reveal>
+        <h3>Marketing de presença mede</h3>
+        <ul><li>Alcance</li><li>Visualização</li><li>Engajamento</li><li>Seguidores</li></ul>
+      </div>
+      <div class="oper" data-reveal>
+        <h3>Marketing de operação mede</h3>
+        <ul><li>Pedido</li><li>Ticket</li><li>CAC</li><li>Margem</li><li>Recompra</li></ul>
+      </div>
+    </div>
+    <p class="change-fecho fecho" data-reveal>A Audens conecta o marketing às métricas que <b>aparecem no caixa.</b></p>
+
+    <div class="chapters">
+      <div class="chapter" data-reveal>
+        <div class="cn">01</div>
+        <div><h3>Canal direto</h3><p class="prob">As taxas do marketplace comprimem a margem e o relacionamento com o cliente continua dentro da plataforma.</p></div>
+        <div class="res"><span class="k">O que muda</span>Venda e recompra no seu WhatsApp/app próprio — mais margem por pedido e o cliente passa a ser seu.</div>
+      </div>
+      <div class="chapter" data-reveal>
+        <div class="cn">02</div>
+        <div><h3>Aquisição</h3><p class="prob">Anúncio rodando sem saber quantos pedidos entraram por real investido. Decisão no achismo.</p></div>
+        <div class="res"><span class="k">O que muda</span>Tráfego medido por pedido rastreável, com leitura clara de quanto entra pra cada real gasto.</div>
+      </div>
+      <div class="chapter" data-reveal>
+        <div class="cn">03</div>
+        <div><h3>Recompra</h3><p class="prob">Cliente que pede uma vez e some. Todo mês recomeça a corrida por cliente novo.</p></div>
+        <div class="res"><span class="k">O que muda</span>Régua de recompra (cashback, cupom, reativação) pra faturamento mais previsível.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 04 · CASE ÂNCORA ===== -->
+<section class="case" id="case" data-ev-view="case_view">
+  <div class="wrap">
+    <div class="top" data-reveal>
+      <div>
+        <span class="eyebrow"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Resultado de cliente</span>
+        <h2 style="margin-top:16px">Um caixa que saiu de<br>R$ 9 mil para R$ 73 mil.</h2>
+      </div>
+      <div class="meta"><span class="mark-txt">[Operação + cidade a confirmar]</span><br>Hamburgueria · nov/2025 → abr/2026</div>
+    </div>
+    <div class="dom" data-reveal>
+      <div class="big">8×</div>
+      <div class="sub">o faturamento mensal, de <b>R$ 9.101</b> (nov) para <b>R$ 73.390</b> (abr). A gestão de tráfego entrou em <b>20/jan</b> — os primeiros meses já vinham em curva.</div>
+    </div>
+    <div class="body">
+      <div data-reveal>
+        <div class="tl" aria-label="Faturamento mensal de novembro a abril">
+          <div class="bars">
+            <div class="c pre"><span class="v">9,1k</span><span class="bar" style="height:14%"></span><span class="m">Nov</span></div>
+            <div class="c pre"><span class="v">16,5k</span><span class="bar" style="height:22%"></span><span class="m">Dez</span></div>
+            <div class="c pre"><span class="v">19,9k</span><span class="bar" style="height:27%"></span><span class="m">Jan</span></div>
+            <div class="c"><span class="flag">20/jan · Audens</span><span class="v">31,9k</span><span class="bar" style="height:44%"></span><span class="m">Fev</span></div>
+            <div class="c"><span class="v">47,2k</span><span class="bar" style="height:64%"></span><span class="m">Mar</span></div>
+            <div class="c"><span class="v">73,4k</span><span class="bar" style="height:100%"></span><span class="m">Abr</span></div>
+          </div>
+        </div>
+        <p class="cred">Dados de faturamento informados pelo próprio cliente por WhatsApp. A curva já estava em crescimento antes da entrada da Audens (20/jan); não apresentamos o resultado como efeito isolado do nosso trabalho. Resultados variam conforme operação, região, oferta, investimento e execução.</p>
+        <div class="recline">
+          <div class="r"><span class="n">351</span><span class="l">lanches · sex a dom</span></div>
+          <div class="r"><span class="n">63</span><span class="l">lanches em 1h no pico</span></div>
+          <div class="r"><span class="n">122</span><span class="l">lanches num único dia</span></div>
+        </div>
+      </div>
+      <figure class="case-shot" data-reveal>
+        <img src="images/case-growth.webp" width="620" height="586" loading="lazy" alt="Print de WhatsApp do cliente com o faturamento mês a mês, de novembro a abril">
+        <figcaption class="cap">Print real enviado pelo cliente.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 07 · PROVAS ===== -->
+<section class="proofs" data-ev-view="offer_view">
+  <div class="wrap">
+    <div class="head" style="max-width:640px;margin-bottom:20px" data-reveal>
+      <span class="eyebrow"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Provas de clientes</span>
+      <h2 style="margin-top:16px">O recorde vira rotina no grupo.</h2>
+    </div>
+    <div class="proof-row" data-reveal>
+      <div class="pn">351</div>
+      <div class="pt"><div class="ctx">lanches vendidos num único fim de semana — mais de 1 por minuto no pico.</div><div class="who">Operação atendida pela Audens · print real</div></div>
+      <img class="ps" src="images/proof-351.webp" width="640" height="283" loading="lazy" alt="Print: 351 lanches de sexta a domingo">
+    </div>
+    <div class="proof-row" data-reveal>
+      <div class="pn">122</div>
+      <div class="pt"><div class="ctx">lanches num único dia — 58 comandas, novo recorde da casa.</div><div class="who">Operação atendida pela Audens · print real</div></div>
+      <img class="ps" src="images/proof-122.webp" width="640" height="365" loading="lazy" alt="Print: 122 lanches num dia, 58 comandas">
+    </div>
+    <div class="proof-row" data-reveal>
+      <div class="pn">+300</div>
+      <div class="pt"><div class="ctx">lanches de sexta a domingo, semana após semana.</div><div class="who">Operação atendida pela Audens · print real</div></div>
+      <img class="ps" src="images/proof-300.webp" width="640" height="172" loading="lazy" alt="Print: mais de 300 lanches no fim de semana">
+    </div>
+
+    <div class="more-btn"><button class="btn btn-line" id="moreProof" aria-expanded="false" aria-controls="moreWrap">Ver mais resultados <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button></div>
+    <div class="proof-more" id="moreWrap">
+      <figure class="pm"><img src="images/proof-zanardo.webp" width="560" height="507" loading="lazy" alt="Cliente Zanardo: recorde de pedidos"><figcaption class="cap"><b>Zanardo</b> — "Ontem batemos o recorde de pedidos!"</figcaption></figure>
+      <figure class="pm"><img src="images/proof-lanchepraca.webp" width="560" height="570" loading="lazy" alt="Lanche na Praça: média 40 pedidos"><figcaption class="cap"><b>Lanche na Praça</b> — "Média 40 pedidos. Pedidos grandes!"</figcaption></figure>
+      <figure class="pm"><img src="images/proof-hashtag.webp" width="560" height="465" loading="lazy" alt="Hashtag Lanches: recorde de pedidos"><figcaption class="cap"><b>Hashtag Lanches</b> — "batemos o recorde de pedidos"</figcaption></figure>
+    </div>
+    <p class="auth">Prints reais de clientes. <span style="color:var(--purple-2)">[Confirmar autorização de cada cliente — nomes/telefones podem ser ocultados.]</span></p>
+  </div>
+</section>
+
+<!-- ===== 09 · RAIO-X (redesign) ===== -->
+<!-- validar prazo/formato comercialmente do Raio-X -->
+<section id="raiox" class="rx" data-ev-view="offer_view">
+  <div class="wrap grid">
+    <div class="rx-left" data-reveal>
+      <span class="eyebrow"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Raio-X do Delivery</span>
+      <h2 class="rx-title">Antes de investir mais em marketing, descubra onde o seu delivery está <span class="pp">perdendo dinheiro.</span></h2>
+      <p class="rx-sub">Em uma análise estratégica, nosso time olha os pontos que mais interferem no crescimento da sua operação — antes de apresentar qualquer proposta.</p>
+      <div class="rx-tl">
+        <div class="rx-step"><div class="num">01</div><div class="rail"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/><path d="M12 1.6v3M12 19.4v3M1.6 12h3M19.4 12h3"/></svg></span></div><div class="tx"><h3>Aquisição</h3><p>De onde vêm seus pedidos e onde o investimento está virando venda — ou sendo desperdiçado.</p></div></div>
+        <div class="rx-step"><div class="num">02</div><div class="rail"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg></span></div><div class="tx"><h3>Conversão</h3><p>Cardápio, ofertas, ticket e caminho de compra. Onde o cliente entra e onde ele abandona o pedido.</p></div></div>
+        <div class="rx-step"><div class="num">03</div><div class="rail"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v5.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V6.5"/><path d="M4.5 12v5.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V12"/></svg></span></div><div class="tx"><h3>Margem &amp; canais</h3><p>Como marketplace, canal direto, taxas e CMV estão impactando o dinheiro que realmente sobra.</p></div></div>
+        <div class="rx-step"><div class="num">04</div><div class="rail"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5l3.5 3.5L17 9.5"/><path d="M3.5 11.5V10A4 4 0 0 1 7.5 6h13"/><path d="M7 21.5l-3.5-3.5L7 14.5"/><path d="M20.5 12.5V14a4 4 0 0 1-4 4h-13"/></svg></span></div><div class="tx"><h3>Recompra</h3><p>O que acontece depois do primeiro pedido e quanto potencial de receita existe na base que você já conquistou.</p></div></div>
+      </div>
+    </div>
+
+    <aside class="rx-card" data-reveal>
+      <div class="rx-chead">
+        <img class="logo" src="images/logo-mark.webp" alt="" aria-hidden="true">
+        <div><div class="rx-brand">Raio-X <span class="pp">Audens</span></div><div class="rx-bsub">Diagnóstico de operação</div></div>
+        <svg class="rx-chart" viewBox="0 0 118 52" fill="none" aria-hidden="true">
+          <defs><linearGradient id="rxg" x1="0" y1="0" x2="118" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7C34F0"/><stop offset="1" stop-color="#C9A6FF"/></linearGradient></defs>
+          <polyline points="2,46 22,36 42,40 64,24 86,28 116,6" stroke="url(#rxg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="116" cy="6" r="3.6" fill="#C9A6FF"/><circle cx="116" cy="6" r="7" fill="#A66BFF" opacity=".22"/>
+        </svg>
+      </div>
+
+      <div class="rx-lbl">Áreas analisadas</div>
+      <div class="rx-bars">
+        <div class="rx-bar"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/><path d="M12 1.6v3M12 19.4v3M1.6 12h3M19.4 12h3"/></svg><span class="lb">Aquisição</span><span class="track"><span class="fill" style="width:64%"></span></span></div>
+        <div class="rx-bar"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg><span class="lb">Conversão</span><span class="track"><span class="fill" style="width:80%"></span></span></div>
+        <div class="rx-bar"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6.5" rx="7.5" ry="3"/><path d="M4.5 6.5v5.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V6.5"/><path d="M4.5 12v5.5c0 1.66 3.36 3 7.5 3s7.5-1.34 7.5-3V12"/></svg><span class="lb">Margem</span><span class="track"><span class="fill" style="width:54%"></span></span></div>
+        <div class="rx-bar"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.5a8 8 0 0 1-11.7 7.1L3.5 20l1.5-5.2A8 8 0 1 1 20.5 11.5Z"/><path d="M8.7 11.2c.6 1.9 2.3 3.4 4.2 3.9"/></svg><span class="lb">Canal direto</span><span class="track"><span class="fill" style="width:82%"></span></span></div>
+        <div class="rx-bar"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2.5l3.5 3.5L17 9.5"/><path d="M3.5 11.5V10A4 4 0 0 1 7.5 6h13"/><path d="M7 21.5l-3.5-3.5L7 14.5"/><path d="M20.5 12.5V14a4 4 0 0 1-4 4h-13"/></svg><span class="lb">Recompra</span><span class="track"><span class="fill" style="width:70%"></span></span></div>
+      </div>
+
+      <div class="rx-lbl">Prioridades</div>
+      <div class="rx-prio">
+        <div class="p"><span class="k">01</span><span>Encontrar o gargalo principal</span></div>
+        <div class="p"><span class="k">02</span><span>Identificar oportunidades</span></div>
+        <div class="p"><span class="k">03</span><span>Definir os próximos passos</span></div>
+      </div>
+
+      <div class="rx-lbl">O que você recebe</div>
+      <ul class="rx-recebe">
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg></span> Diagnóstico dos principais gargalos</li>
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg></span> Prioridades da operação</li>
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg></span> Oportunidades de crescimento</li>
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg></span> Próximos passos recomendados</li>
+      </ul>
+
+      <button class="btn btn-primary rx-cta" data-open data-ev="offer_cta_click">Quero o Raio-X da minha operação <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button>
+      <div class="rx-micro">Análise gratuita · sem compromisso</div>
+      <p class="rx-micro2">Depois do envio, nosso time analisa as informações e entra em contato para aprofundar o diagnóstico da sua operação.</p>
+    </aside>
+  </div>
+  <script>
+  (function(){var card=document.querySelector('#raiox .rx-card');if(!card)return;
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){card.classList.add('rx-go');return;}
+    if('IntersectionObserver' in window){var o=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){card.classList.add('rx-go');o.disconnect();}});},{threshold:.28});o.observe(card);}
+    else card.classList.add('rx-go');
+  })();
+  </script>
+</section>
+
+<!-- ===== 10 · FAQ ===== -->
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div class="head" data-reveal>
+      <span class="eyebrow"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Dúvidas frequentes</span>
+      <h2 style="margin-top:16px">O que todo dono pergunta antes.</h2>
+    </div>
+    <div data-reveal>
+      <div class="qa"><button aria-expanded="false">Eu já invisto em tráfego. Vocês fazem diferente?<span class="ic" aria-hidden="true"></span></button><div class="a"><p>Fazemos. Partimos da sua operação — margem, ticket e canal — e medimos por pedido rastreável no seu canal direto, não por "impulsionar post". Você passa a saber quanto entrou pra cada real investido.</p></div></div>
+      <div class="qa"><button aria-expanded="false">Vocês trabalham só com iFood?<span class="ic" aria-hidden="true"></span></button><div class="a"><p>Não. A gente ajuda a fortalecer o seu <b>canal direto</b> (WhatsApp/app próprio) pra você depender menos do marketplace — sem abrir mão do que já funciona pra você hoje.</p></div></div>
+      <div class="qa"><button aria-expanded="false">O que vocês realmente fazem no canal direto?<span class="ic" aria-hidden="true"></span></button><div class="a"><p>Estruturamos a oferta, o caminho de compra e a régua de recompra (cashback, cupom de 2ª compra, reativação de inativos), além do tráfego que leva o cliente pra esse canal. <span class="val">[Detalhar entregáveis conforme escopo comercial.]</span></p></div></div>
+      <div class="qa"><button aria-expanded="false">Vocês atendem a minha cidade?<span class="ic" aria-hidden="true"></span></button><div class="a"><p>O trabalho é digital e o foco é o seu raio de entrega — já são +50 cidades atendidas no Brasil. <span class="val">[Confirmar se há exceção.]</span></p></div></div>
+      <div class="qa"><button aria-expanded="false">Quanto preciso investir?<span class="ic" aria-hidden="true"></span></button><div class="a"><p>Depende do tamanho da operação e da meta. No Raio-X a gente mostra o investimento em serviço e mídia que faz sentido pro seu faturamento atual — sem empurrar pacote.</p></div></div>
+      <div class="qa"><button aria-expanded="false">Tem fidelidade ou multa?<span class="ic" aria-hidden="true"></span></button><div class="a"><p class="val">[Validar a política comercial real da Audens antes de publicar.]</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 11 · FORM + CTA FINAL ===== -->
+<section class="final">
+  <div class="wrap">
+    <div class="top" data-reveal>
+      <span class="eyebrow" style="justify-content:center"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Vamos conversar</span>
+      <h2 style="margin-top:16px">Transformamos operação em <span class="pp">crescimento.</span></h2>
+      <p class="lead" style="margin:14px auto 0">Peça o Raio-X do seu delivery. A gente analisa a sua operação antes mesmo da conversa.</p>
+    </div>
+    <div class="form-card" data-reveal>
+      <h3>Raio-X do Delivery</h3>
+      <p class="sub">2 passos rápidos. Começamos pela sua operação.</p>
+      <div class="prog"><div class="track"><div class="fill" id="pfill"></div></div><span class="lbl" id="plbl">Etapa 1 de 2</span></div>
+      <form id="lead" novalidate>
+        <div class="pane on" data-step="1">
+          <div class="fld"><label for="segmento">Qual o seu segmento?</label>
+            <select id="segmento" name="segmento" required aria-describedby="e-seg"><option value="" disabled selected>Selecione…</option><option>Hamburgueria</option><option>Pizzaria</option><option>Restaurante</option><option>Cafeteria / Confeitaria</option><option>Dark kitchen</option><option>Outro</option></select>
+            <span class="err" id="e-seg">Selecione um segmento.</span></div>
+          <div class="fld"><label for="faturamento">Faturamento mensal hoje</label>
+            <select id="faturamento" name="faturamento" required aria-describedby="e-fat"><option value="" disabled selected>Selecione…</option><option>Até R$ 20 mil</option><option>R$ 20 mil a R$ 50 mil</option><option>R$ 50 mil a R$ 100 mil</option><option>R$ 100 mil a R$ 300 mil</option><option>Acima de R$ 300 mil</option></select>
+            <span class="err" id="e-fat">Selecione uma faixa.</span></div>
+          <div class="fld"><label for="canal">Como você vende hoje?</label>
+            <select id="canal" name="canal" required aria-describedby="e-can"><option value="" disabled selected>Selecione…</option><option>Só iFood / marketplace</option><option>iFood + canal próprio</option><option>Só canal próprio (WhatsApp/app)</option><option>Ainda não vendo por delivery</option></select>
+            <span class="err" id="e-can">Selecione uma opção.</span></div>
+          <button type="button" class="btn btn-primary btn-block" id="next">Continuar <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button>
+        </div>
+        <div class="pane" data-step="2">
+          <div class="fld"><label for="nome">Nome e sobrenome</label><input id="nome" name="nome" type="text" required autocomplete="name" placeholder="Como podemos te chamar?" aria-describedby="e-nome"><span class="err" id="e-nome">Informe seu nome.</span></div>
+          <div class="fld"><label for="whats">WhatsApp</label><input id="whats" name="whats" type="tel" required inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" aria-describedby="e-whats"><span class="err" id="e-whats">Informe um WhatsApp válido com DDD.</span></div>
+          <div class="fld"><label for="insta">@ do Instagram <span style="color:var(--muted-2)">(opcional)</span></label><input id="insta" name="insta" type="text" placeholder="@suaoperacao"></div>
+          <div class="fld"><label for="email">E-mail <span style="color:var(--muted-2)">(opcional)</span></label><input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="seu@email.com" aria-describedby="e-email"><span class="err" id="e-email">E-mail inválido.</span><span class="hint">Preferimos te chamar no WhatsApp — o e-mail é só backup.</span></div>
+          <label class="consent"><input type="checkbox" id="consent" required> Autorizo o contato da Audens sobre o Raio-X e concordo com a <a href="#" target="_blank" rel="noopener">Política de Privacidade</a>. <span style="color:var(--purple-2)">[inserir link real]</span></label>
+          <div class="form-nav"><button type="button" class="back" id="back">← voltar</button><button type="submit" class="btn btn-primary" style="flex:1">Quero o Raio-X <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button></div>
+        </div>
+      </form>
+      <p class="form-status" id="status" role="status" aria-live="polite"></p>
+      <div class="form-done" id="done"><div class="ok">✓ Recebido! Nosso time vai te chamar no WhatsApp.</div><p>Enquanto isso, o time já vai olhar a sua operação.</p></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-sig">
+      <img class="foot-logo" src="images/logo-full.webp" alt="Audens Company">
+      <div class="msg">Transformamos operação em crescimento.</div>
+    </div>
+    <div class="foot-info">
+      <div class="col" style="max-width:300px"><b>Audens Company</b><span style="color:var(--muted);font-size:14px">Marketing de delivery feito por quem vive de delivery.</span></div>
+      <div class="col"><b>Navegação</b><a href="#operadores">Operadores</a><a href="#case">Resultado</a><a href="#metodo">Método</a><a href="#raiox">Raio-X</a></div>
+      <div class="col"><b>Contato</b><a href="#raiox">Pedir meu Raio-X</a><a href="#">Instagram [@audens]</a><a href="#">WhatsApp [número]</a></div>
+    </div>
+    <div class="legal">© 2026 Audens Company · [CNPJ] · <a href="#" style="color:var(--purple-2)">Política de Privacidade</a></div>
+  </div>
+</footer>
+
+<!-- STICKY -->
+<div class="sticky" id="sticky"><button class="btn btn-primary" data-open data-ev="hero_cta_click">Quero o Raio-X da minha operação <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button></div>
+<div id="sentinel" style="position:absolute;top:620px;height:1px;width:1px" aria-hidden="true"></div>
+
+<!-- MODAL -->
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal-card">
+    <button class="modal-x" data-close aria-label="Fechar">×</button>
+    <h3 id="mTitle">Raio-X do Delivery</h3>
+    <p class="sub" style="font-size:14px;color:var(--muted);margin-bottom:20px">2 passos rápidos. Começamos pela sua operação.</p>
+    <div class="prog"><div class="track"><div class="fill" id="pfillM"></div></div><span class="lbl" id="plblM">Etapa 1 de 2</span></div>
+    <form id="leadM" novalidate>
+      <div class="pane on" data-step="1">
+        <div class="fld"><label>Segmento</label><select required><option value="" disabled selected>Selecione…</option><option>Hamburgueria</option><option>Pizzaria</option><option>Restaurante</option><option>Cafeteria / Confeitaria</option><option>Dark kitchen</option><option>Outro</option></select></div>
+        <div class="fld"><label>Faturamento mensal</label><select required><option value="" disabled selected>Selecione…</option><option>Até R$ 20 mil</option><option>R$ 20 mil a R$ 50 mil</option><option>R$ 50 mil a R$ 100 mil</option><option>R$ 100 mil a R$ 300 mil</option><option>Acima de R$ 300 mil</option></select></div>
+        <div class="fld"><label>Como vende hoje?</label><select required><option value="" disabled selected>Selecione…</option><option>Só iFood / marketplace</option><option>iFood + canal próprio</option><option>Só canal próprio</option><option>Ainda não vendo por delivery</option></select></div>
+        <button type="button" class="btn btn-primary btn-block mnext">Continuar <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button>
+      </div>
+      <div class="pane" data-step="2">
+        <div class="fld"><label>Nome e sobrenome</label><input type="text" required placeholder="Como podemos te chamar?"></div>
+        <div class="fld"><label>WhatsApp</label><input type="tel" required inputmode="tel" placeholder="(00) 00000-0000"></div>
+        <div class="fld"><label>@ do Instagram (opcional)</label><input type="text" placeholder="@suaoperacao"></div>
+        <label class="consent"><input type="checkbox" required> Autorizo o contato e concordo com a <a href="#">Política de Privacidade</a>.</label>
+        <div class="form-nav"><button type="button" class="back mback">← voltar</button><button type="submit" class="btn btn-primary" style="flex:1">Quero o Raio-X</button></div>
+      </div>
+    </form>
+    <p class="form-status" id="statusM" role="status" aria-live="polite"></p>
+    <div class="form-done" id="doneM"><div class="ok">✓ Recebido! Nosso time vai te chamar no WhatsApp.</div></div>
+  </div>
+</div>
+
+<script>
+/* =======================================================================
+   TRACKING — dataLayer stub. NÃO dispara para plataformas sem os IDs.
+   Configure: META_PIXEL_ID · GA4_ID · GTM_ID
+   ======================================================================= */
+window.dataLayer = window.dataLayer || [];
+function pushEvent(name, params){
+  var payload = Object.assign({event:name, ts:0}, params||{});
+  window.dataLayer.push(payload);
+  // if (window.fbq) fbq('trackCustom', name, params);   // requer META_PIXEL_ID
+  // if (window.gtag) gtag('event', name, params);        // requer GA4_ID
+}
+window.addEventListener('load', function(){ pushEvent('lp_view', {path: location.pathname}); });
+document.querySelectorAll('[data-ev]').forEach(function(el){
+  el.addEventListener('click', function(){ pushEvent(el.getAttribute('data-ev')); });
+});
+
+/* Header + sticky */
+var hdr = document.getElementById('hdr');
+addEventListener('scroll', function(){ hdr.classList.toggle('scrolled', scrollY > 16); });
+var sticky = document.getElementById('sticky'), sentinel = document.getElementById('sentinel');
+if ('IntersectionObserver' in window && sentinel){
+  new IntersectionObserver(function(es){ es.forEach(function(e){ sticky.classList.toggle('show', !e.isIntersecting && e.boundingClientRect.top < 0); }); }, {threshold:0}).observe(sentinel);
+}
+
+/* Reveal on scroll + section view events + count-up */
+var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if ('IntersectionObserver' in window){
+  var ro = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); if(e.target.dataset.count) countUp(e.target); ro.unobserve(e.target);} });
+  }, {threshold:.16, rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('[data-reveal],[data-count]').forEach(function(el){ ro.observe(el); });
+  document.querySelectorAll('[data-ev-view]').forEach(function(el){
+    var once = new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ pushEvent(e.target.getAttribute('data-ev-view')); once.unobserve(e.target);} }); }, {threshold:.3});
+    once.observe(el);
+  });
+} else { document.querySelectorAll('[data-reveal]').forEach(function(el){el.classList.add('in');}); }
+
+function countUp(el){
+  if(reduce){return;}
+  var end = parseFloat(el.dataset.count), pre = el.dataset.prefix||'', suf = el.dataset.suffix||'';
+  var t0=null, dur=1100;
+  function step(t){ if(!t0)t0=t; var p=Math.min((t-t0)/dur,1); var v=Math.round(end*(0.5-Math.cos(p*Math.PI)/2)); el.textContent=pre+v+suf; if(p<1)requestAnimationFrame(step); }
+  requestAnimationFrame(step);
+}
+
+/* Ver mais provas */
+var moreBtn = document.getElementById('moreProof'), moreWrap = document.getElementById('moreWrap');
+moreBtn.addEventListener('click', function(){
+  var open = moreWrap.classList.toggle('show');
+  moreBtn.setAttribute('aria-expanded', open);
+  moreBtn.firstChild.textContent = open ? 'Ver menos ' : 'Ver mais resultados ';
+});
+
+/* Modal + focus trap */
+var modal = document.getElementById('modal'), lastFocus=null;
+function openModal(){ lastFocus=document.activeElement; modal.classList.add('open'); document.body.style.overflow='hidden'; pushEvent('offer_view',{via:'modal'}); var f=modal.querySelector('select,input,button'); if(f)f.focus(); }
+function closeModal(){ modal.classList.remove('open'); document.body.style.overflow=''; if(lastFocus)lastFocus.focus(); }
+document.querySelectorAll('[data-open]').forEach(function(b){ b.addEventListener('click', openModal); });
+document.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', closeModal); });
+modal.addEventListener('click', function(e){ if(e.target===modal) closeModal(); });
+addEventListener('keydown', function(e){
+  if(e.key==='Escape' && modal.classList.contains('open')) closeModal();
+  if(e.key==='Tab' && modal.classList.contains('open')){
+    var f=modal.querySelectorAll('button,select,input,a[href]'), first=f[0], last=f[f.length-1];
+    if(e.shiftKey && document.activeElement===first){e.preventDefault(); last.focus();}
+    else if(!e.shiftKey && document.activeElement===last){e.preventDefault(); first.focus();}
+  }
+});
+
+/* FAQ */
+document.querySelectorAll('.qa button').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var item=btn.parentElement, open=item.classList.contains('open');
+    document.querySelectorAll('.qa').forEach(function(i){ i.classList.remove('open'); i.querySelector('.a').style.maxHeight=null; i.querySelector('button').setAttribute('aria-expanded','false'); });
+    if(!open){ item.classList.add('open'); var a=item.querySelector('.a'); a.style.maxHeight=a.scrollHeight+'px'; btn.setAttribute('aria-expanded','true'); }
+  });
+});
+
+/* ===== FORM (validação real + 2 etapas) ===== */
+var CONFIGURE_CRM_ENDPOINT_HERE = ''; // <-- coloque o endpoint do CRM/Webhook aqui
+
+function isPhone(v){ return (v.replace(/\D/g,'').length >= 10); }
+function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+function setup(formId, fillId, lblId, statusId, doneId, isModal){
+  var form=document.getElementById(formId); if(!form) return;
+  var fill=document.getElementById(fillId), lbl=document.getElementById(lblId), status=document.getElementById(statusId), done=document.getElementById(doneId);
+  var started=false;
+  form.addEventListener('focusin', function(){ if(!started){started=true; pushEvent('form_start',{form:formId});} });
+  function go(step){ form.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('on', p.dataset.step==step);}); if(fill)fill.style.width=step==1?'50%':'100%'; if(lbl)lbl.textContent='Etapa '+step+' de 2'; }
+  function fieldErr(el,on){ if(!el) return; el.setAttribute('aria-invalid', on?'true':'false'); var e=el.getAttribute('aria-describedby'); if(e){var m=document.getElementById(e); if(m)m.classList.toggle('on',on);} }
+  function validateStep1(){
+    var ok=true; form.querySelectorAll('.pane[data-step="1"] [required]').forEach(function(el){ var bad=!el.value; fieldErr(el,bad); if(bad)ok=false; }); return ok;
+  }
+  form.querySelectorAll('.mnext, #next').forEach(function(b){ b.addEventListener('click', function(){
+    if(!validateStep1()){ if(status){status.textContent='Preencha os campos da operação para continuar.'; status.style.color='#F58098';} return; }
+    if(status)status.textContent=''; go(2); pushEvent('form_step_1_complete',{form:formId});
+  }); });
+  form.querySelectorAll('.mback, #back').forEach(function(b){ b.addEventListener('click', function(){ go(1); }); });
+  form.addEventListener('submit', function(e){
+    e.preventDefault(); var ok=true;
+    var nome=form.querySelector('[type="text"]'), tel=form.querySelector('[type="tel"]'), email=form.querySelector('[type="email"]'), consent=form.querySelector('[type="checkbox"]');
+    if(nome){var bad=!nome.value.trim(); fieldErr(nome,bad); if(bad)ok=false;}
+    if(tel){var badp=!isPhone(tel.value); fieldErr(tel,badp); if(badp)ok=false;}
+    if(email && email.value){var bade=!isEmail(email.value); fieldErr(email,bade); if(bade)ok=false;}
+    if(consent && !consent.checked){ ok=false; if(status){status.textContent='É preciso autorizar o contato para enviar.'; status.style.color='#F58098';} }
+    if(!ok){ if(status && !consent.checked===false){} return; }
+    if(status)status.textContent='';
+    var data={}; form.querySelectorAll('input,select').forEach(function(el,i){ if(el.type!=='checkbox') data[(el.name||el.id||'campo'+i)]=el.value; });
+    var fat=(form.querySelector('select[name="faturamento"]')||{}).value||'';
+    var qualified = /100 mil|300 mil|Acima/.test(fat);
+    pushEvent('lead_submit', {form:formId});
+    if(qualified) pushEvent('qualified_lead', {faixa:fat});
+    // Integração real: descomente ao configurar o endpoint.
+    // if(CONFIGURE_CRM_ENDPOINT_HERE){ fetch(CONFIGURE_CRM_ENDPOINT_HERE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); }
+    form.style.display='none'; var prog=form.previousElementSibling; if(prog&&prog.classList.contains('prog'))prog.style.display='none';
+    if(done)done.style.display='block';
+  });
+}
+setup('lead','pfill','plbl','status','done',false);
+setup('leadM','pfillM','plblM','statusM','doneM',true);
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+COMO EDITAR / CADASTRAR CLIENTES — PAINEL VISUAL
+================================================
+
+PASSO A PASSO
+1) Abra o painel-clientes.html (2 cliques).
+2) Cadastre/edite os clientes e suba as fotos direto do PC
+   (logo, print do Instagram, galeria e/ou antes/depois).
+3) Pronto. Agora tem DOIS jeitos de ver na landing:
+
+   • TESTAR no seu computador (rápido):
+     - Deixe o painel e o index.html na MESMA pasta e use o MESMO navegador.
+     - Só RECARREGUE a landing (index.html) — ela já mostra o que você editou.
+       (a landing lê automaticamente as edições salvas do painel neste navegador)
+
+   • PUBLICAR (colocar no ar / enviar pra alguém):
+     - No painel, clique em "⬇ Baixar clientes-data.js".
+     - Coloque esse arquivo na pasta do site, junto do index.html (substituindo o antigo).
+     - Suba os dois (index.html + clientes-data.js) pra hospedagem.
+
+POR QUE DOIS JEITOS?
+- No SEU navegador, a landing lê suas edições direto (comodidade pra testar).
+- Pra QUALQUER OUTRA pessoa/visitante ver, os dados precisam estar no arquivo
+  clientes-data.js (por isso o "Baixar" antes de publicar).
+
+DICAS
+- As fotos ficam DENTRO do arquivo (não precisa gerenciar pastas de imagem).
+- Use fotos leves; o painel já reduz o tamanho automaticamente.
+- Não invente número/resultado sem comprovação.
+- "Restaurar padrão" volta pra lista inicial (apaga suas edições deste navegador).

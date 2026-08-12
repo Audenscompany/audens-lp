@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Configurações · Audens LP</title>
+<style>
+  :root{
+    --bg:#07060B;--bg-2:#0E0A16;--surface:#14101F;--card:#17122a;
+    --line:rgba(255,255,255,.09);--purple:#7C34F0;--purple-2:#A66BFF;
+    --silver:#C7C2D6;--white:#F5F2FA;--muted:#9C93B4;--muted-2:#6f6786;--success:#3AD07E;--danger:#ff5c7a;
+    --ff:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--white);font-family:var(--ff);display:flex;flex-direction:column;min-height:100vh}
+  a{color:var(--purple-2)}
+  /* topbar */
+  .top{display:flex;align-items:center;gap:14px;padding:14px 22px;background:linear-gradient(180deg,var(--bg-2),var(--bg));border-bottom:1px solid var(--line)}
+  .top img{height:26px;width:auto}
+  .top .t{font-weight:700;font-size:15px;letter-spacing:.02em}
+  .top .t span{color:var(--muted);font-weight:500}
+  .top .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+  .badge{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+  .badge.ok{color:var(--success);border-color:rgba(58,208,126,.35)}
+  /* tabs */
+  .tabs{display:flex;gap:6px;padding:10px 22px 0;background:var(--bg);border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .tab{appearance:none;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--muted);
+       font-family:var(--ff);font-weight:600;font-size:14px;padding:11px 16px;cursor:pointer;border-radius:8px 8px 0 0;transition:.15s}
+  .tab:hover{color:var(--white);background:rgba(255,255,255,.03)}
+  .tab.active{color:var(--white);border-bottom-color:var(--purple)}
+  .tab .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--purple-2);margin-left:7px;vertical-align:middle;opacity:0}
+  .tab.dirty .dot{opacity:1}
+  /* panes */
+  .pane{flex:1;display:none;min-height:0}
+  .pane.active{display:flex;flex-direction:column}
+  iframe{border:0;width:100%;flex:1;background:var(--bg)}
+  /* publish pane */
+  .pub{max-width:860px;margin:0 auto;padding:34px 22px 60px;width:100%;overflow:auto}
+  .pub h1{font-size:22px;margin:0 0 6px}
+  .pub .sub{color:var(--muted);font-size:14px;margin:0 0 26px}
+  .block{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:18px}
+  .block h2{font-size:15px;margin:0 0 4px;letter-spacing:.02em}
+  .block .h-sub{color:var(--muted);font-size:12.5px;margin:0 0 16px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12.5px;color:var(--silver);margin-bottom:6px;font-weight:600}
+  .field input{width:100%;background:#0c0916;border:1px solid var(--line);border-radius:10px;color:var(--white);
+               font-family:var(--ff);font-size:14px;padding:11px 13px}
+  .field input:focus{outline:none;border-color:var(--purple)}
+  .field .tip{font-size:11.5px;color:var(--muted-2);margin-top:6px;line-height:1.5}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .row .field{flex:1;min-width:180px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+  .btn{appearance:none;border:0;border-radius:11px;font-family:var(--ff);font-weight:700;font-size:14px;
+       padding:12px 20px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:linear-gradient(180deg,var(--purple-2),var(--purple));color:#fff;box-shadow:0 8px 22px -10px var(--purple)}
+  .btn-primary:hover{filter:brightness(1.06)}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--white)}
+  .btn-ghost:hover{border-color:var(--purple-2)}
+  .btn[disabled]{opacity:.55;cursor:not-allowed}
+  .log{margin-top:16px;background:#0a0814;border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+       font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--silver);
+       white-space:pre-wrap;min-height:44px;max-height:220px;overflow:auto;display:none}
+  .log.show{display:block}
+  .log .ok{color:var(--success)} .log .err{color:var(--danger)} .log .mut{color:var(--muted-2)}
+  .link-live{display:inline-flex;align-items:center;gap:8px;margin-top:4px;font-size:13.5px;word-break:break-all}
+  .soon{opacity:.7}
+  .soon .badge{background:rgba(124,52,240,.12);border-color:rgba(124,52,240,.3);color:var(--purple-2)}
+  .steps{counter-reset:s;margin:0;padding:0;list-style:none}
+  .steps li{counter-increment:s;position:relative;padding:6px 0 6px 30px;font-size:13px;color:var(--muted);line-height:1.55}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:5px;width:20px;height:20px;border-radius:50%;
+       background:rgba(124,52,240,.16);color:var(--purple-2);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .steps li b{color:var(--silver)}
+  code{background:#0c0916;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12px;color:var(--purple-2)}
+</style>
+</head>
+<body>
+  <div class="top">
+    <img src="images/logo-mark.webp" alt="Audens" onerror="this.style.display='none'">
+    <div class="t">Configurações da LP <span>· Audens</span></div>
+    <div class="right">
+      <span class="badge" id="ghBadge">GitHub: não conectado</span>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab active" data-pane="clientes">Painel de Clientes</button>
+    <button class="tab" data-pane="depoimentos">Painel de Depoimentos</button>
+    <button class="tab" data-pane="publicar">Publicar &amp; Domínio</button>
+  </nav>
+
+  <!-- CLIENTES -->
+  <section class="pane active" data-pane="clientes">
+    <iframe id="ifClientes" title="Painel de Clientes" src="painel-clientes.html"></iframe>
+  </section>
+
+  <!-- DEPOIMENTOS -->
+  <section class="pane" data-pane="depoimentos">
+    <iframe id="ifDepo" title="Painel de Depoimentos" src="painel-depoimentos.html"></iframe>
+  </section>
+
+  <!-- PUBLICAR -->
+  <section class="pane" data-pane="publicar">
+    <div class="pub">
+      <h1>Publicar alterações</h1>
+      <p class="sub">Edite clientes e depoimentos nas abas ao lado. Aqui você envia tudo para o site e a landing atualiza sozinha em ~1 minuto.</p>
+
+      <div class="block">
+        <h2>1 · Conexão com o GitHub</h2>
+        <p class="h-sub">Só precisa preencher uma vez. O token fica salvo só neste navegador, nunca sai daqui para outro lugar além do próprio GitHub.</p>
+        <div class="row">
+          <div class="field">
+            <label>Repositório (usuário/nome)</label>
+            <input id="ghRepo" placeholder="ex.: audenscompany/audens-lp" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="field" style="max-width:150px;flex:0 0 150px">
+            <label>Branch</label>
+            <input id="ghBranch" placeholder="main" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+        <div class="field">
+          <label>Token de acesso (fine-grained PAT)</label>
+          <input id="ghToken" type="password" placeholder="github_pat_..." autocomplete="off" spellcheck="false">
+          <div class="tip">Crie em <b>github.com → Settings → Developer settings → Fine-grained tokens</b>, com permissão <b>Contents: Read and write</b> apenas neste repositório. <a href="#" id="howTok">Ver o passo a passo</a></div>
+        </div>
+        <div class="btns">
+          <button class="btn btn-ghost" id="btnSaveCfg">Salvar conexão</button>
+          <button class="btn btn-ghost" id="btnTest">Testar conexão</button>
+        </div>
+        <ol class="steps" id="tokSteps" style="display:none;margin-top:16px">
+          <li>Acesse <b>github.com/settings/tokens?type=beta</b> e clique em <b>Generate new token</b>.</li>
+          <li>Em <b>Repository access</b>, escolha <b>Only select repositories</b> e selecione o repositório da LP.</li>
+          <li>Em <b>Permissions → Repository permissions</b>, ache <b>Contents</b> e marque <b>Read and write</b>.</li>
+          <li>Gere o token, copie (começa com <code>github_pat_</code>) e cole no campo acima.</li>
+        </ol>
+      </div>
+
+      <div class="block">
+        <h2>2 · Enviar para o ar</h2>
+        <p class="h-sub">Publica <code>clientes-data.js</code> e <code>depoimentos-data.js</code> com tudo que você editou nas abas ao lado.</p>
+        <div class="btns">
+          <button class="btn btn-primary" id="btnPublish">🚀 Publicar alterações agora</button>
+          <a class="btn btn-ghost" id="btnView" target="_blank" rel="noopener" style="display:none">Ver a landing ↗</a>
+        </div>
+        <div class="log" id="log"></div>
+      </div>
+
+      <div class="block soon">
+        <h2>3 · Domínio próprio <span class="badge">em breve</span></h2>
+        <p class="h-sub" style="margin-bottom:0">Quando quiser, dá para apontar o seu domínio (ex.: <b>audens.com.br</b>) para esta landing. Deixamos essa configuração pronta aqui — é só me avisar quando chegar a hora e eu ativo o campo de domínio e te passo o passo a passo do DNS.</p>
+      </div>
+    </div>
+  </section>
+
+<script>
+(function(){
+  var CFG_KEY="audens_gh_cfg";
+  function el(id){return document.getElementById(id);}
+  function getCfg(){try{return JSON.parse(localStorage.getItem(CFG_KEY)||"{}");}catch(e){return {};}}
+  function saveCfg(c){localStorage.setItem(CFG_KEY,JSON.stringify(c));}
+  function b64(s){return btoa(unescape(encodeURIComponent(s)));}
+
+  /* ---- tabs ---- */
+  var tabs=document.querySelectorAll(".tab"), panes=document.querySelectorAll(".pane");
+  tabs.forEach(function(t){t.addEventListener("click",function(){
+    tabs.forEach(function(x){x.classList.remove("active");});
+    panes.forEach(function(p){p.classList.remove("active");});
+    t.classList.add("active");
+    document.querySelector('.pane[data-pane="'+t.dataset.pane+'"]').classList.add("active");
+    if(t.dataset.pane==="publicar")refreshView();
+  });});
+
+  /* ---- config form ---- */
+  function fillForm(){var c=getCfg();el("ghRepo").value=c.repo||"";el("ghBranch").value=c.branch||"main";el("ghToken").value=c.token||"";refreshBadge();refreshView();}
+  function readForm(){return {repo:el("ghRepo").value.trim().replace(/^https?:\/\/github\.com\//,"").replace(/\.git$/,"").replace(/\/$/,""),branch:el("ghBranch").value.trim()||"main",token:el("ghToken").value.trim()};}
+  function refreshBadge(){var c=getCfg();var b=el("ghBadge");if(c.repo&&c.token){b.textContent="GitHub: "+c.repo;b.classList.add("ok");}else{b.textContent="GitHub: não conectado";b.classList.remove("ok");}}
+  function refreshView(){var c=getCfg();var v=el("btnView");if(c.repo&&c.repo.indexOf("/")>0){var p=c.repo.split("/");v.href="https://"+p[0]+".github.io/"+p[1]+"/";v.style.display="inline-flex";}else{v.style.display="none";}}
+
+  el("btnSaveCfg").addEventListener("click",function(){var c=readForm();if(!c.repo||!c.token){logLine("Preencha repositório e token.","err");return;}saveCfg(c);refreshBadge();refreshView();logLine("Conexão salva neste navegador.","ok");});
+  el("howTok").addEventListener("click",function(e){e.preventDefault();var s=el("tokSteps");s.style.display=s.style.display==="none"?"block":"none";});
+
+  /* ---- log ---- */
+  function logLine(msg,cls){var l=el("log");l.classList.add("show");var span=document.createElement("div");if(cls)span.className=cls;span.textContent=msg;l.appendChild(span);l.scrollTop=l.scrollHeight;}
+  function logClear(){var l=el("log");l.innerHTML="";l.classList.add("show");}
+
+  /* ---- build data files (mesmo formato dos painéis) ---- */
+  function buildClientes(){
+    var raw=[];try{raw=JSON.parse(localStorage.getItem("audens_clientes_v1")||"[]");}catch(e){}
+    var clean=raw.map(function(c){var o={slug:c.slug,name:c.name,description:c.description,ctaLabel:c.ctaLabel,ctaHref:c.ctaHref};
+      if(c.logo)o.logo=c.logo;if(c.phoneImage)o.phoneImage=c.phoneImage;if(c.gallery&&c.gallery.length)o.gallery=c.gallery;if(c.beforeAfter)o.beforeAfter=c.beforeAfter;return o;});
+    return {count:clean.length,content:"/* Gerado pelo painel de configuração — Audens. */\nwindow.AUDENS_CLIENTES = "+JSON.stringify(clean,null,2)+";\n"};
+  }
+  function buildDepo(){
+    var raw=[];try{raw=JSON.parse(localStorage.getItem("audens_depoimentos_v1")||"[]");}catch(e){}
+    return {count:raw.length,content:"/* Gerado pelo painel de configuração — Audens. */\nwindow.AUDENS_DEPOIMENTOS = "+JSON.stringify(raw,null,2)+";\n"};
+  }
+
+  /* ---- GitHub API ---- */
+  async function ghGetSha(cfg,path){
+    var url="https://api.github.com/repos/"+cfg.repo+"/contents/"+encodeURIComponent(path)+"?ref="+encodeURIComponent(cfg.branch);
+    var r=await fetch(url,{headers:{Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28"}});
+    if(r.status===200){var j=await r.json();return j.sha;}
+    if(r.status===404)return null;
+    var t=await r.text();throw new Error("Não consegui ler "+path+" ("+r.status+"). "+shortErr(t));
+  }
+  async function ghPut(cfg,path,content,sha){
+    var body={message:"Atualiza "+path+" via painel de configuração",content:b64(content),branch:cfg.branch};
+    if(sha)body.sha=sha;
+    var r=await fetch("https://api.github.com/repos/"+cfg.repo+"/contents/"+encodeURIComponent(path),
+      {method:"PUT",headers:{Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","Content-Type":"application/json"},body:JSON.stringify(body)});
+    if(!r.ok){var t=await r.text();throw new Error("Falha ao enviar "+path+" ("+r.status+"). "+shortErr(t));}
+    return r.json();
+  }
+  function shortErr(t){try{var j=JSON.parse(t);return j.message||t;}catch(e){return (t||"").slice(0,160);}}
+
+  el("btnTest").addEventListener("click",async function(){
+    var cfg=readForm();saveCfg(cfg);refreshBadge();
+    if(!cfg.repo||!cfg.token){logLine("Preencha repositório e token primeiro.","err");return;}
+    logClear();logLine("Testando conexão com "+cfg.repo+" …","mut");
+    try{
+      var r=await fetch("https://api.github.com/repos/"+cfg.repo,{headers:{Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json"}});
+      if(r.ok){var j=await r.json();logLine("✓ Conectado ao repositório \""+j.full_name+"\". Tudo certo para publicar.","ok");}
+      else{var t=await r.text();logLine("✗ "+shortErr(t)+" (verifique o nome do repositório e a permissão Contents do token).","err");}
+    }catch(e){logLine("✗ "+e.message,"err");}
+  });
+
+  var publishing=false;
+  el("btnPublish").addEventListener("click",async function(){
+    if(publishing)return;
+    var cfg=readForm();saveCfg(cfg);refreshBadge();refreshView();
+    if(!cfg.repo||!cfg.token){logLine("Preencha e salve a conexão do GitHub primeiro.","err");return;}
+    publishing=true;el("btnPublish").disabled=true;logClear();
+    try{
+      var c=buildClientes(),d=buildDepo();
+      logLine("Enviando clientes-data.js ("+c.count+" clientes) …","mut");
+      var s1=await ghGetSha(cfg,"clientes-data.js");await ghPut(cfg,"clientes-data.js",c.content,s1);
+      logLine("✓ clientes-data.js publicado.","ok");
+      logLine("Enviando depoimentos-data.js ("+d.count+" depoimentos) …","mut");
+      var s2=await ghGetSha(cfg,"depoimentos-data.js");await ghPut(cfg,"depoimentos-data.js",d.content,s2);
+      logLine("✓ depoimentos-data.js publicado.","ok");
+      logLine("","mut");
+      logLine("🎉 Pronto! A landing atualiza sozinha em cerca de 1 minuto. Abra pelo botão \"Ver a landing\".","ok");
+    }catch(e){logLine("✗ "+e.message,"err");}
+    finally{publishing=false;el("btnPublish").disabled=false;}
+  });
+
+  fillForm();
+})();
+</script>
+</body>
+</html>

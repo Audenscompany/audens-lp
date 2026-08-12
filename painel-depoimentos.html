@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Depoimentos — Audens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07060B;--bg2:#0E0A16;--surface:#14101F;--line:rgba(255,255,255,.09);--purple:#7C34F0;--purple2:#A66BFF;
+  --white:#F5F2FA;--muted:#9C93B4;--muted2:#6E6685;--danger:#F0576B;--ok:#3AD07E;
+  --d:"Space Grotesk",system-ui,sans-serif;--b:"Inter",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--b);background:var(--bg);color:var(--white);line-height:1.5}
+.top{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--bg2);position:sticky;top:0;z-index:10}
+.top h1{font-family:var(--d);font-weight:700;font-size:19px}.top .peak{width:26px;height:20px;color:#C7C2D6}.top .sp{flex:1}
+.btn{font-family:var(--b);font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--white);border-radius:10px;padding:11px 16px;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--purple2)}.btn.p{background:var(--purple);border-color:transparent}.btn.p:hover{background:#8a44ff}.btn.g{background:transparent}
+.btn.dl{background:linear-gradient(180deg,#3AD07E,#1f9e57);border-color:transparent;color:#04120a}
+.hint{font-size:12.5px;color:var(--muted2);padding:12px 22px;background:var(--bg2);border-bottom:1px solid var(--line)}.hint b{color:var(--muted)}
+.wrap{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 118px)}@media(max-width:860px){.wrap{grid-template-columns:1fr}}
+.list{border-right:1px solid var(--line);padding:16px;overflow:auto}@media(max-width:860px){.list{border-right:none;border-bottom:1px solid var(--line)}}
+.list h2,.editor h2{font-family:var(--d);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--purple2);margin-bottom:14px}
+.citem{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--surface);cursor:pointer}
+.citem:hover{border-color:var(--purple2)}.citem.active{border-color:var(--purple);box-shadow:0 0 0 1px var(--purple) inset}
+.citem .th{width:34px;height:44px;border-radius:7px;flex:none;overflow:hidden;background:#0C0816;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted2);font-size:14px}
+.citem .th img{width:100%;height:100%;object-fit:cover}
+.citem .nm{flex:1;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.citem .ord{display:flex;flex-direction:column;gap:2px}.citem .ord button{width:22px;height:16px;border:none;background:none;color:var(--muted);cursor:pointer;font-size:11px;line-height:1}.citem .ord button:hover{color:var(--purple2)}
+.editor{padding:22px;overflow:auto}.fld{margin-bottom:16px}.fld label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.fld .sub{font-size:11.5px;color:var(--muted2);font-weight:400;margin-left:6px}
+.fld input[type=text],.fld textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 13px;color:var(--white);font-family:var(--b);font-size:14px}
+.fld textarea{min-height:70px;resize:vertical}.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--purple2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:560px){.row2{grid-template-columns:1fr}}
+.up{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.up .prev{width:60px;height:80px;border-radius:8px;overflow:hidden;background:#0C0816;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted2);text-align:center;flex:none}
+.up .prev img{width:100%;height:100%;object-fit:cover}
+.file{position:relative;overflow:hidden;display:inline-flex}.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.vpath{font-size:12px;color:var(--ok);margin-top:8px;word-break:break-all}
+.vwarn{font-size:11.5px;color:var(--muted2);margin-top:4px}
+.actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.rm{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer}.rm:hover{border-color:var(--danger);color:var(--danger)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><symbol id="pk" viewBox="0 0 120 88"><path d="M4 84 L46 22 L64 46 L82 16 L116 84 Z" fill="#C7C2D6"/></symbol></svg>
+<div class="top">
+  <svg class="peak"><use href="#pk"/></svg><h1>Painel de Depoimentos · Audens</h1><div class="sp"></div>
+  <button class="btn g" id="btnReset">Restaurar padrão</button>
+  <button class="btn dl" id="btnDownload">⬇ Baixar depoimentos-data.js</button>
+</div>
+<div class="hint"><b>Como usar:</b> cadastre o depoimento, escolha o arquivo do vídeo (.mp4) e suba um pôster (miniatura). O vídeo é <b>pesado</b>, então ele não entra no arquivo: salve o .mp4 na pasta <b>videos/</b> do site com o nome que o painel indicar. Depois clique em <b>Baixar depoimentos-data.js</b> e coloque junto do index.html (ou, testando no seu PC, só recarregue a landing).</div>
+<div class="wrap">
+  <div class="list"><h2>Depoimentos</h2><div id="list"></div><button class="btn p" id="btnNew" style="width:100%;margin-top:6px">+ Novo depoimento</button></div>
+  <div class="editor">
+    <h2 id="edTitle">Editar depoimento</h2>
+    <div class="row2">
+      <div class="fld"><label>Nome do dono</label><input type="text" id="fName" placeholder="Ex.: Reinaldo"></div>
+      <div class="fld"><label>Operação · cidade</label><input type="text" id="fRole" placeholder="Ex.: Lanche na Praça · Uberlândia"></div>
+    </div>
+    <div class="fld"><label>Frase do depoimento <span class="sub">(curta e forte)</span></label><textarea id="fQuote" placeholder="Ex.: Achei que era só mais uma agência. Hoje bato recorde de pedidos todo fim de semana."></textarea></div>
+    <div class="row2">
+      <div class="fld"><label>Vídeo do depoimento <span class="sub">(link do YouTube é o mais fácil)</span></label>
+        <input type="text" id="fVideoUrl" placeholder="Cole o link do YouTube (ex.: youtu.be/xxxx) ou .mp4">
+        <div class="vwarn">Dica: suba o vídeo no YouTube (pode ser "não listado") e cole o link aqui — funciona em qualquer lugar, sem gerenciar arquivo.</div>
+        <div class="up" style="margin-top:8px"><span class="file"><button class="btn" type="button">…ou escolher arquivo .mp4</button><input type="file" accept="video/*" id="fVideo"></span></div>
+        <div class="vpath" id="vpath"></div>
+        <div class="vwarn" id="vwarn"></div>
+      </div>
+      <div class="fld"><label>Pôster (miniatura)</label>
+        <div class="up"><div class="prev" id="pvPoster">pôster</div>
+          <span class="file"><button class="btn" type="button">Enviar pôster</button><input type="file" accept="image/*" id="fPoster"></span>
+          <button class="rm" type="button" id="rmPoster">remover</button></div></div>
+    </div>
+    <div class="actions"><button class="btn p" id="btnSave">Salvar depoimento</button><button class="btn g" id="btnCancel">Limpar</button><div style="flex:1"></div><button class="rm" id="btnDelete" style="display:none">Excluir</button></div>
+  </div>
+</div>
+<script>
+(function(){
+  "use strict";
+  var KEY="audens_depoimentos_v1";
+  var DEFAULTS=[
+    {name:"[Nome do dono]",role:"[Operação · Cidade]",quote:"[Depoimento — cite a objeção que tinha antes e o número que mudou.]",video:"",poster:""},
+    {name:"[Nome do dono]",role:"[Operação · Cidade]",quote:"[Depoimento em vídeo do cliente.]",video:"",poster:""},
+    {name:"[Nome do dono]",role:"[Operação · Cidade]",quote:"[Depoimento em vídeo do cliente.]",video:"",poster:""}
+  ];
+  var items=load(), editing=null, form={};
+  function load(){try{var s=localStorage.getItem(KEY);if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULTS));}
+  function persist(){try{localStorage.setItem(KEY,JSON.stringify(items));}catch(e){}}
+  function slugify(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");}
+  function el(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[m];});}
+  function processImage(file,maxDim){return new Promise(function(res){var r=new FileReader();r.onload=function(){var img=new Image();img.onload=function(){var w=img.width,h=img.height;if(Math.max(w,h)>maxDim){if(w>=h){h=Math.round(h*maxDim/w);w=maxDim;}else{w=Math.round(w*maxDim/h);h=maxDim;}}var cv=document.createElement("canvas");cv.width=w;cv.height=h;cv.getContext("2d").drawImage(img,0,0,w,h);var out;try{out=cv.toDataURL("image/webp",0.85);if(out.indexOf("data:image/webp")!==0)out=cv.toDataURL("image/jpeg",0.85);}catch(e){out=cv.toDataURL("image/jpeg",0.85);}res(out);};img.src=r.result;};r.readAsDataURL(file);});}
+
+  function renderList(){var box=el("list");box.innerHTML="";items.forEach(function(v,i){var d=document.createElement("div");d.className="citem"+(editing===i?" active":"");
+    d.innerHTML='<div class="th">'+(v.poster?'<img src="'+esc(v.poster)+'">':'▶')+'</div><div class="nm">'+esc(v.name||"(sem nome)")+'</div><div class="ord"><button data-up="'+i+'">▲</button><button data-dn="'+i+'">▼</button></div>';
+    d.addEventListener("click",function(e){if(e.target.dataset.up!=null||e.target.dataset.dn!=null)return;edit(i);});box.appendChild(d);});
+    box.querySelectorAll("[data-up]").forEach(function(b){b.addEventListener("click",function(){move(+b.dataset.up,-1);});});
+    box.querySelectorAll("[data-dn]").forEach(function(b){b.addEventListener("click",function(){move(+b.dataset.dn,1);});});}
+  function move(i,dir){var j=i+dir;if(j<0||j>=items.length)return;var t=items[i];items[i]=items[j];items[j]=t;if(editing===i)editing=j;else if(editing===j)editing=i;persist();renderList();}
+
+  function blank(){return {name:"",role:"",quote:"",video:"",poster:""};}
+  function edit(i){editing=i;form=JSON.parse(JSON.stringify(items[i]));fill();renderList();el("btnDelete").style.display="inline-block";el("edTitle").textContent="Editar: "+(form.name||"depoimento");}
+  function newItem(){editing=null;form=blank();fill();renderList();el("btnDelete").style.display="none";el("edTitle").textContent="Novo depoimento";el("fName").focus();}
+  function fill(){el("fName").value=form.name||"";el("fRole").value=form.role||"";el("fQuote").value=form.quote||"";
+    el("fVideoUrl").value=form.video||"";
+    el("pvPoster").innerHTML=form.poster?'<img src="'+esc(form.poster)+'">':"pôster";
+    el("vpath").textContent="";el("vwarn").textContent="";}
+  function collect(){return {name:el("fName").value.trim(),role:el("fRole").value.trim(),quote:el("fQuote").value.trim(),video:el("fVideoUrl").value.trim()||form.video||"",poster:form.poster||""};}
+  function save(){var v=collect();if(!v.name){alert("Coloque o nome.");return;}if(editing===null){items.push(v);editing=items.length-1;}else{items[editing]=v;}form=JSON.parse(JSON.stringify(v));persist();renderList();el("btnDelete").style.display="inline-block";el("edTitle").textContent="Editar: "+v.name;}
+  function del(){if(editing===null)return;if(!confirm("Excluir?"))return;items.splice(editing,1);newItem();persist();renderList();}
+  function download(){var content="/* Gerado pelo painel-depoimentos.html — Audens. Coloque junto do index.html; os vídeos .mp4 vão na pasta videos/. */\nwindow.AUDENS_DEPOIMENTOS = "+JSON.stringify(items,null,2)+";\n";
+    var blob=new Blob([content],{type:"application/javascript;charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="depoimentos-data.js";document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){alert("depoimentos-data.js baixado!\\n\\nNAO esqueca: salve cada video .mp4 na pasta videos/ do site, com o nome indicado no campo do video.\\n\\nTestando no seu PC? So recarregue a landing.");},150);}
+
+  el("fVideoUrl").addEventListener("input",function(){ form.video=this.value.trim(); });
+  el("fVideo").addEventListener("change",function(){ if(!this.files[0])return; var nm=el("fName").value.trim(); var slug=slugify(nm)|| ("video-"+(items.length+1)); form.video="videos/"+slug+".mp4"; el("fVideoUrl").value=form.video; el("vpath").innerHTML="↳ salve o seu arquivo como <b>"+form.video+"</b> na pasta videos/ do site (ou use o link do YouTube acima)."; });
+  el("fPoster").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],640).then(function(d){form.poster=d;el("pvPoster").innerHTML='<img src="'+d+'">';}); });
+  el("rmPoster").addEventListener("click",function(){form.poster="";el("pvPoster").innerHTML="pôster";});
+  el("btnSave").addEventListener("click",save);
+  el("btnCancel").addEventListener("click",function(){if(editing===null)newItem();else edit(editing);});
+  el("btnDelete").addEventListener("click",del);
+  el("btnNew").addEventListener("click",newItem);
+  el("btnDownload").addEventListener("click",download);
+  el("btnReset").addEventListener("click",function(){if(confirm("Restaurar padrão? Apaga suas edições deste navegador.")){items=JSON.parse(JSON.stringify(DEFAULTS));persist();newItem();renderList();}});
+  renderList(); if(items.length)edit(0); else newItem();
+})();
+</script>
+</body>
+</html>

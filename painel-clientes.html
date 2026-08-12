@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel de Clientes — Audens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07060B;--bg2:#0E0A16;--surface:#14101F;--line:rgba(255,255,255,.09);--purple:#7C34F0;--purple2:#A66BFF;
+  --white:#F5F2FA;--muted:#9C93B4;--muted2:#6E6685;--danger:#F0576B;--ok:#3AD07E;
+  --d:"Space Grotesk",system-ui,sans-serif;--b:"Inter",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--b);background:var(--bg);color:var(--white);line-height:1.5}
+a{color:var(--purple2)}
+.top{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--bg2);position:sticky;top:0;z-index:10}
+.top h1{font-family:var(--d);font-weight:700;font-size:19px}
+.top .peak{width:26px;height:20px;color:#C7C2D6}
+.top .sp{flex:1}
+.btn{font-family:var(--b);font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--surface);color:var(--white);
+  border-radius:10px;padding:11px 16px;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--purple2)}
+.btn.p{background:var(--purple);border-color:transparent}
+.btn.p:hover{background:#8a44ff}
+.btn.g{background:transparent}
+.btn.dl{background:linear-gradient(180deg,#3AD07E,#1f9e57);border-color:transparent;color:#04120a}
+.btn.dl:hover{filter:brightness(1.06)}
+.hint{font-size:12.5px;color:var(--muted2);padding:12px 22px;background:var(--bg2);border-bottom:1px solid var(--line)}
+.hint b{color:var(--muted)}
+.wrap{display:grid;grid-template-columns:340px 1fr;gap:0;min-height:calc(100vh - 118px)}
+@media(max-width:860px){.wrap{grid-template-columns:1fr}}
+.list{border-right:1px solid var(--line);padding:16px;overflow:auto}
+@media(max-width:860px){.list{border-right:none;border-bottom:1px solid var(--line)}}
+.list h2,.editor h2{font-family:var(--d);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--purple2);margin-bottom:14px}
+.citem{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--surface);cursor:pointer}
+.citem:hover{border-color:var(--purple2)}
+.citem.active{border-color:var(--purple);box-shadow:0 0 0 1px var(--purple) inset}
+.citem .th{width:40px;height:40px;border-radius:50%;flex:none;overflow:hidden;background:#0C0816;border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.citem .th img{width:100%;height:100%;object-fit:cover}
+.citem .th svg{width:20px;height:16px;color:#C7C2D6;opacity:.7}
+.citem .nm{flex:1;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.citem .ord{display:flex;flex-direction:column;gap:2px}
+.citem .ord button{width:22px;height:16px;border:none;background:none;color:var(--muted);cursor:pointer;font-size:11px;line-height:1}
+.citem .ord button:hover{color:var(--purple2)}
+.editor{padding:22px;overflow:auto}
+.fld{margin-bottom:16px}
+.fld label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.fld .sub{font-size:11.5px;color:var(--muted2);font-weight:400;margin-left:6px}
+.fld input[type=text],.fld textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 13px;color:var(--white);font-family:var(--b);font-size:14px}
+.fld textarea{min-height:84px;resize:vertical}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--purple2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.row2{grid-template-columns:1fr}}
+.up{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.up .prev{width:64px;height:64px;border-radius:10px;overflow:hidden;background:#0C0816;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted2);text-align:center;flex:none}
+.up .prev img{width:100%;height:100%;object-fit:cover}
+.up .prev.phone{border-radius:12px}
+.file{position:relative;overflow:hidden;display:inline-flex}
+.file input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.gal{display:flex;gap:10px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.seg button{background:transparent;border:none;color:var(--muted);font-family:var(--b);font-weight:600;font-size:13px;padding:9px 14px;cursor:pointer}
+.seg button.on{background:var(--purple);color:#fff}
+.actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.rm{background:none;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer}
+.rm:hover{border-color:var(--danger);color:var(--danger)}
+.pill{font-size:11px;color:var(--ok);background:rgba(58,208,126,.12);border:1px solid rgba(58,208,126,.3);border-radius:99px;padding:3px 9px;display:none}
+.pill.show{display:inline-block}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><symbol id="pk" viewBox="0 0 120 88"><path d="M4 84 L46 22 L64 46 L82 16 L116 84 Z" fill="#C7C2D6"/></symbol></svg>
+
+<div class="top">
+  <svg class="peak"><use href="#pk"/></svg>
+  <h1>Painel de Clientes · Audens</h1>
+  <span class="pill" id="savedPill">✓ salvo</span>
+  <div class="sp"></div>
+  <button class="btn g" id="btnReset">Restaurar padrão</button>
+  <button class="btn dl" id="btnDownload">⬇ Baixar clientes-data.js</button>
+</div>
+<div class="hint">
+  <b>Como usar:</b> cadastre/edite os clientes aqui e suba as fotos direto do seu computador. Ao terminar, clique em <b>Baixar clientes-data.js</b> e coloque esse arquivo na mesma pasta do <b>index.html</b> do site. <b>Testando no seu PC?</b> É só recarregar a landing no mesmo navegador — ela já reflete o que você editar aqui. Seu trabalho fica salvo automaticamente.
+</div>
+
+<div class="wrap">
+  <div class="list">
+    <h2>Clientes</h2>
+    <div id="clientList"></div>
+    <button class="btn p" id="btnNew" style="width:100%;margin-top:6px">+ Novo cliente</button>
+  </div>
+
+  <div class="editor">
+    <h2 id="edTitle">Editar cliente</h2>
+    <div class="fld"><label>Nome da marca</label><input type="text" id="fName" placeholder="Ex.: Burguer FC"></div>
+    <div class="fld"><label>Slug <span class="sub">(gerado do nome — pode editar; sem espaço/acento)</span></label><input type="text" id="fSlug" placeholder="burguer-fc"></div>
+    <div class="fld"><label>Descrição do case</label><textarea id="fDesc" placeholder="Conte o contexto e o que a Audens fez. Evite número que não dê pra comprovar."></textarea></div>
+    <div class="row2">
+      <div class="fld"><label>Texto do botão</label><input type="text" id="fCtaLabel" placeholder="Falar com a Audens"></div>
+      <div class="fld"><label>Link do botão</label><input type="text" id="fCtaHref" placeholder="#raiox"></div>
+    </div>
+
+    <div class="row2">
+      <div class="fld"><label>Logo da marca <span class="sub">(círculo do card/modal)</span></label>
+        <div class="up"><div class="prev" id="pvLogo">logo</div>
+          <span class="file"><button class="btn" type="button">Enviar logo</button><input type="file" accept="image/*" id="fLogo"></span>
+          <button class="rm" type="button" id="rmLogo">remover</button></div></div>
+      <div class="fld"><label>Print do Instagram <span class="sub">(dentro do celular)</span></label>
+        <div class="up"><div class="prev phone" id="pvPhone">print</div>
+          <span class="file"><button class="btn" type="button">Enviar print</button><input type="file" accept="image/*" id="fPhone"></span>
+          <button class="rm" type="button" id="rmPhone">remover</button></div></div>
+    </div>
+
+    <div class="fld"><label>Tipo de prova extra</label>
+      <div class="seg" id="segType">
+        <button type="button" data-t="gallery" class="on">Galeria</button>
+        <button type="button" data-t="beforeafter">Antes / Depois</button>
+        <button type="button" data-t="none">Nenhuma</button>
+      </div>
+      <div id="paneGallery">
+        <div class="up"><div class="gal" id="galPrev"></div>
+          <span class="file"><button class="btn" type="button">+ Adicionar imagens</button><input type="file" accept="image/*" multiple id="fGallery"></span></div>
+        <div class="sub" style="margin-top:6px;color:var(--muted2)">Até 4 imagens.</div>
+      </div>
+      <div id="paneBA" style="display:none">
+        <div class="row2">
+          <div class="fld"><label>Antes</label><div class="up"><div class="prev" id="pvBefore">antes</div>
+            <span class="file"><button class="btn" type="button">Enviar</button><input type="file" accept="image/*" id="fBefore"></span></div></div>
+          <div class="fld"><label>Depois</label><div class="up"><div class="prev" id="pvAfter">depois</div>
+            <span class="file"><button class="btn" type="button">Enviar</button><input type="file" accept="image/*" id="fAfter"></span></div></div>
+        </div>
+        <div class="fld"><label>Legenda (opcional)</label><input type="text" id="fBACap" placeholder="Descreva a mudança"></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn p" id="btnSave">Salvar cliente</button>
+      <button class="btn g" id="btnCancel">Limpar formulário</button>
+      <div class="sp" style="flex:1"></div>
+      <button class="rm" id="btnDelete" style="display:none">Excluir este cliente</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KEY="audens_clientes_v1";
+  var DEFAULTS=[
+    {slug:"burguer-fc",name:"Burguer FC",description:"Operação própria dos fundadores da Audens. [Edite: conte a estratégia e o resultado real quando puder comprovar.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"pizza-fc",name:"Pizza FC",description:"Operação própria dos fundadores da Audens. [Edite este texto.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"perto-do-fogo",name:"Perto do Fogo",description:"Parceria da Audens no marketing de delivery. [Edite e adicione o resultado real.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"gerra",name:"Gerrá Burguer",description:"[Edite: case da Gerrá Burguer.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"texas",name:"Texas Hamburgueria",description:"[Edite: case da Texas.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"dom-costela",name:"Dom Costela Defumada",description:"[Edite: case da Dom Costela.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"johnnie-jack",name:"Johnnie Jack",description:"[Edite: case da Johnnie Jack.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"paiol",name:"Paiol Hamburgueria",description:"[Edite: case da Paiol.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"delicias-brasil",name:"Delícias Brasil",description:"[Edite: case da Delícias Brasil.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"dark",name:"Dark Smash Burguer",description:"[Edite: case da Dark.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"georges",name:"George's",description:"[Edite: case da George's.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"croc",name:"Croc",description:"[Edite: case da Croc.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"minas-burguer",name:"Minas Burguer BH",description:"[Edite: case da Minas Burguer BH.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"},
+    {slug:"chapa-quente",name:"Chapa Quente",description:"[Edite: case da Chapa Quente.]",ctaLabel:"Falar com a Audens",ctaHref:"#raiox"}
+  ];
+  var clients=load(), editing=null, form={};
+
+  function load(){ try{var s=localStorage.getItem(KEY); if(s)return JSON.parse(s);}catch(e){} return JSON.parse(JSON.stringify(DEFAULTS)); }
+  function persist(){ try{localStorage.setItem(KEY,JSON.stringify(clients));}catch(e){} flashSaved(); }
+  function flashSaved(){ var p=document.getElementById("savedPill"); p.classList.add("show"); setTimeout(function(){p.classList.remove("show");},1200); }
+  function slugify(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
+  function el(id){return document.getElementById(id);}
+
+  function processImage(file, maxDim){
+    return new Promise(function(res){
+      var r=new FileReader();
+      r.onload=function(){ var img=new Image(); img.onload=function(){
+        var w=img.width,h=img.height;
+        if(Math.max(w,h)>maxDim){ if(w>=h){h=Math.round(h*maxDim/w);w=maxDim;} else {w=Math.round(w*maxDim/h);h=maxDim;} }
+        var cv=document.createElement("canvas");cv.width=w;cv.height=h;cv.getContext("2d").drawImage(img,0,0,w,h);
+        var out; try{out=cv.toDataURL("image/webp",0.86); if(out.indexOf("data:image/webp")!==0)out=cv.toDataURL("image/jpeg",0.86);}catch(e){out=cv.toDataURL("image/jpeg",0.86);}
+        res(out);
+      }; img.src=r.result; };
+      r.readAsDataURL(file);
+    });
+  }
+
+  /* ---- LISTA ---- */
+  function renderList(){
+    var box=el("clientList"); box.innerHTML="";
+    clients.forEach(function(c,i){
+      var d=document.createElement("div"); d.className="citem"+(editing===i?" active":"");
+      d.innerHTML='<div class="th">'+(c.logo?'<img src="'+c.logo+'" alt="">':'<svg><use href="#pk"/></svg>')+'</div>'
+        +'<div class="nm">'+escapeHtml(c.name)+'</div>'
+        +'<div class="ord"><button data-up="'+i+'" title="Subir">▲</button><button data-dn="'+i+'" title="Descer">▼</button></div>';
+      d.addEventListener("click",function(e){ if(e.target.dataset.up!=null||e.target.dataset.dn!=null)return; edit(i); });
+      box.appendChild(d);
+    });
+    box.querySelectorAll("[data-up]").forEach(function(b){b.addEventListener("click",function(){move(+b.dataset.up,-1);});});
+    box.querySelectorAll("[data-dn]").forEach(function(b){b.addEventListener("click",function(){move(+b.dataset.dn,1);});});
+  }
+  function move(i,dir){ var j=i+dir; if(j<0||j>=clients.length)return; var t=clients[i];clients[i]=clients[j];clients[j]=t; if(editing===i)editing=j; else if(editing===j)editing=i; persist();renderList(); }
+
+  /* ---- FORM ---- */
+  function blank(){ return {slug:"",name:"",description:"",ctaLabel:"Falar com a Audens",ctaHref:"#raiox",logo:"",phoneImage:"",gallery:[],beforeAfter:null,_type:"gallery"}; }
+  function edit(i){
+    editing=i; form=JSON.parse(JSON.stringify(clients[i]));
+    form._type = form.beforeAfter?"beforeafter":((form.gallery&&form.gallery.length)?"gallery":"gallery");
+    if(!form.gallery)form.gallery=[];
+    fillForm(); renderList(); el("btnDelete").style.display="inline-block"; el("edTitle").textContent="Editar: "+(form.name||"cliente");
+  }
+  function newClient(){ editing=null; form=blank(); fillForm(); renderList(); el("btnDelete").style.display="none"; el("edTitle").textContent="Novo cliente"; el("fName").focus(); }
+  function fillForm(){
+    el("fName").value=form.name||""; el("fSlug").value=form.slug||""; el("fDesc").value=form.description||"";
+    el("fCtaLabel").value=form.ctaLabel||"Falar com a Audens"; el("fCtaHref").value=form.ctaHref||"#raiox";
+    prev("pvLogo",form.logo,"logo"); prev("pvPhone",form.phoneImage,"print");
+    form.beforeAfter=form.beforeAfter||null;
+    el("fBACap").value=form.beforeAfter?(form.beforeAfter.caption||""):"";
+    prev("pvBefore",form.beforeAfter&&form.beforeAfter.before,"antes"); prev("pvAfter",form.beforeAfter&&form.beforeAfter.after,"depois");
+    renderGallery(); setType(form._type||"gallery");
+  }
+  function prev(id,src,label){ var e=el(id); e.innerHTML= src?'<img src="'+src+'" alt="">':label; }
+  function renderGallery(){ var g=el("galPrev"); g.innerHTML=""; (form.gallery||[]).forEach(function(src,i){
+    var d=document.createElement("div"); d.className="prev"; d.style.position="relative";
+    d.innerHTML='<img src="'+src+'" alt=""><button class="rm" style="position:absolute;top:-8px;right:-8px;background:#1a1024;border-radius:50%;padding:2px 6px" data-g="'+i+'">×</button>';
+    g.appendChild(d);
+  }); g.querySelectorAll("[data-g]").forEach(function(b){b.addEventListener("click",function(){form.gallery.splice(+b.dataset.g,1);renderGallery();});}); }
+  function setType(t){ form._type=t; el("segType").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.dataset.t===t);});
+    el("paneGallery").style.display=t==="gallery"?"block":"none"; el("paneBA").style.display=t==="beforeafter"?"block":"none"; }
+
+  function collect(){
+    var c={ slug:slugify(el("fSlug").value||el("fName").value), name:el("fName").value.trim(),
+      description:el("fDesc").value.trim(), ctaLabel:el("fCtaLabel").value.trim()||"Falar com a Audens", ctaHref:el("fCtaHref").value.trim()||"#raiox" };
+    if(form.logo)c.logo=form.logo; if(form.phoneImage)c.phoneImage=form.phoneImage;
+    if(form._type==="gallery" && form.gallery && form.gallery.length)c.gallery=form.gallery.slice(0,4);
+    if(form._type==="beforeafter" && (form._before||form.beforeAfter)){ }
+    if(form._type==="beforeafter"){ var ba={ before:form.beforeAfter&&form.beforeAfter.before||"", after:form.beforeAfter&&form.beforeAfter.after||"", caption:el("fBACap").value.trim() }; if(ba.before||ba.after||ba.caption)c.beforeAfter=ba; }
+    return c;
+  }
+  function save(){
+    var c=collect();
+    if(!c.name){ alert("Coloque o nome da marca."); return; }
+    if(!c.slug){ c.slug=slugify(c.name); }
+    if(editing===null){ clients.push(c); editing=clients.length-1; } else { clients[editing]=c; }
+    form=JSON.parse(JSON.stringify(c)); form._type=c.beforeAfter?"beforeafter":"gallery"; if(!form.gallery)form.gallery=c.gallery||[];
+    persist(); renderList(); el("btnDelete").style.display="inline-block"; el("edTitle").textContent="Editar: "+c.name;
+  }
+  function del(){ if(editing===null)return; if(!confirm("Excluir "+(clients[editing].name)+"?"))return; clients.splice(editing,1); newClient(); persist(); renderList(); }
+
+  /* ---- download ---- */
+  function download(){
+    var clean=clients.map(function(c){ var o={slug:c.slug,name:c.name,description:c.description,ctaLabel:c.ctaLabel,ctaHref:c.ctaHref};
+      if(c.logo)o.logo=c.logo; if(c.phoneImage)o.phoneImage=c.phoneImage; if(c.gallery&&c.gallery.length)o.gallery=c.gallery; if(c.beforeAfter)o.beforeAfter=c.beforeAfter; return o; });
+    var content="/* Gerado pelo painel-clientes.html — Audens. Coloque este arquivo na pasta do index.html. */\nwindow.AUDENS_CLIENTES = "+JSON.stringify(clean,null,2)+";\n";
+    var blob=new Blob([content],{type:"application/javascript;charset=utf-8"});
+    var a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="clientes-data.js"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){alert("clientes-data.js baixado!\n\n• Para TESTAR no seu PC: e só recarregar a landing (ela ja le suas edicoes deste navegador).\n• Para PUBLICAR: coloque este arquivo na pasta do site, junto do index.html.");},150);
+  }
+
+  function escapeHtml(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[m];});}
+
+  /* ---- eventos ---- */
+  el("fName").addEventListener("input",function(){ if(editing===null && (!el("fSlug").value || el("fSlug").dataset.auto!=="0")){ el("fSlug").value=slugify(this.value); el("fSlug").dataset.auto="1"; } });
+  el("fSlug").addEventListener("input",function(){ this.dataset.auto="0"; });
+  el("fLogo").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],512).then(function(d){form.logo=d;prev("pvLogo",d,"logo");}); });
+  el("fPhone").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],1000).then(function(d){form.phoneImage=d;prev("pvPhone",d,"print");}); });
+  el("rmLogo").addEventListener("click",function(){form.logo="";prev("pvLogo","","logo");});
+  el("rmPhone").addEventListener("click",function(){form.phoneImage="";prev("pvPhone","","print");});
+  el("fGallery").addEventListener("change",function(){ var fs=Array.prototype.slice.call(this.files); if(!form.gallery)form.gallery=[];
+    Promise.all(fs.map(function(f){return processImage(f,1400);})).then(function(arr){ form.gallery=(form.gallery||[]).concat(arr).slice(0,4); renderGallery(); }); this.value=""; });
+  el("fBefore").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],1600).then(function(d){form.beforeAfter=form.beforeAfter||{};form.beforeAfter.before=d;prev("pvBefore",d,"antes");}); });
+  el("fAfter").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],1600).then(function(d){form.beforeAfter=form.beforeAfter||{};form.beforeAfter.after=d;prev("pvAfter",d,"depois");}); });
+  el("segType").querySelectorAll("button").forEach(function(b){ b.addEventListener("click",function(){ setType(b.dataset.t); }); });
+  el("btnSave").addEventListener("click",save);
+  el("btnCancel").addEventListener("click",function(){ if(editing===null)newClient(); else edit(editing); });
+  el("btnDelete").addEventListener("click",del);
+  el("btnNew").addEventListener("click",newClient);
+  el("btnDownload").addEventListener("click",download);
+  el("btnReset").addEventListener("click",function(){ if(confirm("Restaurar a lista padrão? Isso apaga suas edições salvas neste navegador."))
+    { clients=JSON.parse(JSON.stringify(DEFAULTS)); persist(); editing=null; newClient(); renderList(); } });
+
+  /* init */
+  renderList();
+  if(clients.length)edit(0); else newClient();
+})();
+</script>
+</body>
+</html>
