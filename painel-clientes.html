@@ -42,6 +42,8 @@ a{color:var(--purple2)}
 .citem .ord{display:flex;flex-direction:column;gap:2px}
 .citem .ord button{width:22px;height:16px;border:none;background:none;color:var(--muted);cursor:pointer;font-size:11px;line-height:1}
 .citem .ord button:hover{color:var(--purple2)}
+.citem .delx{flex:none;width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--muted);cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.15s}
+.citem .delx:hover{color:#fff;border-color:#ff5c7a;background:rgba(255,92,122,.14)}
 .editor{padding:22px;overflow:auto}
 .fld{margin-bottom:16px}
 .fld label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
@@ -194,12 +196,22 @@ a{color:var(--purple2)}
       var d=document.createElement("div"); d.className="citem"+(editing===i?" active":"");
       d.innerHTML='<div class="th">'+(c.logo?'<img src="'+c.logo+'" alt="">':'<svg><use href="#pk"/></svg>')+'</div>'
         +'<div class="nm">'+escapeHtml(c.name)+'</div>'
-        +'<div class="ord"><button data-up="'+i+'" title="Subir">▲</button><button data-dn="'+i+'" title="Descer">▼</button></div>';
-      d.addEventListener("click",function(e){ if(e.target.dataset.up!=null||e.target.dataset.dn!=null)return; edit(i); });
+        +'<div class="ord"><button data-up="'+i+'" title="Subir">▲</button><button data-dn="'+i+'" title="Descer">▼</button></div>'
+        +'<button class="delx" data-del="'+i+'" title="Remover este cliente">✕</button>';
+      d.addEventListener("click",function(e){ if(e.target.dataset.up!=null||e.target.dataset.dn!=null||e.target.dataset.del!=null)return; edit(i); });
       box.appendChild(d);
     });
     box.querySelectorAll("[data-up]").forEach(function(b){b.addEventListener("click",function(){move(+b.dataset.up,-1);});});
     box.querySelectorAll("[data-dn]").forEach(function(b){b.addEventListener("click",function(){move(+b.dataset.dn,1);});});
+    box.querySelectorAll("[data-del]").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();delAt(+b.dataset.del);});});
+  }
+  function delAt(i){
+    if(i<0||i>=clients.length)return;
+    if(!confirm('Remover "'+(clients[i].name||"este cliente")+'" da lista?\n\nEle sai da landing quando você clicar em Publicar. Esta ação não pode ser desfeita aqui.'))return;
+    clients.splice(i,1);
+    if(editing===i){ editing=null; form=blank(); fillForm(); el("btnDelete").style.display="none"; el("edTitle").textContent="Novo cliente"; }
+    else if(editing!==null && editing>i){ editing--; }
+    persist(); renderList();
   }
   function move(i,dir){ var j=i+dir; if(j<0||j>=clients.length)return; var t=clients[i];clients[i]=clients[j];clients[j]=t; if(editing===i)editing=j; else if(editing===j)editing=i; persist();renderList(); }
 
