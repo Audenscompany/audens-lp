@@ -5,11 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Audens Company — Marketing de delivery feito por operador</title>
 <meta name="description" content="Marketing de delivery feito por quem opera +R$500 mil/mês no próprio caixa. Da aquisição à recompra, um sistema para transformar marketing em pedido. +200 clientes ativos, +50 cidades.">
+<!-- Open Graph / compartilhamento -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Audens Company">
+<meta property="og:title" content="Marketing de delivery feito por operador — Audens">
+<meta property="og:description" content="Da aquisição à recompra: um sistema para transformar marketing em pedido, feito por quem opera +R$500 mil/mês no próprio caixa.">
+<meta property="og:image" content="https://audenscompany.github.io/audens-lp/images/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://audenscompany.github.io/audens-lp/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Marketing de delivery feito por operador — Audens">
+<meta name="twitter:description" content="Da aquisição à recompra: transforme marketing em pedido.">
+<meta name="twitter:image" content="https://audenscompany.github.io/audens-lp/images/og-image.jpg">
 <link rel="icon" type="image/png" href="images/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="image" href="images/founders-1050.webp" imagesrcset="images/founders-760.webp 760w, images/founders-1050.webp 1050w" imagesizes="(max-width:920px) 90vw, 46vw" fetchpriority="high">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','288150133971064');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=288150133971064&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
 <style>
 /* =====================================================================
    AUDENS COMPANY · LP V4 · Conceito "Operação em Ascensão"
@@ -19,7 +39,7 @@
   --bg:#07060B; --bg-2:#0E0A16; --surface:#14101F;
   --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.05);
   --purple:#7C34F0; --purple-2:#A66BFF; --purple-deep:#5A22C0;
-  --silver:#C7C2D6; --white:#F5F2FA; --muted:#9C93B4; --muted-2:#6E6685;
+  --silver:#C7C2D6; --white:#F5F2FA; --muted:#9C93B4; --muted-2:#968DAD;
   --success:#3AD07E;
   --r-in:10px; --r-btn:12px; --r-md:16px; --r-lg:18px;
   --sh:0 30px 70px rgba(0,0,0,.5);
@@ -1086,11 +1106,18 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
    Configure: META_PIXEL_ID · GA4_ID · GTM_ID
    ======================================================================= */
 window.dataLayer = window.dataLayer || [];
+/* eventos que viram evento PADRÃO do Meta (o resto vai como evento personalizado) */
+var FBQ_STANDARD = { lead_submit:'Lead', offer_view:'ViewContent' };
 function pushEvent(name, params){
-  var payload = Object.assign({event:name, ts:0}, params||{});
+  var payload = Object.assign({event:name}, params||{});
   window.dataLayer.push(payload);
-  // if (window.fbq) fbq('trackCustom', name, params);   // requer META_PIXEL_ID
-  // if (window.gtag) gtag('event', name, params);        // requer GA4_ID
+  try{
+    if(window.fbq){
+      if(FBQ_STANDARD[name]) fbq('track', FBQ_STANDARD[name], params||{});
+      else fbq('trackCustom', name, params||{});
+    }
+  }catch(e){}
+  try{ if(window.gtag) gtag('event', name, params||{}); }catch(e){}   // pronto p/ GA4
 }
 window.addEventListener('load', function(){ pushEvent('lp_view', {path: location.pathname}); });
 document.querySelectorAll('[data-ev]').forEach(function(el){
@@ -1117,6 +1144,33 @@ if ('IntersectionObserver' in window){
     once.observe(el);
   });
 } else { document.querySelectorAll('[data-reveal]').forEach(function(el){el.classList.add('in');}); }
+
+/* ===== MAPEAMENTO COMPLETO DA PÁGINA — onde o lead entra e clica ===== */
+(function(){
+  if(!('IntersectionObserver' in window)) return;
+  /* 1) Seções vistas: dispara section_view com o id de cada seção */
+  var secObs = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ pushEvent('section_view',{secao: e.target.id || 'sem-id'}); secObs.unobserve(e.target); } });
+  }, {threshold:.4});
+  document.querySelectorAll('section[id]').forEach(function(s){ secObs.observe(s); });
+
+  /* 2) Profundidade de rolagem: 25/50/75/100% */
+  var marks=[25,50,75,100], hit={};
+  addEventListener('scroll', function(){
+    var h = document.documentElement.scrollHeight - innerHeight; if(h<=0) return;
+    var p = Math.round(scrollY / h * 100);
+    marks.forEach(function(m){ if(p>=m && !hit[m]){ hit[m]=1; pushEvent('scroll_depth',{percent:m}); } });
+  }, {passive:true});
+
+  /* 3) Cliques em qualquer botão/link (os CTAs nomeados já têm data-ev; aqui pega o resto) */
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('a,button'); if(!el) return;
+    if(el.hasAttribute('data-ev')) return; // já rastreado pelo nome
+    var sec = el.closest('section');
+    var label = el.id || (el.textContent||'').trim().replace(/\s+/g,' ').slice(0,44) || el.getAttribute('aria-label') || el.tagName;
+    pushEvent('click', { rotulo: label, secao: (sec && sec.id) || '', tipo: el.tagName.toLowerCase() });
+  }, true);
+})();
 
 function countUp(el){
   if(reduce){return;}
@@ -1160,7 +1214,21 @@ document.querySelectorAll('.qa button').forEach(function(btn){
 });
 
 /* ===== FORM (validação real + 2 etapas) ===== */
-var CONFIGURE_CRM_ENDPOINT_HERE = ''; // <-- coloque o endpoint do CRM/Webhook aqui
+/* ===== Integração com o CRM (Cloud Function → Firebase + WhatsApp automático) ===== */
+var CRM_ENDPOINT = 'https://receberlead-471063273836.us-central1.run.app';
+var CRM_SECRET   = '';   /* <-- COLOQUE AQUI o WEBHOOK_SECRET do Cloud Run. Sem ele o endpoint devolve 401. */
+var URLQ = new URLSearchParams(location.search);
+function utm(){ for(var i=0;i<arguments.length;i++){ var v=URLQ.get(arguments[i]); if(v) return v; } return ''; }
+function enviarCRM(lead){
+  if(!CRM_ENDPOINT || !CRM_SECRET) return;   /* sem secret configurado, não dispara */
+  try{
+    fetch(CRM_ENDPOINT, {
+      method:'POST', mode:'cors', keepalive:true,
+      headers:{'Content-Type':'application/json','X-Webhook-Secret':CRM_SECRET},
+      body: JSON.stringify(lead)
+    }).catch(function(){});
+  }catch(e){}
+}
 
 function isPhone(v){ return (v.replace(/\D/g,'').length >= 10); }
 function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
@@ -1194,8 +1262,21 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
     var qualified = /100 mil|300 mil|Acima/.test(fat);
     pushEvent('lead_submit', {form:formId});
     if(qualified) pushEvent('qualified_lead', {faixa:fat});
-    // Integração real: descomente ao configurar o endpoint.
-    // if(CONFIGURE_CRM_ENDPOINT_HERE){ fetch(CONFIGURE_CRM_ENDPOINT_HERE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); }
+    /* Envia o lead ao CRM com atribuição de campanha/anúncio (UTMs da URL do anúncio) */
+    enviarCRM({
+      nome:        (nome && nome.value || '').trim(),
+      telefone:    (tel && tel.value || ''),
+      email:       (email && email.value || '').trim(),
+      faturamento: fat,
+      instagram:   (form.querySelector('[name="insta"]')||{}).value || '',
+      segmento:    (form.querySelector('[name="segmento"]')||{}).value || '',
+      canal:       (form.querySelector('[name="canal"]')||{}).value || '',
+      origem:      'lp-audens',
+      utm_campaign: utm('utm_campaign','campaign'),
+      utm_content:  utm('utm_content','ad'),
+      utm_medium:   utm('utm_medium','adset'),
+      utm_source:   utm('utm_source') || 'meta'
+    });
     form.style.display='none'; var prog=form.previousElementSibling; if(prog&&prog.classList.contains('prog'))prog.style.display='none';
     if(done)done.style.display='block';
   });
