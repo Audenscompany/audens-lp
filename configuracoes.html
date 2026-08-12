@@ -87,6 +87,7 @@
   <nav class="tabs">
     <button class="tab active" data-pane="clientes">Painel de Clientes</button>
     <button class="tab" data-pane="depoimentos">Painel de Depoimentos</button>
+    <button class="tab" data-pane="pagina">Imagens da Página</button>
     <button class="tab" data-pane="publicar">Publicar &amp; Domínio</button>
   </nav>
 
@@ -98,6 +99,29 @@
   <!-- DEPOIMENTOS -->
   <section class="pane" data-pane="depoimentos">
     <iframe id="ifDepo" title="Painel de Depoimentos" src="painel-depoimentos.html"></iframe>
+  </section>
+
+  <!-- IMAGENS DA PÁGINA -->
+  <section class="pane" data-pane="pagina">
+    <div class="pub">
+      <h1>Imagens da página</h1>
+      <p class="sub">Fotos fixas da landing (que não ficam nos painéis de clientes/depoimentos). Suba aqui e publique.</p>
+      <div class="block">
+        <h2>Foto da operação — seção "somos operadores"</h2>
+        <p class="h-sub">A foto de vocês dentro da operação (cozinha, expedição), ao lado do "+R$ 500 mil/mês".</p>
+        <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+          <div id="opPrev" style="width:230px;aspect-ratio:4/3.4;border-radius:12px;border:1px solid var(--line);background:#0c0916;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--muted-2);font-size:12px;text-align:center;padding:10px">Nenhuma foto ainda</div>
+          <div style="flex:1;min-width:220px">
+            <div class="btns">
+              <label class="btn btn-ghost" style="cursor:pointer">📷 Escolher foto<input type="file" id="opFile" accept="image/*" style="display:none"></label>
+              <button class="btn btn-ghost" id="opRemove" style="display:none">Remover</button>
+            </div>
+            <p class="tip" style="margin-top:12px">Ao escolher a foto, ela é enviada para o site na hora (precisa do GitHub conectado na aba Publicar). Depois clique em <b>Publicar alterações agora</b> para ela aparecer na landing. Formato ideal: horizontal, boa luz.</p>
+            <div class="log" id="opLog"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- PUBLICAR -->
@@ -197,6 +221,56 @@
     var raw=[];try{raw=JSON.parse(localStorage.getItem("audens_depoimentos_v1")||"[]");}catch(e){}
     return {count:raw.length,content:"/* Gerado pelo painel de configuração — Audens. */\nwindow.AUDENS_DEPOIMENTOS = "+JSON.stringify(raw,null,2)+";\n"};
   }
+  function getPagina(){try{return JSON.parse(localStorage.getItem("audens_pagina_v1")||"{}");}catch(e){return {};}}
+  function buildPagina(){
+    var p=getPagina();
+    return {content:"/* Gerado pelo painel de configuração — Audens. */\nwindow.AUDENS_PAGINA = "+JSON.stringify(p,null,2)+";\n"};
+  }
+
+  /* ---- Imagens da Página ---- */
+  function processImage(file, maxDim){
+    return new Promise(function(res){
+      var r=new FileReader();
+      r.onload=function(){ var img=new Image(); img.onload=function(){
+        var w=img.width,h=img.height;
+        if(Math.max(w,h)>maxDim){ if(w>=h){h=Math.round(h*maxDim/w);w=maxDim;} else {w=Math.round(w*maxDim/h);h=maxDim;} }
+        var cv=document.createElement("canvas");cv.width=w;cv.height=h;cv.getContext("2d").drawImage(img,0,0,w,h);
+        var out; try{out=cv.toDataURL("image/webp",0.86); if(out.indexOf("data:image/webp")!==0)out=cv.toDataURL("image/jpeg",0.86);}catch(e){out=cv.toDataURL("image/jpeg",0.86);}
+        res(out);
+      }; img.src=r.result; };
+      r.readAsDataURL(file);
+    });
+  }
+  async function ghUploadBinary(cfg, path, dataUrl){
+    var content=dataUrl.substring(dataUrl.indexOf(",")+1), sha=null;
+    var g=await fetch("https://api.github.com/repos/"+cfg.repo+"/contents/"+path+"?ref="+encodeURIComponent(cfg.branch),{cache:"no-store",headers:{Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json"}});
+    if(g.status===200){try{sha=(await g.json()).sha;}catch(e){}}
+    var body={message:"Imagem da página: "+path,content:content,branch:cfg.branch};if(sha)body.sha=sha;
+    var r=await fetch("https://api.github.com/repos/"+cfg.repo+"/contents/"+path,{method:"PUT",headers:{Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify(body)});
+    if(!r.ok){var t=await r.text();throw new Error("("+r.status+") "+shortErr(t));}
+    return path;
+  }
+  function opLogLine(msg,cls){var l=el("opLog");l.classList.add("show");var s=document.createElement("div");if(cls)s.className=cls;s.textContent=msg;l.appendChild(s);l.scrollTop=l.scrollHeight;}
+  function renderOpPrev(){var p=getPagina();var box=el("opPrev");if(p.opPhoto){box.innerHTML='<img src="'+p.opPhoto+'" alt="" style="width:100%;height:100%;object-fit:cover">';el("opRemove").style.display="inline-flex";}else{box.textContent="Nenhuma foto ainda";el("opRemove").style.display="none";}}
+  el("opFile").addEventListener("change",async function(){
+    if(!this.files[0])return;
+    var cfg=readForm();
+    if(!cfg.repo||!cfg.token){opLogLine("Conecte o GitHub na aba \"Publicar & Domínio\" primeiro.","err");this.value="";return;}
+    var f=this.files[0];this.value="";
+    el("opLog").innerHTML="";opLogLine("Processando e enviando a foto…","mut");
+    try{
+      var dataUrl=await processImage(f,1600);
+      var path=await ghUploadBinary(cfg,"images/pagina/operacao.webp",dataUrl);
+      var p=getPagina();p.opPhoto=path+"?v="+(new Date().getTime());localStorage.setItem("audens_pagina_v1",JSON.stringify(p));
+      renderOpPrev();
+      opLogLine("✓ Foto enviada! Agora clique em \"Publicar alterações agora\" na aba Publicar.","ok");
+    }catch(e){opLogLine("✗ Não consegui enviar: "+e.message,"err");}
+  });
+  el("opRemove").addEventListener("click",function(){
+    var p=getPagina();delete p.opPhoto;localStorage.setItem("audens_pagina_v1",JSON.stringify(p));renderOpPrev();
+    opLogLine("Foto removida. Publique para refletir na landing.","mut");
+  });
+  renderOpPrev();
 
   /* ---- GitHub API ---- */
   async function ghGetSha(cfg,path){
@@ -249,6 +323,7 @@
       var dep=await pullFile(cfg,"depoimentos-data.js");
       if(dep){localStorage.setItem("audens_depoimentos_v1",JSON.stringify(dep));logLine("✓ Depoimentos carregados ("+dep.length+").","ok");}
       else logLine("• depoimentos-data.js ainda não existe no site.","mut");
+      try{var pg=await pullFile(cfg,"pagina-data.js");if(pg){localStorage.setItem("audens_pagina_v1",JSON.stringify(pg));renderOpPrev();logLine("✓ Imagens da página carregadas.","ok");}}catch(e){}
       logLine("Atualizando as abas…","mut");
       try{el("ifClientes").contentWindow.location.reload();}catch(e){}
       try{el("ifDepo").contentWindow.location.reload();}catch(e){}
@@ -270,6 +345,10 @@
       logLine("Enviando depoimentos-data.js ("+d.count+" depoimentos) …","mut");
       var s2=await ghGetSha(cfg,"depoimentos-data.js");await ghPut(cfg,"depoimentos-data.js",d.content,s2);
       logLine("✓ depoimentos-data.js publicado.","ok");
+      var pg=buildPagina();
+      logLine("Enviando pagina-data.js (imagens da página) …","mut");
+      var s3=await ghGetSha(cfg,"pagina-data.js");await ghPut(cfg,"pagina-data.js",pg.content,s3);
+      logLine("✓ pagina-data.js publicado.","ok");
       logLine("","mut");
       logLine("🎉 Pronto! A landing atualiza sozinha em cerca de 1 minuto. Abra pelo botão \"Ver a landing\".","ok");
     }catch(e){logLine("✗ "+e.message,"err");}
