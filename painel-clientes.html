@@ -80,7 +80,7 @@ a{color:var(--purple2)}
   <button class="btn dl" id="btnDownload">⬇ Baixar clientes-data.js</button>
 </div>
 <div class="hint">
-  <b>Como usar:</b> cadastre/edite os clientes aqui e suba as fotos direto do seu computador. Ao terminar, clique em <b>Baixar clientes-data.js</b> e coloque esse arquivo na mesma pasta do <b>index.html</b> do site. <b>Testando no seu PC?</b> É só recarregar a landing no mesmo navegador — ela já reflete o que você editar aqui. Seu trabalho fica salvo automaticamente.
+  <b>Como usar:</b> 1) na aba <b>Publicar &amp; Domínio</b>, conecte o GitHub (repositório + token) e clique em <b>Salvar conexão</b>. 2) Aqui, cadastre/edite o cliente e suba as fotos. Ao clicar em <b>Salvar cliente</b>, as fotos vão automaticamente para o site (como arquivos). 3) Volte na aba <b>Publicar</b> e clique em <b>Publicar alterações agora</b> para a landing atualizar. As fotos só sobem com o GitHub conectado — sem conexão, o painel avisa.
 </div>
 
 <div class="wrap">
@@ -237,10 +237,21 @@ a{color:var(--purple2)}
     if(form._type==="beforeafter"){ var ba={ before:form.beforeAfter&&form.beforeAfter.before||"", after:form.beforeAfter&&form.beforeAfter.after||"", caption:el("fBACap").value.trim() }; if(ba.before||ba.after||ba.caption)c.beforeAfter=ba; }
     return c;
   }
-  function save(){
+  async function save(){
     var c=collect();
     if(!c.name){ alert("Coloque o nome da marca."); return; }
     if(!c.slug){ c.slug=slugify(c.name); }
+    if(hasDataImages(c)){
+      var cfg=ghCfg();
+      if(!cfg.repo||!cfg.token){
+        alert("Para as FOTOS irem para o site, conecte o GitHub primeiro:\n\nAba \"Publicar & Domínio\" → preencha repositório + token → Salvar conexão.\n\nDepois volte aqui e clique em Salvar de novo.");
+        return;
+      }
+      var btn=el("btnSave"), old=btn.textContent; btn.disabled=true; btn.textContent="Enviando fotos…";
+      try{ await uploadImagesFor(cfg, c); }
+      catch(e){ alert("Não consegui enviar as fotos: "+e.message+"\n\nVerifique a conexão do GitHub na aba Publicar."); btn.disabled=false; btn.textContent=old; return; }
+      btn.disabled=false; btn.textContent=old;
+    }
     if(editing===null){ clients.push(c); editing=clients.length-1; } else { clients[editing]=c; }
     form=JSON.parse(JSON.stringify(c)); form._type=c.beforeAfter?"beforeafter":"gallery"; if(!form.gallery)form.gallery=c.gallery||[];
     persist(); renderList(); el("btnDelete").style.display="inline-block"; el("edTitle").textContent="Editar: "+c.name;
@@ -257,6 +268,30 @@ a{color:var(--purple2)}
   }
 
   function escapeHtml(s){return String(s==null?"":s).replace(/[&<>"]/g,function(m){return({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[m];});}
+
+  /* ---- upload de fotos direto para o repositório (evita estourar a memória do navegador) ---- */
+  function ghCfg(){ try{return JSON.parse(localStorage.getItem("audens_gh_cfg")||"{}");}catch(e){return {};} }
+  function isDataUrl(v){ return typeof v==="string" && v.indexOf("data:")===0; }
+  function extOf(u){ var m=u.substring(5,u.indexOf(";")); return m==="image/webp"?"webp":(m==="image/png"?"png":"jpg"); }
+  function verTag(p){ return p+"?v="+(new Date().getTime()); }
+  async function ghUploadImage(cfg, path, dataUrl){
+    var content=dataUrl.substring(dataUrl.indexOf(",")+1), sha=null;
+    var g=await fetch("https://api.github.com/repos/"+cfg.repo+"/contents/"+path+"?ref="+encodeURIComponent(cfg.branch||"main"),{cache:"no-store",headers:{Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json"}});
+    if(g.status===200){ try{sha=(await g.json()).sha;}catch(e){} }
+    var body={message:"Foto de cliente: "+path, content:content, branch:cfg.branch||"main"}; if(sha)body.sha=sha;
+    var r=await fetch("https://api.github.com/repos/"+cfg.repo+"/contents/"+path,{method:"PUT",headers:{Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify(body)});
+    if(!r.ok){ var t=await r.text(); throw new Error("("+r.status+") "+t.slice(0,140)); }
+    return path;
+  }
+  function hasDataImages(c){ if(isDataUrl(c.logo)||isDataUrl(c.phoneImage))return true; if(c.gallery&&c.gallery.some(isDataUrl))return true; if(c.beforeAfter&&(isDataUrl(c.beforeAfter.before)||isDataUrl(c.beforeAfter.after)))return true; return false; }
+  async function uploadImagesFor(cfg, c){
+    var base="images/clientes/"+c.slug;
+    if(isDataUrl(c.logo)) c.logo=verTag(await ghUploadImage(cfg, base+"-logo."+extOf(c.logo), c.logo));
+    if(isDataUrl(c.phoneImage)) c.phoneImage=verTag(await ghUploadImage(cfg, base+"-print."+extOf(c.phoneImage), c.phoneImage));
+    if(c.gallery){ for(var i=0;i<c.gallery.length;i++){ if(isDataUrl(c.gallery[i])) c.gallery[i]=verTag(await ghUploadImage(cfg, base+"-g"+i+"."+extOf(c.gallery[i]), c.gallery[i])); } }
+    if(c.beforeAfter){ if(isDataUrl(c.beforeAfter.before)) c.beforeAfter.before=verTag(await ghUploadImage(cfg, base+"-antes."+extOf(c.beforeAfter.before), c.beforeAfter.before)); if(isDataUrl(c.beforeAfter.after)) c.beforeAfter.after=verTag(await ghUploadImage(cfg, base+"-depois."+extOf(c.beforeAfter.after), c.beforeAfter.after)); }
+    return c;
+  }
 
   /* ---- eventos ---- */
   el("fName").addEventListener("input",function(){ if(editing===null && (!el("fSlug").value || el("fSlug").dataset.auto!=="0")){ el("fSlug").value=slugify(this.value); el("fSlug").dataset.auto="1"; } });
