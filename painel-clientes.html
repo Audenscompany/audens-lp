@@ -171,14 +171,16 @@ a{color:var(--purple2)}
   function slugify(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
   function el(id){return document.getElementById(id);}
 
-  function processImage(file, maxDim){
+  function processImage(file, maxDim, quality){
+    var q=quality||0.86;
     return new Promise(function(res){
       var r=new FileReader();
       r.onload=function(){ var img=new Image(); img.onload=function(){
         var w=img.width,h=img.height;
         if(Math.max(w,h)>maxDim){ if(w>=h){h=Math.round(h*maxDim/w);w=maxDim;} else {w=Math.round(w*maxDim/h);h=maxDim;} }
-        var cv=document.createElement("canvas");cv.width=w;cv.height=h;cv.getContext("2d").drawImage(img,0,0,w,h);
-        var out; try{out=cv.toDataURL("image/webp",0.86); if(out.indexOf("data:image/webp")!==0)out=cv.toDataURL("image/jpeg",0.86);}catch(e){out=cv.toDataURL("image/jpeg",0.86);}
+        var cv=document.createElement("canvas");cv.width=w;cv.height=h;var ctx=cv.getContext("2d");
+        ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="high";ctx.drawImage(img,0,0,w,h);
+        var out; try{out=cv.toDataURL("image/webp",q); if(out.indexOf("data:image/webp")!==0)out=cv.toDataURL("image/jpeg",q);}catch(e){out=cv.toDataURL("image/jpeg",q);}
         res(out);
       }; img.src=r.result; };
       r.readAsDataURL(file);
@@ -296,14 +298,14 @@ a{color:var(--purple2)}
   /* ---- eventos ---- */
   el("fName").addEventListener("input",function(){ if(editing===null && (!el("fSlug").value || el("fSlug").dataset.auto!=="0")){ el("fSlug").value=slugify(this.value); el("fSlug").dataset.auto="1"; } });
   el("fSlug").addEventListener("input",function(){ this.dataset.auto="0"; });
-  el("fLogo").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],512).then(function(d){form.logo=d;prev("pvLogo",d,"logo");}); });
-  el("fPhone").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],1000).then(function(d){form.phoneImage=d;prev("pvPhone",d,"print");}); });
+  el("fLogo").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],640,0.92).then(function(d){form.logo=d;prev("pvLogo",d,"logo");}); });
+  el("fPhone").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],1200,0.92).then(function(d){form.phoneImage=d;prev("pvPhone",d,"print");}); });
   el("rmLogo").addEventListener("click",function(){form.logo="";prev("pvLogo","","logo");});
   el("rmPhone").addEventListener("click",function(){form.phoneImage="";prev("pvPhone","","print");});
   el("fGallery").addEventListener("change",function(){ var fs=Array.prototype.slice.call(this.files); if(!form.gallery)form.gallery=[];
-    Promise.all(fs.map(function(f){return processImage(f,1400);})).then(function(arr){ form.gallery=(form.gallery||[]).concat(arr).slice(0,4); renderGallery(); }); this.value=""; });
-  el("fBefore").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],1600).then(function(d){form.beforeAfter=form.beforeAfter||{};form.beforeAfter.before=d;prev("pvBefore",d,"antes");}); });
-  el("fAfter").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],1600).then(function(d){form.beforeAfter=form.beforeAfter||{};form.beforeAfter.after=d;prev("pvAfter",d,"depois");}); });
+    Promise.all(fs.map(function(f){return processImage(f,1800,0.92);})).then(function(arr){ form.gallery=(form.gallery||[]).concat(arr).slice(0,4); renderGallery(); }); this.value=""; });
+  el("fBefore").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],2000,0.94).then(function(d){form.beforeAfter=form.beforeAfter||{};form.beforeAfter.before=d;prev("pvBefore",d,"antes");}); });
+  el("fAfter").addEventListener("change",function(){ if(this.files[0])processImage(this.files[0],2000,0.94).then(function(d){form.beforeAfter=form.beforeAfter||{};form.beforeAfter.after=d;prev("pvAfter",d,"depois");}); });
   el("segType").querySelectorAll("button").forEach(function(b){ b.addEventListener("click",function(){ setType(b.dataset.t); }); });
   el("btnSave").addEventListener("click",save);
   el("btnCancel").addEventListener("click",function(){ if(editing===null)newClient(); else edit(editing); });
