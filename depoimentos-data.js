@@ -17,7 +17,7 @@ window.AUDENS_DEPOIMENTOS = [
   {
     "name": "Guilherme e Gustavo Naliati",
     "role": "Naliatis Pão de Alho - Jundiaí SP",
-    "quote": "[Depoimento em vídeo do cliente.]",
+    "quote": "",
     "video": "https://youtube.com/shorts/llFFmdiHJwg?feature=share",
     "poster": ""
   }

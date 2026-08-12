@@ -22,7 +22,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="image" href="images/founders-1050.webp" imagesrcset="images/founders-760.webp 760w, images/founders-1050.webp 1050w" imagesizes="(max-width:920px) 90vw, 46vw" fetchpriority="high">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<!-- Microsoft Clarity (heatmap + gravação) — cole o ID do projeto entre as aspas para ativar -->
+<script>(function(){var CLARITY_ID='';if(!CLARITY_ID)return;(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script",CLARITY_ID);})();</script>
 <!-- Meta Pixel Code -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
@@ -629,7 +632,7 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
       <div class="rail" id="brandRail" role="list" aria-label="Marcas atendidas pela Audens"></div>
       <button class="rail-btn next" id="railNext" type="button" aria-label="Ver mais marcas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
-    <p class="note">Arraste para o lado para ver mais marcas. <span style="color:var(--purple-2)">[Adicione o logo de cada cliente em <code>images/clientes/&lt;slug&gt;/logo.webp</code> — enquanto isso, o card mostra o nome.]</span></p>
+    <p class="note">Arraste para o lado para ver mais marcas.</p>
   </div>
 
   <!-- Modal de case (separado do modal principal de lead) -->
@@ -862,7 +865,7 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
         <span class="eyebrow"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Resultado de cliente</span>
         <h2 style="margin-top:16px">Um caixa que saiu de<br>R$ 9 mil para R$ 73 mil.</h2>
       </div>
-      <div class="meta"><span class="mark-txt">[Operação + cidade a confirmar]</span><br>Hamburgueria · nov/2025 → abr/2026</div>
+      <div class="meta"><span class="mark-txt">Operação acompanhada pela Audens</span><br>Hamburgueria · nov/2025 → abr/2026</div>
     </div>
     <div class="dom" data-reveal>
       <div class="big">8×</div>
@@ -924,7 +927,7 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
       <figure class="pm"><img src="images/proof-300.webp" width="640" height="172" loading="lazy" alt="Print: mais de 300 lanches no fim de semana"><figcaption class="cap">+300 lanches de sexta a domingo, semana após semana.</figcaption></figure>
       <figure class="pm"><img src="images/proof-hashtag.webp" width="850" height="706" loading="lazy" alt="Print do cliente Hashtag Lanches: recorde de pedidos"><figcaption class="cap"><b>Hashtag Lanches</b> — "batemos o recorde de pedidos".</figcaption></figure>
     </div>
-    <p class="auth">Prints reais de clientes. <span style="color:var(--purple-2)">[Confirmar autorização de cada cliente — nomes/telefones podem ser ocultados.]</span></p>
+    <p class="auth">Prints reais de clientes.</p>
   </div>
 </section>
 
@@ -1041,7 +1044,7 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
           <div class="fld"><label for="whats">WhatsApp</label><input id="whats" name="whats" type="tel" required inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" aria-describedby="e-whats"><span class="err" id="e-whats">Informe um WhatsApp válido com DDD.</span></div>
           <div class="fld"><label for="insta">@ do Instagram <span style="color:var(--muted-2)">(opcional)</span></label><input id="insta" name="insta" type="text" placeholder="@suaoperacao"></div>
           <div class="fld"><label for="email">E-mail <span style="color:var(--muted-2)">(opcional)</span></label><input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="seu@email.com" aria-describedby="e-email"><span class="err" id="e-email">E-mail inválido.</span><span class="hint">Preferimos te chamar no WhatsApp — o e-mail é só backup.</span></div>
-          <label class="consent"><input type="checkbox" id="consent" required> Autorizo o contato da Audens sobre o Raio-X e concordo com a <a href="#" target="_blank" rel="noopener">Política de Privacidade</a>. <span style="color:var(--purple-2)">[inserir link real]</span></label>
+          <label class="consent"><input type="checkbox" id="consent" required> Autorizo o contato da Audens sobre o Raio-X e concordo com a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</label>
           <div class="form-nav"><button type="button" class="back" id="back">← voltar</button><button type="submit" class="btn btn-primary" style="flex:1">Quero o Raio-X <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button></div>
         </div>
       </form>
@@ -1065,7 +1068,7 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
       <div class="col"><b>Navegação</b><a href="#operadores">Operadores</a><a href="#case">Resultado</a><a href="#metodo">Método</a><a href="#raiox">Raio-X</a></div>
       <div class="col"><b>Contato</b><a href="#raiox">Pedir meu Raio-X</a><a href="#">Instagram [@audens]</a><a href="#">WhatsApp [número]</a></div>
     </div>
-    <div class="legal">© 2026 Audens Company · [CNPJ] · <a href="#" style="color:var(--purple-2)">Política de Privacidade</a></div>
+    <div class="legal">© 2026 Audens Company · <a href="privacidade.html" style="color:var(--purple-2)">Política de Privacidade</a></div>
   </div>
 </footer>
 
@@ -1091,7 +1094,7 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
         <div class="fld"><label>Nome e sobrenome</label><input type="text" required placeholder="Como podemos te chamar?"></div>
         <div class="fld"><label>WhatsApp</label><input type="tel" required inputmode="tel" placeholder="(00) 00000-0000"></div>
         <div class="fld"><label>@ do Instagram (opcional)</label><input type="text" placeholder="@suaoperacao"></div>
-        <label class="consent"><input type="checkbox" required> Autorizo o contato e concordo com a <a href="#">Política de Privacidade</a>.</label>
+        <label class="consent"><input type="checkbox" required> Autorizo o contato e concordo com a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</label>
         <div class="form-nav"><button type="button" class="back mback">← voltar</button><button type="submit" class="btn btn-primary" style="flex:1">Quero o Raio-X</button></div>
       </div>
     </form>
