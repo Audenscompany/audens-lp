@@ -1,10 +1,24 @@
-/* =============================================================
-   AUDENS · DEPOIMENTOS EM VÍDEO
-   Gerado pelo painel-depoimentos.html. Não precisa editar à mão.
-   O vídeo (.mp4) vai na pasta videos/ do site; o pôster fica embutido.
-   ============================================================= */
+/* Gerado pelo painel de configuração — Audens. */
 window.AUDENS_DEPOIMENTOS = [
-  {name:"[Nome do dono]", role:"[Operação · Cidade]", quote:"[Depoimento — cite a objeção que tinha antes e o número que mudou.]", video:"", poster:""},
-  {name:"[Nome do dono]", role:"[Operação · Cidade]", quote:"[Depoimento em vídeo do cliente.]", video:"", poster:""},
-  {name:"[Nome do dono]", role:"[Operação · Cidade]", quote:"[Depoimento em vídeo do cliente.]", video:"", poster:""}
+  {
+    "name": "Gerrá",
+    "role": "Gerrá Burguer - Belo Horizonte",
+    "quote": "De 37 mil para mais de 90 mil !",
+    "video": "https://youtube.com/shorts/VIe9rIrLkEs?feature=share",
+    "poster": ""
+  },
+  {
+    "name": "Alecs",
+    "role": "Perto do Fogo - Ponta Grossa",
+    "quote": "Eu duvidei da Audens e eles queimaram a minha lingua.",
+    "video": "https://youtube.com/shorts/EleVlWIesF0?feature=share",
+    "poster": ""
+  },
+  {
+    "name": "Guilherme e Gustavo Naliati",
+    "role": "Naliatis Pão de Alho - Jundiaí SP",
+    "quote": "[Depoimento em vídeo do cliente.]",
+    "video": "https://youtube.com/shorts/llFFmdiHJwg?feature=share",
+    "poster": ""
+  }
 ];
