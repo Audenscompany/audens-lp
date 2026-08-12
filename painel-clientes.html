@@ -142,6 +142,7 @@ a{color:var(--purple2)}
   </div>
 </div>
 
+<script src="clientes-data.js" onerror="void 0"></script>
 <script>
 (function(){
   "use strict";
@@ -164,7 +165,7 @@ a{color:var(--purple2)}
   ];
   var clients=load(), editing=null, form={};
 
-  function load(){ try{var s=localStorage.getItem(KEY); if(s)return JSON.parse(s);}catch(e){} return JSON.parse(JSON.stringify(DEFAULTS)); }
+  function load(){ try{var s=localStorage.getItem(KEY); if(s)return JSON.parse(s);}catch(e){} if(window.AUDENS_CLIENTES&&window.AUDENS_CLIENTES.length)return JSON.parse(JSON.stringify(window.AUDENS_CLIENTES)); return JSON.parse(JSON.stringify(DEFAULTS)); }
   function persist(){ try{localStorage.setItem(KEY,JSON.stringify(clients));}catch(e){} flashSaved(); }
   function flashSaved(){ var p=document.getElementById("savedPill"); p.classList.add("show"); setTimeout(function(){p.classList.remove("show");},1200); }
   function slugify(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }

@@ -141,8 +141,10 @@
         <p class="h-sub">Publica <code>clientes-data.js</code> e <code>depoimentos-data.js</code> com tudo que você editou nas abas ao lado.</p>
         <div class="btns">
           <button class="btn btn-primary" id="btnPublish">🚀 Publicar alterações agora</button>
+          <button class="btn btn-ghost" id="btnSync">⟳ Puxar versão publicada</button>
           <a class="btn btn-ghost" id="btnView" target="_blank" rel="noopener" style="display:none">Ver a landing ↗</a>
         </div>
+        <p class="tip" style="margin-top:10px">Trocou de computador? Clique em <b>Puxar versão publicada</b> primeiro — assim você edita em cima do que já está no ar, e não do zero.</p>
         <div class="log" id="log"></div>
       </div>
 
@@ -222,6 +224,35 @@
       var r=await fetch("https://api.github.com/repos/"+cfg.repo,{headers:{Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json"}});
       if(r.ok){var j=await r.json();logLine("✓ Conectado ao repositório \""+j.full_name+"\". Tudo certo para publicar.","ok");}
       else{var t=await r.text();logLine("✗ "+shortErr(t)+" (verifique o nome do repositório e a permissão Contents do token).","err");}
+    }catch(e){logLine("✗ "+e.message,"err");}
+  });
+
+  /* ---- puxar versão publicada do site -> localStorage (edição multi-máquina) ---- */
+  function b64decode(s){try{return decodeURIComponent(escape(atob(String(s).replace(/\n/g,""))));}catch(e){return atob(String(s).replace(/\n/g,""));}}
+  function extractArray(js){var i=js.indexOf("=");if(i<0)throw new Error("arquivo inesperado");var body=js.slice(i+1).replace(/;\s*$/,"").trim();return JSON.parse(body);}
+  async function pullFile(cfg,path){
+    var url="https://api.github.com/repos/"+cfg.repo+"/contents/"+encodeURIComponent(path)+"?ref="+encodeURIComponent(cfg.branch)+"&t="+encodeURIComponent(cfg.token.slice(-6));
+    var r=await fetch(url,{cache:"no-store",headers:{Authorization:"Bearer "+cfg.token,Accept:"application/vnd.github+json"}});
+    if(r.status===404)return null;
+    if(!r.ok){var t=await r.text();throw new Error("Ler "+path+": "+shortErr(t));}
+    var j=await r.json();return extractArray(b64decode(j.content));
+  }
+  el("btnSync").addEventListener("click",async function(){
+    var cfg=readForm();saveCfg(cfg);refreshBadge();
+    if(!cfg.repo||!cfg.token){logLine("Preencha repositório e token primeiro.","err");return;}
+    if(!confirm("Isto substitui o que estiver nas abas deste navegador pela versão que está publicada no site. Continuar?"))return;
+    logClear();logLine("Puxando dados publicados de "+cfg.repo+" …","mut");
+    try{
+      var cli=await pullFile(cfg,"clientes-data.js");
+      if(cli){localStorage.setItem("audens_clientes_v1",JSON.stringify(cli));logLine("✓ Clientes carregados ("+cli.length+").","ok");}
+      else logLine("• clientes-data.js ainda não existe no site.","mut");
+      var dep=await pullFile(cfg,"depoimentos-data.js");
+      if(dep){localStorage.setItem("audens_depoimentos_v1",JSON.stringify(dep));logLine("✓ Depoimentos carregados ("+dep.length+").","ok");}
+      else logLine("• depoimentos-data.js ainda não existe no site.","mut");
+      logLine("Atualizando as abas…","mut");
+      try{el("ifClientes").contentWindow.location.reload();}catch(e){}
+      try{el("ifDepo").contentWindow.location.reload();}catch(e){}
+      logLine("✓ Pronto! Agora é só editar nas abas e publicar.","ok");
     }catch(e){logLine("✗ "+e.message,"err");}
   });
 

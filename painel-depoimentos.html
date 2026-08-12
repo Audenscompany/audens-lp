@@ -74,6 +74,7 @@ body{font-family:var(--b);background:var(--bg);color:var(--white);line-height:1.
     <div class="actions"><button class="btn p" id="btnSave">Salvar depoimento</button><button class="btn g" id="btnCancel">Limpar</button><div style="flex:1"></div><button class="rm" id="btnDelete" style="display:none">Excluir</button></div>
   </div>
 </div>
+<script src="depoimentos-data.js" onerror="void 0"></script>
 <script>
 (function(){
   "use strict";
@@ -84,7 +85,7 @@ body{font-family:var(--b);background:var(--bg);color:var(--white);line-height:1.
     {name:"[Nome do dono]",role:"[Operação · Cidade]",quote:"[Depoimento em vídeo do cliente.]",video:"",poster:""}
   ];
   var items=load(), editing=null, form={};
-  function load(){try{var s=localStorage.getItem(KEY);if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DEFAULTS));}
+  function load(){try{var s=localStorage.getItem(KEY);if(s)return JSON.parse(s);}catch(e){}if(window.AUDENS_DEPOIMENTOS&&window.AUDENS_DEPOIMENTOS.length)return JSON.parse(JSON.stringify(window.AUDENS_DEPOIMENTOS));return JSON.parse(JSON.stringify(DEFAULTS));}
   function persist(){try{localStorage.setItem(KEY,JSON.stringify(items));}catch(e){}}
   function slugify(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");}
   function el(id){return document.getElementById(id);}
