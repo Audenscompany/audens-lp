@@ -311,6 +311,13 @@
     if(!r.ok){var t=await r.text();throw new Error("Ler "+path+": "+shortErr(t));}
     var j=await r.json();return extractArray(b64decode(j.content));
   }
+  async function seedIfEmpty(cfg, key, path){
+    var cur=null; try{cur=JSON.parse(localStorage.getItem(key)||"null");}catch(e){}
+    var empty = !cur || (Array.isArray(cur)&&cur.length===0) || (typeof cur==="object"&&!Array.isArray(cur)&&Object.keys(cur).length===0);
+    if(!empty) return false;
+    try{ var pub=await pullFile(cfg,path); if(pub){ localStorage.setItem(key,JSON.stringify(pub)); logLine("↺ Recuperei "+path+" do site (este navegador estava vazio).","mut"); return true; } }catch(e){}
+    return false;
+  }
   el("btnSync").addEventListener("click",async function(){
     var cfg=readForm();saveCfg(cfg);refreshBadge();
     if(!cfg.repo||!cfg.token){logLine("Preencha repositório e token primeiro.","err");return;}
@@ -338,6 +345,11 @@
     if(!cfg.repo||!cfg.token){logLine("Preencha e salve a conexão do GitHub primeiro.","err");return;}
     publishing=true;el("btnPublish").disabled=true;logClear();
     try{
+      // TRAVA DE SEGURANÇA: se este navegador estiver vazio, puxa o que já está publicado
+      // antes de enviar — assim publicar nunca apaga o que já está no ar.
+      await seedIfEmpty(cfg,"audens_clientes_v1","clientes-data.js");
+      await seedIfEmpty(cfg,"audens_depoimentos_v1","depoimentos-data.js");
+      await seedIfEmpty(cfg,"audens_pagina_v1","pagina-data.js");
       var c=buildClientes(),d=buildDepo();
       logLine("Enviando clientes-data.js ("+c.count+" clientes) …","mut");
       var s1=await ghGetSha(cfg,"clientes-data.js");await ghPut(cfg,"clientes-data.js",c.content,s1);
