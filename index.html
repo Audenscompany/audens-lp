@@ -224,13 +224,13 @@ header.scrolled{background:rgba(7,6,11,.86);backdrop-filter:blur(14px);border-bo
 .proof-row .pt{max-width:30ch}
 .proof-row .pt .ctx{font-size:clamp(18px,2.2vw,22px);font-family:var(--ff-d);font-weight:500;color:var(--white);line-height:1.15}
 .proof-row .pt .who{font-size:13px;color:var(--muted);margin-top:8px}
-.proof-row .ps{width:270px;max-width:100%;border-radius:12px;overflow:hidden;border:1px solid var(--line);justify-self:end}
-@media(max-width:860px){.proof-row .ps{width:100%;max-width:340px;justify-self:start}}
+.proof-row .ps{width:300px;max-width:100%;height:auto;display:block;border-radius:14px;overflow:hidden;border:1px solid var(--line);justify-self:end;box-shadow:0 20px 50px -24px rgba(0,0,0,.7)}
+@media(max-width:860px){.proof-row .ps{width:100%;max-width:360px;justify-self:start}}
 .proof-more{margin-top:36px;display:none;grid-template-columns:repeat(3,1fr);gap:16px}
 .proof-more.show{display:grid}
 @media(max-width:760px){.proof-more.show{grid-template-columns:1fr}}
 .pm{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
-.pm img{width:100%}.pm .cap{padding:9px 12px;font-size:12px;color:var(--muted)}
+.pm img{width:100%;height:auto;display:block}.pm .cap{padding:9px 12px;font-size:12px;color:var(--muted)}
 .proofs .more-btn{margin-top:28px;text-align:center}
 .proofs .auth{margin-top:22px;font-size:12px;color:var(--muted-2);text-align:center}
 
