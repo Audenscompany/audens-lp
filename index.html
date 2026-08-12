@@ -1216,7 +1216,7 @@ document.querySelectorAll('.qa button').forEach(function(btn){
 /* ===== FORM (validação real + 2 etapas) ===== */
 /* ===== Integração com o CRM (Cloud Function → Firebase + WhatsApp automático) ===== */
 var CRM_ENDPOINT = 'https://receberlead-471063273836.us-central1.run.app';
-var CRM_SECRET   = '';   /* <-- COLOQUE AQUI o WEBHOOK_SECRET do Cloud Run. Sem ele o endpoint devolve 401. */
+var CRM_SECRET   = 'audens2025xk';   /* WEBHOOK_SECRET do Cloud Run */
 var URLQ = new URLSearchParams(location.search);
 function utm(){ for(var i=0;i<arguments.length;i++){ var v=URLQ.get(arguments[i]); if(v) return v; } return ''; }
 function enviarCRM(lead){
@@ -1237,6 +1237,11 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
   var form=document.getElementById(formId); if(!form) return;
   var fill=document.getElementById(fillId), lbl=document.getElementById(lblId), status=document.getElementById(statusId), done=document.getElementById(doneId);
   var started=false;
+  /* honeypot anti-bot: campo escondido; se preenchido, é robô */
+  var hp=document.createElement('input');
+  hp.type='text'; hp.name='empresa_url'; hp.tabIndex=-1; hp.autocomplete='off'; hp.setAttribute('aria-hidden','true');
+  hp.style.cssText='position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;pointer-events:none';
+  form.appendChild(hp);
   form.addEventListener('focusin', function(){ if(!started){started=true; pushEvent('form_start',{form:formId});} });
   function go(step){ form.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('on', p.dataset.step==step);}); if(fill)fill.style.width=step==1?'50%':'100%'; if(lbl)lbl.textContent='Etapa '+step+' de 2'; }
   function fieldErr(el,on){ if(!el) return; el.setAttribute('aria-invalid', on?'true':'false'); var e=el.getAttribute('aria-describedby'); if(e){var m=document.getElementById(e); if(m)m.classList.toggle('on',on);} }
@@ -1249,8 +1254,10 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
   }); });
   form.querySelectorAll('.mback, #back').forEach(function(b){ b.addEventListener('click', function(){ go(1); }); });
   form.addEventListener('submit', function(e){
-    e.preventDefault(); var ok=true;
-    var nome=form.querySelector('[type="text"]'), tel=form.querySelector('[type="tel"]'), email=form.querySelector('[type="email"]'), consent=form.querySelector('[type="checkbox"]');
+    e.preventDefault();
+    if(hp.value){ if(done)done.style.display='block'; form.style.display='none'; return; } /* bot: mostra sucesso mas não envia */
+    var ok=true;
+    var nome=form.querySelector('input[type="text"]:not([name="empresa_url"])'), tel=form.querySelector('[type="tel"]'), email=form.querySelector('[type="email"]'), consent=form.querySelector('[type="checkbox"]');
     if(nome){var bad=!nome.value.trim(); fieldErr(nome,bad); if(bad)ok=false;}
     if(tel){var badp=!isPhone(tel.value); fieldErr(tel,badp); if(badp)ok=false;}
     if(email && email.value){var bade=!isEmail(email.value); fieldErr(email,bade); if(bade)ok=false;}
