@@ -24,14 +24,6 @@ window.AUDENS_CLIENTES = [
     "phoneImage": "images/clientes/burguer-fc-print.webp?v=1786538588349"
   },
   {
-    "slug": "pizza-fc",
-    "name": "Pizza FC",
-    "description": "Operação própria dos fundadores da Audens. Criamos a Pizza FC para seguir os mesmos caminhos do Burguer FC e em menos de um ano já estamos com um faturamento mensal acima de 200 mil por mês!",
-    "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox",
-    "logo": "images/clientes/pizza-fc-logo.webp?v=1786540342589"
-  },
-  {
     "slug": "gerra",
     "name": "Gerrá Burguer",
     "description": "Em apenas um ano, o Gerrá Burguer saiu de um faturamento de aproximadamente R$ 37 mil por mês para mais de R$ 120 mil mensais.\n\nO crescimento foi tão significativo que a operação precisou mudar de loja para acompanhar a nova demanda e sustentar o próximo nível do negócio.\n\nMais do que aumentar o faturamento, o Gerrá precisou evoluir a própria estrutura para suportar o crescimento.",
@@ -61,65 +53,52 @@ window.AUDENS_CLIENTES = [
   },
   {
     "slug": "dom-costela",
-    "name": "Dom Costela Defumada",
-    "description": "[Edite: case da Dom Costela.]",
+    "name": "O Santo Burger",
+    "description": "O Santos Burger já contava com uma agência de Marketing antes da Audens, mas era uma agência que nunca vendeu um hambúrguer na vida, e em 30 dias tiveram um crescimento de mais de 40% de faturamento.",
     "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox"
+    "ctaHref": "#raiox",
+    "logo": "images/clientes/dom-costela-logo.webp?v=1786548229023",
+    "phoneImage": "images/clientes/dom-costela-print.webp?v=1786548234220",
+    "beforeAfter": {
+      "before": "images/clientes/dom-costela-antes.webp?v=1786548240290",
+      "after": "images/clientes/dom-costela-depois.webp?v=1786548242851",
+      "caption": ""
+    }
   },
   {
-    "slug": "johnnie-jack",
-    "name": "Johnnie Jack",
-    "description": "[Edite: case da Johnnie Jack.]",
+    "slug": "pizza-fc",
+    "name": "Pizza FC",
+    "description": "Operação própria dos fundadores da Audens. Criamos a Pizza FC para seguir os mesmos caminhos do Burguer FC e em menos de um ano já estamos com um faturamento mensal acima de 200 mil por mês!",
     "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox"
+    "ctaHref": "#raiox",
+    "logo": "images/clientes/pizza-fc-logo.webp?v=1786540342589"
   },
   {
-    "slug": "paiol",
-    "name": "Paiol Hamburgueria",
-    "description": "[Edite: case da Paiol.]",
+    "slug": "naliatis-alho",
+    "name": "Naliati'S Pão de Alho",
+    "description": "Em apenas 60 dias a Naliatis saiu de um faturamento de R$ 37.679,01 para R$ 73.168,54 aplicando o Método Audens! E se tornou referência na cidade de Jundiaí",
     "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox"
+    "ctaHref": "#raiox",
+    "logo": "images/clientes/naliatis-alho-logo.webp?v=1786548578633",
+    "phoneImage": "images/clientes/naliatis-alho-print.webp?v=1786548580823",
+    "beforeAfter": {
+      "before": "images/clientes/naliatis-alho-antes.webp?v=1786548582930",
+      "after": "images/clientes/naliatis-alho-depois.webp?v=1786548585053",
+      "caption": ""
+    }
   },
   {
-    "slug": "delicias-brasil",
-    "name": "Delícias Brasil",
-    "description": "[Edite: case da Delícias Brasil.]",
+    "slug": "burguerhein",
+    "name": "Burguerhein",
+    "description": "Entre abril e julho, o Burguerhein, cliente da Audens Company, saiu de R$ 35,2 mil para R$ 50,7 mil em vendas, um crescimento de 44,2%. No mesmo período, os pedidos avançaram de 477 para 721 (+51,2%), mostrando que a evolução foi impulsionada principalmente pelo aumento no volume de vendas.",
     "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox"
-  },
-  {
-    "slug": "dark",
-    "name": "Dark Smash Burguer",
-    "description": "[Edite: case da Dark Smash Burguer.]",
-    "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox"
-  },
-  {
-    "slug": "georges",
-    "name": "George's",
-    "description": "[Edite: case da George's.]",
-    "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox"
-  },
-  {
-    "slug": "croc",
-    "name": "Croc",
-    "description": "[Edite: case da Croc.]",
-    "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox"
-  },
-  {
-    "slug": "minas-burguer",
-    "name": "Minas Burguer BH",
-    "description": "[Edite: case da Minas Burguer BH.]",
-    "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox"
-  },
-  {
-    "slug": "chapa-quente",
-    "name": "Chapa Quente",
-    "description": "[Edite: case da Chapa Quente.]",
-    "ctaLabel": "Falar com a Audens",
-    "ctaHref": "#raiox"
+    "ctaHref": "#raiox",
+    "logo": "images/clientes/burguerhein-logo.webp?v=1786555336605",
+    "phoneImage": "images/clientes/burguerhein-print.webp?v=1786555338619",
+    "beforeAfter": {
+      "before": "images/clientes/burguerhein-antes.webp?v=1786555340426",
+      "after": "images/clientes/burguerhein-depois.webp?v=1786555342485",
+      "caption": ""
+    }
   }
 ];
