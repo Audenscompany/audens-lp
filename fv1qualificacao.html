@@ -64,7 +64,7 @@ h1,h2,h3,h4,.display{font-family:var(--ff-d);font-weight:700;line-height:1.04;le
 header{position:fixed;top:0;left:0;right:0;z-index:40;padding:14px 0;border-bottom:1px solid var(--line-2);background:rgba(7,6,11,.72);backdrop-filter:blur(14px)}
 .nav{max-width:var(--wrap);margin:0 auto;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .logo{display:flex;align-items:center;gap:10px;font-family:var(--ff-d);font-weight:700;font-size:17px;letter-spacing:.02em;color:var(--white)}
-.logo .mk{width:44px;height:20px}
+.logo .mk{width:30px;height:23px;object-fit:contain;display:block}
 .hd-help{font-size:13px;color:var(--muted);font-weight:500;white-space:nowrap}
 .hd-help b{color:var(--white)}
 @media(max-width:520px){.hd-help{display:none}}
@@ -290,7 +290,7 @@ footer a{color:var(--purple-2)}
 
 <header>
   <div class="nav">
-    <a href="https://assessoriaaudens.com.br" class="logo"><svg class="mk" style="color:var(--silver)" aria-hidden="true"><use href="#mk"/></svg> <span>AUDENS</span></a>
+    <a href="https://assessoriaaudens.com.br" class="logo"><img class="mk" src="https://assessoriaaudens.com.br/images/logo-mark.webp" alt="Audens Company" width="57" height="26"> <span>AUDENS</span></a>
     <span class="hd-help">Leva <b>1 minuto</b> · sem compromisso</span>
   </div>
 </header>
@@ -374,7 +374,7 @@ function enviarCRM(extra){
   if(!CONFIG.CRM_ENDPOINT || !CONFIG.CRM_SECRET) return;
   var base = {
     nome:(STATE.nome||'').trim(), telefone:(STATE.whats||''), email:(STATE.email||'').trim(), instagram:(STATE.insta||''),
-    faturamento:labelOf('faturamento'), segmento:labelOf('segmento'), canal:labelOf('canal'), desafio:labelOf('desafio'),
+    faturamento:labelOf('faturamento'), segmento:labelOf('segmento'), canal:labelOf('canal'), desafio:labelOf('desafio'), investimento:labelOf('investimento'),
     origem:'lp-audens-quiz-fv1',
     utm_campaign:utmv('utm_campaign','campaign'), utm_content:utmv('utm_content','ad'), utm_medium:utmv('utm_medium','adset'), utm_source:utmv('utm_source')||'meta'
   };
@@ -405,7 +405,11 @@ var ICON = {
   bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13h5l-1 8 8-11h-5l1-7Z"/></svg>',
   repeat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9a6 6 0 0 1 10-2l3 2M20 15a6 6 0 0 1-10 2l-3-2"/><path d="M17 4v5h-5M7 20v-5h5"/></svg>',
   chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16h16"/><path d="M8 15l3-4 3 2 4-6"/></svg>',
-  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.5l3 2"/></svg>'
+  clock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.5l3 2"/></svg>',
+  thumbdown:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21V11"/><path d="M17 11l-3.3-6.6C13.3 3.5 12.4 3 11.4 3H8a3 3 0 0 0-3 2.4l-1 5A3 3 0 0 0 7 14h3l-.7 3.3A2 2 0 0 0 11.3 20L17 11Z"/></svg>',
+  invest:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="14" r="6"/><path d="M12 11.5v5M10.4 13h2.6a1.2 1.2 0 0 1 0 2.4h-1.8"/><path d="M14 4l4 1-1 4"/><path d="M18 5l-6 5"/></svg>',
+  scale:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M7 20h10M4 8h16"/><path d="M4 8l-2.3 4.6a2.6 2.6 0 0 0 4.6 0L4 8Z"/><path d="M20 8l-2.3 4.6a2.6 2.6 0 0 0 4.6 0L20 8Z"/></svg>',
+  pause:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M10 9v6M14 9v6"/></svg>'
 };
 
 /* =======================================================================
@@ -446,7 +450,14 @@ var QUESTIONS = {
       {value:'refem-ifood',label:'Dependo demais do iFood / taxas',icon:'ifood'},
       {value:'sem-recompra',label:'O cliente compra e some (sem recompra)',icon:'repeat'},
       {value:'sem-medir',label:'Não sei medir se o marketing dá retorno',icon:'chart'},
+      {value:'agencia',label:'Insatisfeito com a agência atual',icon:'thumbdown'},
       {value:'sem-tempo',label:'Não tenho tempo pra operar o marketing',icon:'clock'}
+    ]},
+  investimento:{ kind:'choice', cols:1, eyebrow:'Compromisso de crescimento', title:'Pra crescer de forma constante, o ideal é investir cerca de 10% do faturamento em marketing. Você está disposto(a)?', sub:'Não tem certo ou errado — só ajuda a gente a entender se faz sentido pra agora.',
+    options:[
+      {value:'sim',label:'Sim, quero investir pra crescer',sub:'Topo colocar pra escalar de verdade',icon:'invest'},
+      {value:'condicional',label:'Consigo, dependendo do retorno',sub:'Investir com previsibilidade',icon:'scale'},
+      {value:'nao',label:'Hoje não é prioridade / não consigo',icon:'pause'}
     ]}
 };
 
@@ -462,6 +473,7 @@ var FLOW = [
   {type:'insight-fat'},
   {type:'question', id:'canal'},
   {type:'question', id:'desafio'},
+  {type:'question', id:'investimento'},
   {type:'contato'},
   {type:'final'}
 ];
@@ -564,15 +576,18 @@ function viewContato(){
   '</form>';
 }
 
-function isQualified(){ return CONFIG.FAIXAS_QUALIFICA.indexOf(valOf('faturamento'))>=0; }
+function faixaQualifica(){ return CONFIG.FAIXAS_QUALIFICA.indexOf(valOf('faturamento'))>=0; }
+/* Qualifica pra agendar: faixa de faturamento OK E disposto a investir (sim ou condicional).
+   Quem responde 'nao' na disposição de investir vai pro caminho do YouTube. */
+function isQualified(){ return faixaQualifica() && valOf('investimento')!=='nao'; }
 
 /* mini-diagnóstico personalizado */
 function buildDiagnostico(){
   var seg=labelOf('segmento')||'Sua operação';
   var fat=(labelOf('faturamento')||'').replace(' / mês','');
   var canalTxt={ 'so-ifood':'dependendo 100% do iFood','ifood-proprio':'com parte no iFood e parte no canal próprio','so-proprio':'já com canal próprio na mão','nao-vendo':'ainda montando o delivery' }[valOf('canal')]||'';
-  var dorTxt={ 'poucos-pedidos':'o gargalo hoje é aquisição — entra pouco pedido novo','refem-ifood':'o risco é a dependência do iFood corroendo margem e a sua base de clientes','sem-recompra':'o furo está na recompra — o cliente compra e não volta','sem-medir':'falta medição — não dá pra saber o que o marketing devolve','sem-tempo':'falta braço pra operar o marketing com consistência' }[valOf('desafio')]||'dá pra destravar o próximo nível com método';
-  var foco={ 'poucos-pedidos':'tráfego + oferta pra entrar pedido novo de forma constante','refem-ifood':'construir canal próprio forte sem perder o que o iFood traz','sem-recompra':'régua de recompra — cashback, cupom e reativação','sem-medir':'medição ponta a ponta pra cada real de mídia ter retorno visível','sem-tempo':'o nosso time operando o marketing por você' }[valOf('desafio')]||'aquisição, canal próprio e recompra';
+  var dorTxt={ 'poucos-pedidos':'o gargalo hoje é aquisição — entra pouco pedido novo','refem-ifood':'o risco é a dependência do iFood corroendo margem e a sua base de clientes','sem-recompra':'o furo está na recompra — o cliente compra e não volta','sem-medir':'falta medição — não dá pra saber o que o marketing devolve','agencia':'você já investe, mas a agência atual não entrega — e não fala a língua de quem opera delivery','sem-tempo':'falta braço pra operar o marketing com consistência' }[valOf('desafio')]||'dá pra destravar o próximo nível com método';
+  var foco={ 'poucos-pedidos':'tráfego + oferta pra entrar pedido novo de forma constante','refem-ifood':'construir canal próprio forte sem perder o que o iFood traz','sem-recompra':'régua de recompra — cashback, cupom e reativação','sem-medir':'medição ponta a ponta pra cada real de mídia ter retorno visível','agencia':'assumir o marketing com quem vive de delivery e devolver previsibilidade pro seu caixa','sem-tempo':'o nosso time operando o marketing por você' }[valOf('desafio')]||'aquisição, canal próprio e recompra';
   return {
     l1: '<b>'+esc(seg)+'</b> faturando '+esc(fat)+(canalTxt?', '+esc(canalTxt):'')+'.',
     l2: 'Pela leitura das respostas, '+esc(dorTxt)+'.',
@@ -585,8 +600,6 @@ function viewFinal(){ return isQualified()?viewAgenda():viewYoutube(); }
 function viewAgenda(){
   var nome=(STATE.nome||'').split(' ')[0]||'';
   var d=buildDiagnostico();
-  var hasCal=!!CONFIG.CALENDLY_URL;
-  var calInner=hasCal?'<div class="cal-inline" id="calInline"></div>':'<div class="cal-placeholder">Calendário ainda não configurado.<br><br>Cole a URL do seu Calendly em <code>CONFIG.CALENDLY_URL</code> no topo do arquivo.</div>';
   return ''+
   '<div class="final">'+
     '<div class="badge purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v3M18 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z"/><path d="M9 14l2 2 4-4"/></svg></div>'+
@@ -611,14 +624,34 @@ function viewAgenda(){
     '<div class="l"><svg aria-hidden="true"><use href="#check"/></svg><span>'+d.l3+'</span></div>'+
   '</div>'+
   '<div class="pre-sched">'+
-    '<div class="who"><span class="av"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c4.5-3 7-6 7-10a7 7 0 1 0-14 0c0 4 2.5 7 7 10Z"/><path d="M9.5 11.5 11.3 13l3.2-3.4"/></svg></span><div><b>Raio-X do Delivery</b><br><span class="small">Online · ~30 min · com o time Audens</span></div></div>'+
+    '<div class="who"><span class="av"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c4.5-3 7-6 7-10a7 7 0 1 0-14 0c0 4 2.5 7 7 10Z"/><path d="M9.5 11.5 11.3 13l3.2-3.4"/></svg></span><div><b>Análise Estratégica do seu delivery</b><br><span class="small">Online · ~30 min · com o time Audens</span></div></div>'+
     '<ul>'+
       '<li><svg aria-hidden="true"><use href="#check"/></svg> <b>100% gratuito</b> e sem compromisso</li>'+
       '<li><svg aria-hidden="true"><use href="#check"/></svg> Diagnóstico da sua aquisição, canal próprio e recompra</li>'+
       '<li><svg aria-hidden="true"><use href="#check"/></svg> Você sai com o que muda primeiro pra o caixa sentir</li>'+
     '</ul>'+
   '</div>'+
-  '<div class="cal-wrap">'+calInner+'</div>';
+  '<div class="qnav"><button class="btn btn-primary btn-block fwd" id="toAgenda">Agendar minha análise estratégica <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button></div>';
+}
+
+/* Tela 2 (qualificado): SÓ o Calendly */
+function viewCalendarOnly(){
+  var hasCal=!!CONFIG.CALENDLY_URL;
+  var calInner=hasCal?'<div class="cal-inline" id="calInline"></div>':'<div class="cal-placeholder">Calendário ainda não configurado.<br><br>Cole a URL do seu Calendly em <code>CONFIG.CALENDLY_URL</code> no topo do arquivo.</div>';
+  return ''+
+  '<div class="final" style="padding-bottom:0">'+
+    '<h2 style="font-size:clamp(22px,3.6vw,30px)">Escolha o melhor horário</h2>'+
+    '<p class="sub">Selecione um dia e horário — a confirmação chega no seu e-mail e no WhatsApp.</p>'+
+  '</div>'+
+  '<div class="cal-wrap">'+calInner+'</div>'+
+  '<div class="qnav"><button type="button" class="textlink back-to-prova">← voltar</button></div>';
+}
+function showCalendarScreen(){
+  pushEvent('schedule_view',{faixa:valOf('faturamento')});
+  stage.innerHTML='<div class="step on">'+viewCalendarOnly()+'</div>';
+  window.scrollTo({top:0,behavior:'smooth'});
+  var bk=stage.querySelector('.back-to-prova'); if(bk) bk.addEventListener('click',function(){ render(idx); });
+  initCalendly();
 }
 
 function viewYoutube(){
@@ -669,7 +702,7 @@ function bind(step){
         btn.classList.add('sel');
         STATE[step.id]={value:btn.getAttribute('data-val'),label:btn.getAttribute('data-label')};
         pushEvent('quiz_answer',{pergunta:step.id,resposta:STATE[step.id].value});
-        if(q.qualifier) pushEvent(isQualified()?'quiz_qualified':'quiz_unqualified',{faixa:STATE[step.id].value});
+        if(q.qualifier) pushEvent(faixaQualifica()?'quiz_faixa_ok':'quiz_faixa_baixa',{faixa:STATE[step.id].value});
         setTimeout(goNext,260);
       });
     });
@@ -701,9 +734,9 @@ function bind(step){
 
   if(step.type==='final'){
     if(isQualified()){
-      pushEvent('schedule_view',{faixa:valOf('faturamento')});
+      pushEvent('prova_view',{faixa:valOf('faturamento')});
       renderCases();
-      initCalendly();
+      var toA=document.getElementById('toAgenda'); if(toA) toA.addEventListener('click', showCalendarScreen);
     } else {
       pushEvent('youtube_redirect',{faixa:valOf('faturamento')});
       var yt=document.getElementById('ytBtn'); if(yt)yt.addEventListener('click',function(){pushEvent('youtube_click');});
