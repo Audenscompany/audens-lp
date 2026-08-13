@@ -1116,6 +1116,42 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
    Configure: META_PIXEL_ID · GA4_ID · GTM_ID
    ======================================================================= */
 window.dataLayer = window.dataLayer || [];
+
+/* ===== ANALYTICS PRÓPRIO (Audens) — envia os eventos para a sua Cloud Function ===== */
+(function(){
+  var TRACK_URL = 'https://receberlead-471063273836.us-central1.run.app/track';
+  function rid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,10); }
+  var sid;
+  try{ sid = sessionStorage.getItem('audens_sid'); if(!sid){ sid = rid(); sessionStorage.setItem('audens_sid', sid); } }catch(e){ sid = rid(); }
+  var Q = URLQ_SAFE();
+  function URLQ_SAFE(){ try{ return new URLSearchParams(location.search); }catch(e){ return {get:function(){return '';}}; } }
+  function utm(k){ try{ return Q.get(k)||''; }catch(e){ return ''; } }
+  var UTMS = { source:utm('utm_source'), medium:utm('utm_medium'), campaign:utm('utm_campaign'), content:utm('utm_content'), term:utm('utm_term') };
+  function device(){ return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'mobile' : 'desktop'; }
+  var queue = [], timer = null;
+  function flush(useBeacon){
+    if(timer){ clearTimeout(timer); timer = null; }
+    if(!queue.length) return;
+    var batch = queue.splice(0, queue.length);
+    var payload = JSON.stringify({ sid:sid, page:location.pathname, device:device(), ref:(document.referrer||''), utms:UTMS, events:batch });
+    try{
+      if(useBeacon && navigator.sendBeacon){
+        navigator.sendBeacon(TRACK_URL, new Blob([payload], {type:'text/plain'}));
+      } else {
+        fetch(TRACK_URL, { method:'POST', mode:'cors', keepalive:true, headers:{'Content-Type':'application/json'}, body:payload }).catch(function(){});
+      }
+    }catch(e){}
+  }
+  function enqueue(name, params){
+    queue.push({ e:name, p:params||{}, t:Date.now() });
+    if(name==='lead_submit' || name==='qualified_lead'){ flush(); return; }   // eventos-chave: envia já
+    if(!timer) timer = setTimeout(function(){ flush(); }, 4000);
+  }
+  addEventListener('visibilitychange', function(){ if(document.visibilityState==='hidden') flush(true); });
+  addEventListener('pagehide', function(){ flush(true); });
+  window.__ownTrack = enqueue;
+})();
+
 /* eventos que viram evento PADRÃO do Meta (o resto vai como evento personalizado) */
 var FBQ_STANDARD = { lead_submit:'Lead', offer_view:'ViewContent' };
 function pushEvent(name, params){
@@ -1128,6 +1164,7 @@ function pushEvent(name, params){
     }
   }catch(e){}
   try{ if(window.gtag) gtag('event', name, params||{}); }catch(e){}   // pronto p/ GA4
+  try{ if(window.__ownTrack) window.__ownTrack(name, params||{}); }catch(e){}   // analytics próprio
 }
 window.addEventListener('load', function(){ pushEvent('lp_view', {path: location.pathname}); });
 document.querySelectorAll('[data-ev]').forEach(function(el){
