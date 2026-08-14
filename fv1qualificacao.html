@@ -324,11 +324,7 @@ var CONFIG = {
   CLIENTES_URL: 'https://assessoriaaudens.com.br/clientes-data.js',
   IMG_BASE:     'https://assessoriaaudens.com.br/',
   FAIXAS_QUALIFICA: ['20-50','50-100','100-300','300+'],
-  CAPTURAR_NAO_QUALIFICADO: true,
-  /* Ao marcar no Calendly, disparar a rota /agendar do CRM (mensagem de reunião
-     confirmada + imagens + escassez). Deixe FALSE se você já tiver uma automação
-     Calendly→Make disparando esse fluxo, pra não mandar mensagem duplicada. */
-  DISPARAR_AGENDAR: false
+  CAPTURAR_NAO_QUALIFICADO: true
 };
 
 /* =======================================================================
@@ -889,14 +885,14 @@ window.addEventListener('message',function(e){
     showConfirmacao();
   }
 });
-/* Dispara o fluxo de reunião AGENDADA no CRM (rota /agendar: confirmação + imagens + escassez).
-   Não re-posta na rota principal (isso reenviaria o "primeiro contato do João"). */
+/* Avisa o CRM que o lead marcou no Calendly (rota /quiz-agendou):
+   move o card p/ "Reunião Agendada", atribui o closer pela faixa e dispara o WhatsApp.
+   Não re-posta na rota principal (isso reenviaria a mensagem inicial). */
 function dispararReuniaoAgendada(){
-  if(!CONFIG.DISPARAR_AGENDAR) return;
   try{
-    fetch(CONFIG.CRM_ENDPOINT+'/agendar',{method:'POST',mode:'cors',keepalive:true,
+    fetch(CONFIG.CRM_ENDPOINT+'/quiz-agendou',{method:'POST',mode:'cors',keepalive:true,
       headers:{'Content-Type':'application/json','X-Webhook-Secret':CONFIG.CRM_SECRET},
-      body:JSON.stringify({ telefone:(STATE.whats||''), nome:(STATE.nome||'') })
+      body:JSON.stringify({ telefone:(STATE.whats||''), nome:(STATE.nome||''), faixa:valOf('faturamento') })
     }).catch(function(){});
   }catch(e){}
 }
