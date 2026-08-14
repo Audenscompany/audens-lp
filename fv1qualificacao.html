@@ -330,7 +330,7 @@ var CONFIG = {
 /* =======================================================================
    TRACKING
    ======================================================================= */
-var FBQ_STANDARD = { lead_submit:'Lead', schedule_view:'ViewContent', meeting_booked:'Schedule' };
+var FBQ_STANDARD = { lead_submit:'Lead', schedule_view:'ViewContent' };
 (function(){
   var TRACK_URL = CONFIG.CRM_ENDPOINT + '/track';
   function rid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,10); }
@@ -880,7 +880,11 @@ window.addEventListener('message',function(e){
   if(e.origin && e.origin.indexOf('calendly.com')<0) return;
   if(e.data.event==='calendly.event_scheduled' && !meetingDone){
     meetingDone=true;
-    pushEvent('meeting_booked',{faixa:valOf('faturamento')});
+    /* Meta Pixel — evento PADRÃO "Schedule": dispara EXCLUSIVAMENTE aqui, quando o
+       Calendly confirma o agendamento (nunca no load, clique ou link de saída).
+       Reaproveita o fbq já inicializado no <head>; só chama se ele existir. */
+    try{ if(typeof fbq==='function') fbq('track','Schedule'); }catch(e){}
+    pushEvent('meeting_booked',{faixa:valOf('faturamento')}); /* analytics interno (evento custom) */
     dispararReuniaoAgendada();
     showConfirmacao();
   }
