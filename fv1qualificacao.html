@@ -324,7 +324,11 @@ var CONFIG = {
   CLIENTES_URL: 'https://assessoriaaudens.com.br/clientes-data.js',
   IMG_BASE:     'https://assessoriaaudens.com.br/',
   FAIXAS_QUALIFICA: ['20-50','50-100','100-300','300+'],
-  CAPTURAR_NAO_QUALIFICADO: true
+  CAPTURAR_NAO_QUALIFICADO: true,
+  /* Ao marcar no Calendly, disparar a rota /agendar do CRM (mensagem de reunião
+     confirmada + imagens + escassez). Deixe FALSE se você já tiver uma automação
+     Calendly→Make disparando esse fluxo, pra não mandar mensagem duplicada. */
+  DISPARAR_AGENDAR: false
 };
 
 /* =======================================================================
@@ -604,8 +608,9 @@ function viewAgenda(){
   '<div class="final">'+
     '<div class="badge purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v3M18 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z"/><path d="M9 14l2 2 4-4"/></svg></div>'+
     '<h2>'+(nome?esc(nome)+', sua ':'Sua ')+'operação tem perfil pro Raio-X.</h2>'+
-    '<p class="sub">Antes de marcar, veja o que aconteceu com operações que já passaram por aqui — depois é só escolher seu horário.</p>'+
+    '<p class="sub">Você já pode marcar sua análise estratégica agora — e, se quiser, veja abaixo o que aconteceu com operações como a sua.</p>'+
   '</div>'+
+  '<div class="qnav" style="margin:0 0 26px"><button class="btn btn-primary btn-block toAgendaBtn">Agendar minha análise estratégica <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button></div>'+
   '<div class="cases big" id="casesBlock" hidden>'+
     '<div class="chead"><span class="eyebrow"><svg class="pk" aria-hidden="true"><use href="#peakline"/></svg> Marcas que já passaram por aqui</span>'+
       '<h3>Algumas empresas que já ajudamos a crescer</h3>'+
@@ -631,7 +636,7 @@ function viewAgenda(){
       '<li><svg aria-hidden="true"><use href="#check"/></svg> Você sai com o que muda primeiro pra o caixa sentir</li>'+
     '</ul>'+
   '</div>'+
-  '<div class="qnav"><button class="btn btn-primary btn-block fwd" id="toAgenda">Agendar minha análise estratégica <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button></div>';
+  '<div class="qnav"><button class="btn btn-primary btn-block fwd toAgendaBtn">Agendar minha análise estratégica <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button></div>';
 }
 
 /* Tela 2 (qualificado): SÓ o Calendly */
@@ -736,7 +741,7 @@ function bind(step){
     if(isQualified()){
       pushEvent('prova_view',{faixa:valOf('faturamento')});
       renderCases();
-      var toA=document.getElementById('toAgenda'); if(toA) toA.addEventListener('click', showCalendarScreen);
+      stage.querySelectorAll('.toAgendaBtn').forEach(function(b){ b.addEventListener('click', showCalendarScreen); });
     } else {
       pushEvent('youtube_redirect',{faixa:valOf('faturamento')});
       var yt=document.getElementById('ytBtn'); if(yt)yt.addEventListener('click',function(){pushEvent('youtube_click');});
@@ -880,10 +885,21 @@ window.addEventListener('message',function(e){
   if(e.data.event==='calendly.event_scheduled' && !meetingDone){
     meetingDone=true;
     pushEvent('meeting_booked',{faixa:valOf('faturamento')});
-    enviarCRM({status:'reuniao-agendada',reuniao_agendada:'sim'});
+    dispararReuniaoAgendada();
     showConfirmacao();
   }
 });
+/* Dispara o fluxo de reunião AGENDADA no CRM (rota /agendar: confirmação + imagens + escassez).
+   Não re-posta na rota principal (isso reenviaria o "primeiro contato do João"). */
+function dispararReuniaoAgendada(){
+  if(!CONFIG.DISPARAR_AGENDAR) return;
+  try{
+    fetch(CONFIG.CRM_ENDPOINT+'/agendar',{method:'POST',mode:'cors',keepalive:true,
+      headers:{'Content-Type':'application/json','X-Webhook-Secret':CONFIG.CRM_SECRET},
+      body:JSON.stringify({ telefone:(STATE.whats||''), nome:(STATE.nome||'') })
+    }).catch(function(){});
+  }catch(e){}
+}
 
 /* =======================================================================
    START
