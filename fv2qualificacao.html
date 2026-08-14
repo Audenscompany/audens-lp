@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audens — Diagnóstico de Tráfego</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Meta Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','288150133971064');fbq('track','PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=288150133971064&ev=PageView&noscript=1"/></noscript>
+<style>
+  :root{
+    --orange:#7C34F0;
+    --orange-hover:#5A22C0;
+    --orange-soft:#e9dcff;
+    --orange-softer:#f4eeff;
+    --bg:#f9fafb;
+    --ink:#0f1729;
+    --gray:#6b7280;
+    --line:#e5e7eb;
+    --line-soft:#e3d6f7;
+    --blue:#7C34F0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Geist',-apple-system,system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* progress bar */
+  #progress-track{position:fixed;top:0;left:0;right:0;height:4px;background:#e9dcff;z-index:50}
+  #progress-fill{height:100%;width:0;background:var(--orange);transition:width .4s ease}
+  /* back button */
+  #back{position:fixed;top:18px;left:22px;width:34px;height:34px;border:none;background:transparent;
+    color:#4b5563;font-size:22px;cursor:pointer;z-index:60;display:none;line-height:1;border-radius:6px}
+  #back:hover{background:#efefef}
+  /* logo */
+  .logo{display:flex;flex-direction:column;align-items:center;gap:6px;padding:36px 0 0}
+  .logo img{height:46px;width:auto;display:block}
+  .logo .name{font-family:'Lato',sans-serif;font-weight:900;font-size:9px;letter-spacing:2px;color:var(--blue)}
+  /* layout */
+  .stage{max-width:640px;margin:0 auto;padding:0 24px;min-height:calc(100vh - 96px);
+    display:flex;flex-direction:column;justify-content:center}
+  .stage.wide{max-width:760px}
+  .step{display:none;animation:fade .35s ease}
+  .step.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  h1{font-family:'Lato',sans-serif;font-weight:400;font-size:30px;line-height:1.25;color:#000;margin-bottom:6px}
+  h1 b{font-weight:700}
+  .req{color:#ef4444}
+  .subtitle{color:var(--gray);font-size:16px;margin:8px 0 4px;line-height:1.4}
+  .subtitle b{color:#374151;font-weight:600}
+  /* intro list */
+  .intro-list{list-style:none;margin:22px 0 4px;font-size:17px;line-height:2}
+  .intro-note{color:var(--gray);font-style:italic;font-size:15px;margin-top:20px;line-height:1.6}
+  /* inputs */
+  .field{margin-top:26px}
+  input.txt{width:100%;border:none;border-bottom:1px solid var(--line-soft);background:transparent;
+    font-family:inherit;font-size:20px;color:var(--ink);padding:10px 4px;outline:none}
+  input.txt::placeholder{color:#c9ccd1}
+  input.txt:focus{border-bottom-color:var(--orange)}
+  .phone-row{display:flex;align-items:flex-end;gap:14px}
+  .cc{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line-soft);padding:10px 2px;font-size:18px;color:#374151;white-space:nowrap}
+  .cc .flag{font-size:20px}
+  .cc select{border:none;background:transparent;font-family:inherit;font-size:18px;color:#374151;outline:none;cursor:pointer}
+  .phone-row input.txt{flex:1}
+  .err{display:none;color:#ef4444;font-size:14px;margin-top:10px;align-items:center;gap:6px}
+  .err.show{display:flex}
+  .err::before{content:"\24d8";font-style:normal}
+  /* choice cards */
+  .choices{margin-top:26px;display:flex;flex-direction:column;gap:14px}
+  .choice{display:flex;align-items:center;gap:14px;border:1px solid var(--line);background:#fff;
+    border-radius:8px;padding:16px 18px;cursor:pointer;font-size:17px;transition:all .15s;text-align:left;width:100%;font-family:inherit;color:var(--ink)}
+  .choice:hover{border-color:#c9a6ff;background:#faf7ff}
+  .choice .badge{width:26px;height:26px;flex:0 0 26px;border-radius:6px;background:#f3f4f6;color:#374151;
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .choice.sel{border-color:var(--orange);background:var(--orange-softer)}
+  .choice.sel .badge{background:var(--orange);color:#fff}
+  /* continue button */
+  .btn{font-family:'Lato',sans-serif;font-weight:500;background:var(--orange);color:#fafafa;border:none;
+    cursor:pointer;transition:background .15s}
+  .btn:hover{background:var(--orange-hover)}
+  .btn-continue{margin-top:26px;padding:16px 34px;font-size:16px}
+  .hint{margin-top:12px;color:#9ca3af;font-size:13px}
+  .hint kbd{background:#eef0f2;border-radius:4px;padding:1px 6px;font-family:monospace;font-size:12px}
+  .cta{margin-top:34px;padding:18px 40px;font-size:16px;font-weight:700;width:100%;max-width:420px}
+  /* meeting card */
+  .meet-card{display:flex;align-items:center;gap:12px;margin:22px 0 18px}
+  .meet-ico{width:42px;height:42px;border-radius:8px;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .meet-card .t{font-family:'Lato',sans-serif;font-weight:700;font-size:16px;color:#000}
+  .meet-card .d{color:var(--gray);font-size:14px;margin-top:2px;display:flex;align-items:center;gap:5px}
+  /* calendly inline */
+  .cal-inline{width:100%;min-height:700px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+  /* youtube (não qualificado) */
+  .yt-wrap{text-align:center}
+  .yt-ico{width:70px;height:70px;border-radius:50%;background:#f4eeff;color:var(--orange);font-size:32px;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+  .yt-card{border:1px solid var(--line);border-radius:14px;padding:24px;background:#fff;margin-top:18px}
+  /* success */
+  #done{text-align:center}
+  #done .check{width:70px;height:70px;border-radius:50%;background:var(--orange);color:#fff;font-size:36px;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+</style>
+</head>
+<body>
+<div id="progress-track"><div id="progress-fill"></div></div>
+<button id="back" title="Voltar">&#8249;</button>
+
+<div class="logo">
+  <img src="https://assessoriaaudens.com.br/images/logo-mark.webp" alt="Audens">
+  <div class="name">AUDENS</div>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<script>
+/* =======================================================================
+   CONFIG — edite só aqui
+   ======================================================================= */
+var CONFIG = {
+  CALENDLY_URL: 'https://calendly.com/audenscompany/diagnosticoestrategico',
+  YOUTUBE_URL:  'https://www.youtube.com/@LucasRamong',
+  CRM_ENDPOINT: 'https://receberlead-471063273836.us-central1.run.app',
+  CRM_SECRET:   'audens2025xk',
+  /* faixas que qualificam para reunião: R$30 mil+ (mapeadas p/ o padrão do CRM) */
+  FAIXAS_QUALIFICA: ['30-50','50-100','100-300'],
+  CAPTURAR_NAO_QUALIFICADO: true
+};
+
+/* faturamento (label do formulário) -> código de faixa usado pelo CRM/closer */
+var FAT_FAIXA = {
+  'Menos de R$15.000':      '0-15',
+  'De R$15.000 a R$30.000': '15-30',
+  'De R$30.000 a R$50.000': '30-50',
+  'De R$50.000 a R$100.000':'50-100',
+  'Acima de R$100.000':     '100-300'
+};
+
+/* =======================================================================
+   TRACKING
+   ======================================================================= */
+var FBQ_STANDARD = { lead_submit:'Lead', schedule_view:'ViewContent' };
+(function(){
+  var TRACK_URL = CONFIG.CRM_ENDPOINT + '/track';
+  function rid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,10); }
+  var sid; try{ sid = sessionStorage.getItem('audens_sid'); if(!sid){ sid=rid(); sessionStorage.setItem('audens_sid',sid);} }catch(e){ sid=rid(); }
+  var Q; try{ Q = new URLSearchParams(location.search); }catch(e){ Q={get:function(){return '';}}; }
+  function utm(k){ try{ return Q.get(k)||''; }catch(e){ return ''; } }
+  var UTMS = { source:utm('utm_source'), medium:utm('utm_medium'), campaign:utm('utm_campaign'), content:utm('utm_content'), term:utm('utm_term') };
+  function device(){ return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'mobile':'desktop'; }
+  var queue=[], timer=null;
+  function flush(useBeacon){
+    if(timer){clearTimeout(timer);timer=null;}
+    if(!queue.length) return;
+    var batch=queue.splice(0,queue.length);
+    var payload=JSON.stringify({sid:sid,page:location.pathname,device:device(),ref:(document.referrer||''),utms:UTMS,events:batch});
+    try{
+      if(useBeacon && navigator.sendBeacon){ navigator.sendBeacon(TRACK_URL,new Blob([payload],{type:'text/plain'})); }
+      else { fetch(TRACK_URL,{method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json'},body:payload}).catch(function(){}); }
+    }catch(e){}
+  }
+  function enqueue(name,params){
+    queue.push({e:name,p:params||{},t:Date.now()});
+    if(name==='lead_submit'||name==='meeting_booked'||name==='qualified_lead'){ flush(); return; }
+    if(!timer) timer=setTimeout(function(){flush();},4000);
+  }
+  addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') flush(true); });
+  addEventListener('pagehide',function(){ flush(true); });
+  window.__ownTrack=enqueue;
+})();
+function pushEvent(name,params){
+  try{ if(typeof fbq==='function'){ var std=FBQ_STANDARD[name]; if(std) fbq('track',std,params||{}); else fbq('trackCustom',name,params||{}); } }catch(e){}
+  try{ if(window.__ownTrack) window.__ownTrack(name,params); }catch(e){}
+  try{ (window.dataLayer=window.dataLayer||[]).push(Object.assign({event:name},params||{})); }catch(e){}
+}
+
+/* =======================================================================
+   ESTADO / QUALIFICAÇÃO / CRM
+   ======================================================================= */
+var URLQ; try{ URLQ=new URLSearchParams(location.search); }catch(e){ URLQ={get:function(){return '';}}; }
+function utmv(){ for(var i=0;i<arguments.length;i++){ var v=URLQ.get(arguments[i]); if(v) return v; } return ''; }
+
+function faixaCod(){ return FAT_FAIXA[answers.faturamento||''] || ''; }
+function dispostoSim(){ return !!(answers.disposto && answers.disposto.indexOf('Sim')>=0); }
+function isQualified(){ return CONFIG.FAIXAS_QUALIFICA.indexOf(faixaCod())>=0 && dispostoSim(); }
+
+var leadSent=false;
+function enviarCRM(extra){
+  if(!CONFIG.CRM_ENDPOINT || !CONFIG.CRM_SECRET) return;
+  var base = {
+    nome:(answers.nome||'').trim(),
+    telefone:(answers.whatsapp||''),
+    email:(answers.email||'').trim(),
+    instagram:(answers.instagram||'').trim(),
+    faturamento:(answers.faturamento||''),
+    faixa:faixaCod(),
+    investimento:dispostoSim()?'sim':'nao',
+    ja_investiu:(answers.investiu||''),
+    origem:'lp-audens-quiz-fv2',
+    utm_campaign:utmv('utm_campaign','campaign'), utm_content:utmv('utm_content','ad'), utm_medium:utmv('utm_medium','adset'), utm_source:utmv('utm_source')||'meta'
+  };
+  if(extra) for(var k in extra) base[k]=extra[k];
+  try{ fetch(CONFIG.CRM_ENDPOINT,{method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json','X-Webhook-Secret':CONFIG.CRM_SECRET},body:JSON.stringify(base)}).catch(function(){}); }catch(e){}
+}
+
+/* =======================================================================
+   PASSOS DO FORMULÁRIO
+   ======================================================================= */
+const steps = [
+  { type:'intro',
+    h:'Tráfego pago feito por quem vive de vender todos os dias.',
+    list:['🎯 Mais retorno (ROAS) em cada real investido',
+          '🖼️ Criativos por nossa conta — você não levanta um dedo',
+          '✅ Otimizamos seu funil de vendas de ponta a ponta',
+          '🏆 Fazemos por você o mesmo que fazemos nas nossas próprias operações'],
+    note:'→ Exclusivo para negócios que já investem (ou estão dispostos a investir) no MÍNIMO R$1.500/mês em anúncios.',
+    cta:'QUERO ESCALAR MINHAS VENDAS' },
+
+  { type:'text', key:'nome', h:'Qual seu nome e sobrenome?', required:true },
+
+  { type:'phone', key:'whatsapp', h:'Qual seu número do WhatsApp?', required:true,
+    placeholder:'(00) 00000-0000' },
+
+  { type:'text', key:'instagram', h:'Qual @ do Instagram da sua empresa?', required:true,
+    subtitle:'Digite somente o user, <b>sem o @ e sem espaços</b>, por favor.' },
+
+  { type:'email', key:'email', h:'Qual é o seu melhor e-mail?', required:true },
+
+  { type:'choice', key:'investiu', h:'Já investiu em tráfego pago antes?', required:true,
+    options:['Sim, eu mesmo faço','Sim, contratei uma pessoa/time','Nunca investi'] },
+
+  { type:'choice', key:'faturamento', h:'Qual o <b>faturamento médio mensal</b> do seu negócio?', required:true,
+    subtitle:'Obs: O seu faturamento não influencia na nossa precificação.',
+    options:['Menos de R$15.000','De R$15.000 a R$30.000','De R$30.000 a R$50.000',
+             'De R$50.000 a R$100.000','Acima de R$100.000'] },
+
+  { type:'choice', key:'disposto',
+    h:'Está disposto a investir pelo menos <b>R$1.500/mês</b> em anúncios, sem contar o valor da nossa mão de obra?',
+    required:true,
+    options:['✅ Sim! Quero tráfego profissional pra crescer.','❌ Não pretendo investir no meu negócio agora.'] },
+
+  { type:'final' }
+];
+
+const answers = {};
+let idx = 0;
+
+const stage = document.getElementById('stage');
+const back  = document.getElementById('back');
+const fill  = document.getElementById('progress-fill');
+
+function updateProgress(){
+  const pct = idx===0 ? 2 : Math.round((idx/(steps.length-1))*100);
+  fill.style.width = pct + '%';
+  back.style.display = (idx>0 && !finalReached) ? 'block' : 'none';
+}
+
+function go(n){ idx = Math.max(0, Math.min(steps.length-1, n)); render(); }
+back.onclick = ()=>go(idx-1);
+
+var finalReached=false;
+function render(){
+  updateProgress();
+  const s = steps[idx];
+  stage.className='stage';
+  stage.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'step active';
+  if(s.type==='intro')      wrap.innerHTML = tplIntro(s);
+  else if(s.type==='choice')wrap.innerHTML = tplChoice(s);
+  else if(s.type==='final') { renderFinal(wrap); stage.appendChild(wrap); return; }
+  else                      wrap.innerHTML = tplInput(s);
+  stage.appendChild(wrap);
+  bind(s);
+}
+
+/* ---------- templates ---------- */
+function tplIntro(s){
+  return `<h1>${s.h}</h1>
+    <ul class="intro-list">${s.list.map(i=>`<li>${i}</li>`).join('')}</ul>
+    <p class="intro-note">${s.note}</p>
+    <button class="btn btn-continue" data-next>${s.cta}&nbsp;&nbsp;→</button>`;
+}
+function reqStar(s){return s.required?' <span class="req">*</span>':''}
+function subHtml(s){return s.subtitle?`<p class="subtitle">${s.subtitle}</p>`:''}
+
+function tplInput(s){
+  let fieldHtml;
+  if(s.type==='phone'){
+    fieldHtml = `<div class="phone-row">
+        <div class="cc"><span class="flag">🇧🇷</span>
+          <select><option>+55</option><option>+1</option><option>+351</option></select>
+        </div>
+        <input class="txt" type="tel" id="inp" placeholder="${s.placeholder||''}" autocomplete="off">
+      </div>`;
+  } else {
+    fieldHtml = `<input class="txt" type="${s.type==='email'?'email':'text'}" id="inp" autocomplete="off">`;
+  }
+  return `<h1>${s.h}${reqStar(s)}</h1>
+    ${subHtml(s)}
+    <div class="field">${fieldHtml}
+      <div class="err" id="err">Este campo é obrigatório</div>
+    </div>
+    <button class="btn btn-continue" data-next>Continuar</button>
+    <div class="hint">pressione <kbd>Enter ↵</kbd></div>`;
+}
+
+function tplChoice(s){
+  const letters='ABCDEFG';
+  return `<h1>${s.h}${reqStar(s)}</h1>
+    ${subHtml(s)}
+    <div class="choices" id="choices">
+      ${s.options.map((o,i)=>`<button class="choice" data-i="${i}">
+          <span class="badge">${letters[i]}</span><span>${o}</span></button>`).join('')}
+    </div>
+    <div class="err" id="err">Este campo é obrigatório</div>
+    <button class="btn btn-continue" data-next>Continuar</button>
+    <div class="hint">pressione <kbd>Enter ↵</kbd></div>`;
+}
+
+/* ---------- passo final: envia CRM e ramifica ---------- */
+function renderFinal(wrap){
+  finalReached=true; updateProgress();
+  var qualified=isQualified();
+  pushEvent('lead_submit',{qualificado:qualified});
+  if(qualified){
+    pushEvent('qualified_lead',{faixa:faixaCod()});
+    if(!leadSent){ leadSent=true; enviarCRM({status:'qualificado',reuniao_agendada:'nao'}); }
+    wrap.innerHTML = tplCalendar();
+    stage.className='stage wide';
+    stage.appendChild(wrap);
+    pushEvent('schedule_view',{faixa:faixaCod()});
+    initCalendly();
+  } else {
+    if(CONFIG.CAPTURAR_NAO_QUALIFICADO && !leadSent){ leadSent=true; enviarCRM({status:'nao-qualificado',prioridade:'baixa',destino:'youtube'}); }
+    wrap.innerHTML = tplYoutube();
+    stage.appendChild(wrap);
+    pushEvent('youtube_redirect',{faixa:faixaCod()});
+    var yt=document.getElementById('ytBtn'); if(yt) yt.addEventListener('click',function(){ pushEvent('youtube_click'); });
+  }
+}
+
+function tplCalendar(){
+  fill.style.width='95%';
+  return `<h1>Quase lá! Agende seu diagnóstico ↓</h1>
+    <div class="meet-card">
+      <div class="meet-ico">📅</div>
+      <div><div class="t">Diagnóstico Estratégico de Tráfego</div>
+      <div class="d">⏱ 60 minutos · 🌐 Horário de Brasília</div></div>
+    </div>
+    <div class="cal-inline" id="calInline"></div>`;
+}
+
+function tplYoutube(){
+  fill.style.width='100%';
+  return `<div class="yt-wrap">
+    <div class="yt-ico">▶</div>
+    <h1>Recebemos suas respostas!</h1>
+    <p class="subtitle">Pelo momento do seu negócio, o melhor primeiro passo é aprender com o nosso conteúdo gratuito — é lá que a gente ensina como estruturar o marketing pra crescer de forma consistente.</p>
+    <div class="yt-card">
+      <p class="subtitle" style="margin-top:0"><b>Acompanhe o canal e comece a aplicar hoje:</b></p>
+      <a class="btn cta" id="ytBtn" href="${CONFIG.YOUTUBE_URL}" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;margin-top:18px">▶&nbsp; Ver o canal no YouTube</a>
+    </div>
+  </div>`;
+}
+
+/* ---------- binding / validation ---------- */
+function bind(s){
+  const nextBtn = stage.querySelector('[data-next]');
+  if(nextBtn) nextBtn.onclick = ()=>attemptNext(s);
+
+  if(s.type==='intro'){ /* dispara início ao sair da intro é feito no attemptNext */ }
+
+  if(['text','email','phone'].includes(s.type)){
+    const inp=document.getElementById('inp');
+    if(inp){ inp.focus(); inp.value=answers[s.key]||'';
+      inp.onkeydown=e=>{ if(e.key==='Enter'){e.preventDefault();attemptNext(s);} };
+    }
+  }
+  if(s.type==='choice'){
+    const chs=[...stage.querySelectorAll('.choice')];
+    chs.forEach(c=>c.onclick=()=>{
+      chs.forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+      answers[s.key]=s.options[+c.dataset.i];
+      pushEvent('quiz_answer',{pergunta:s.key});
+      document.getElementById('err').classList.remove('show');
+    });
+    if(answers[s.key]){ const i=s.options.indexOf(answers[s.key]); if(i>=0)chs[i].classList.add('sel'); }
+  }
+}
+
+var started=false;
+function attemptNext(s){
+  if(s.type==='intro' && !started){ started=true; pushEvent('quiz_start'); }
+  if(['text','email','phone'].includes(s.type)){
+    const inp=document.getElementById('inp');
+    const v=(inp.value||'').trim();
+    if(s.required && !v){ document.getElementById('err').classList.add('show'); inp.focus(); return; }
+    if(s.type==='email' && v && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)){
+      const e=document.getElementById('err'); e.textContent='Digite um email válido'; e.classList.add('show'); return;
+    }
+    answers[s.key]=v;
+  }
+  if(s.type==='choice'){
+    if(s.required && !answers[s.key]){ document.getElementById('err').classList.add('show'); return; }
+  }
+  go(idx+1);
+}
+
+/* =======================================================================
+   CALENDLY
+   ======================================================================= */
+function loadCalendlyScript(cb){
+  if(window.Calendly){ cb(); return; }
+  var css=document.createElement('link'); css.rel='stylesheet'; css.href='https://assets.calendly.com/assets/external/widget.css'; document.head.appendChild(css);
+  var s=document.createElement('script'); s.src='https://assets.calendly.com/assets/external/widget.js'; s.async=true; s.onload=cb; document.body.appendChild(s);
+}
+function buildCalUrl(){
+  var url=CONFIG.CALENDLY_URL, sep=url.indexOf('?')>=0?'&':'?', params=['hide_gdpr_banner=1','background_color=ffffff','text_color=1a1a1a','primary_color=7c34f0'];
+  var u=utmv('utm_source')||'meta'; if(u)params.push('utm_source='+encodeURIComponent(u));
+  var camp=utmv('utm_campaign','campaign'); if(camp)params.push('utm_campaign='+encodeURIComponent(camp));
+  var cont=utmv('utm_content','ad'); if(cont)params.push('utm_content='+encodeURIComponent(cont));
+  return url+sep+params.join('&');
+}
+function initCalendly(){
+  if(!CONFIG.CALENDLY_URL) return;
+  var el=document.getElementById('calInline'); if(!el) return;
+  loadCalendlyScript(function(){
+    try{ window.Calendly.initInlineWidget({ url:buildCalUrl(), parentElement:el, prefill:{ name:answers.nome||'', email:answers.email||'', customAnswers:{ a1:answers.whatsapp||'' } } }); }catch(e){}
+  });
+}
+var meetingDone=false;
+window.addEventListener('message',function(e){
+  if(!e.data || typeof e.data!=='object') return;
+  if(e.origin && e.origin.indexOf('calendly.com')<0) return;
+  if(e.data.event==='calendly.event_scheduled' && !meetingDone){
+    meetingDone=true;
+    /* Meta Pixel — evento PADRÃO "Schedule": dispara EXCLUSIVAMENTE aqui, quando o
+       Calendly confirma o agendamento (nunca no load, clique ou link de saída). */
+    try{ if(typeof fbq==='function') fbq('track','Schedule'); }catch(e){}
+    pushEvent('meeting_booked',{faixa:faixaCod()});
+    dispararReuniaoAgendada();
+    showConfirmacao();
+  }
+});
+/* Avisa o CRM que o lead marcou no Calendly (rota /quiz-agendou):
+   move o card p/ "Reunião Agendada", atribui o closer pela faixa e dispara o WhatsApp. */
+function dispararReuniaoAgendada(){
+  try{
+    fetch(CONFIG.CRM_ENDPOINT+'/quiz-agendou',{method:'POST',mode:'cors',keepalive:true,
+      headers:{'Content-Type':'application/json','X-Webhook-Secret':CONFIG.CRM_SECRET},
+      body:JSON.stringify({ telefone:(answers.whatsapp||''), nome:(answers.nome||''), faixa:faixaCod() })
+    }).catch(function(){});
+  }catch(e){}
+}
+function showConfirmacao(){
+  finalReached=true; fill.style.width='100%'; back.style.display='none';
+  stage.className='stage';
+  stage.innerHTML=`<div class="step active" id="done">
+    <div class="check">✓</div>
+    <h1>Horário agendado!</h1>
+    <p class="subtitle">Enviamos os detalhes do seu<br><b>Diagnóstico Estratégico de Tráfego</b> para o seu WhatsApp e e-mail.</p>
+    <p class="subtitle" style="margin-top:14px">${answers.nome||''}</p>
+  </div>`;
+}
+
+/* =======================================================================
+   START
+   ======================================================================= */
+pushEvent('lp_view',{path:location.pathname,variante:'quiz-fv2'});
+render();
+</script>
+</body>
+</html>
