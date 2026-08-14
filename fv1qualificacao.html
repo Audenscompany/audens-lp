@@ -374,7 +374,7 @@ function enviarCRM(extra){
   if(!CONFIG.CRM_ENDPOINT || !CONFIG.CRM_SECRET) return;
   var base = {
     nome:(STATE.nome||'').trim(), telefone:(STATE.whats||''), email:(STATE.email||'').trim(), instagram:(STATE.insta||''),
-    faturamento:labelOf('faturamento'), segmento:labelOf('segmento'), canal:labelOf('canal'), desafio:labelOf('desafio'), investimento:labelOf('investimento'),
+    faturamento:labelOf('faturamento'), faixa:valOf('faturamento'), segmento:labelOf('segmento'), canal:labelOf('canal'), desafio:labelOf('desafio'), investimento:labelOf('investimento'),
     origem:'lp-audens-quiz-fv1',
     utm_campaign:utmv('utm_campaign','campaign'), utm_content:utmv('utm_content','ad'), utm_medium:utmv('utm_medium','adset'), utm_source:utmv('utm_source')||'meta'
   };
