@@ -49,7 +49,8 @@ fbq('init','288150133971064');fbq('track','PageView');
   /* layout */
   .stage{max-width:640px;margin:0 auto;padding:0 24px;min-height:calc(100vh - 96px);
     display:flex;flex-direction:column;justify-content:center}
-  .stage.wide{max-width:760px}
+  .stage.wide{max-width:900px}
+  .stage.cal{justify-content:flex-start;padding-top:8px;padding-bottom:40px}
   .step{display:none;animation:fade .35s ease}
   .step.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -97,8 +98,9 @@ fbq('init','288150133971064');fbq('track','PageView');
   .meet-ico{width:42px;height:42px;border-radius:8px;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px}
   .meet-card .t{font-family:'Lato',sans-serif;font-weight:700;font-size:16px;color:#000}
   .meet-card .d{color:var(--gray);font-size:14px;margin-top:2px;display:flex;align-items:center;gap:5px}
-  /* calendly inline */
-  .cal-inline{width:100%;min-height:700px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+  /* calendly inline — altura FIXA (o widget rola internamente; evita vão branco) */
+  .cal-inline{width:100%;height:720px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+  @media(max-width:640px){ .cal-inline{height:760px} }
   /* youtube (não qualificado) */
   .yt-wrap{text-align:center}
   .yt-ico{width:70px;height:70px;border-radius:50%;background:#f4eeff;color:var(--orange);font-size:32px;
@@ -335,7 +337,7 @@ function renderFinal(wrap){
     pushEvent('qualified_lead',{faixa:faixaCod()});
     if(!leadSent){ leadSent=true; enviarCRM({status:'qualificado',reuniao_agendada:'nao'}); }
     wrap.innerHTML = tplCalendar();
-    stage.className='stage wide';
+    stage.className='stage wide cal';
     stage.appendChild(wrap);
     pushEvent('schedule_view',{faixa:faixaCod()});
     initCalendly();
