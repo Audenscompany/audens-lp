@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vivendo de Delivery — Formação Completa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --amarelo:#F6C21C;
+    --amarelo-esc:#E3AE08;
+    --preto:#101010;
+    --preto-2:#1c1c1c;
+    --verde:#18C23C;      /* reservado SÓ para CTA de compra */
+    --verde-esc:#12A531;
+    --vermelho:#E5372A;
+    --branco:#ffffff;
+    --off:#f2f2f2;
+    --cinza:#6b6b6b;
+    --radius:14px;
+    --container:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    color:var(--preto);
+    background:var(--branco);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:76px; /* espaço p/ sticky mobile */
+  }
+  h1,h2,h3{font-family:'Anton',Impact,sans-serif;font-weight:400;line-height:1.02;letter-spacing:.5px;text-transform:uppercase}
+  .container{max-width:var(--container);margin:0 auto;padding:0 20px}
+  .sec{padding:64px 0}
+  .center{text-align:center}
+
+  /* ---------- Botões ---------- */
+  .btn{
+    display:inline-block;background:var(--verde);color:var(--preto);
+    font-family:'Inter',sans-serif;font-weight:800;font-size:18px;
+    text-decoration:none;text-align:center;
+    padding:18px 30px;border-radius:var(--radius);
+    border:2px solid rgba(0,0,0,.85);
+    box-shadow:0 6px 0 rgba(0,0,0,.25);
+    transition:transform .08s ease, background .15s ease;
+    cursor:pointer;line-height:1.15;
+  }
+  .btn:hover{background:var(--verde-esc);transform:translateY(-2px)}
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+  .btn--full{display:block;width:100%}
+  .btn small{display:block;font-weight:600;font-size:13px;opacity:.75;margin-top:2px}
+
+  /* ---------- Hero ---------- */
+  .hero{background:var(--amarelo);padding:44px 0 56px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+  .logo-badge{font-family:'Anton';font-size:15px;letter-spacing:2px;color:var(--preto);
+    background:rgba(0,0,0,.08);display:inline-block;padding:6px 14px;border-radius:40px;margin-bottom:18px}
+  .hero h1{font-size:clamp(30px,4.4vw,50px);line-height:1.22}
+  .hero h1 .hl{background:var(--preto);color:var(--amarelo);padding:2px 10px;border-radius:5px;
+    box-decoration-break:clone;-webkit-box-decoration-break:clone;
+    -webkit-box-decoration-break:clone}
+  .hero p.sub{font-size:clamp(16px,1.9vw,20px);margin:20px 0 26px;font-weight:500;max-width:560px}
+  .proof-strip{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:18px;font-weight:700;font-size:14px}
+  .proof-strip span{display:flex;align-items:center;gap:7px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--verde);display:inline-block;box-shadow:0 0 0 3px rgba(0,0,0,.12)}
+  .hero-media{position:relative}
+  .ph{ /* placeholder de imagem */
+    border-radius:var(--radius);background:
+      repeating-linear-gradient(45deg,rgba(0,0,0,.06) 0 12px,rgba(0,0,0,.11) 12px 24px),
+      var(--preto);
+    color:#ffd84d;display:flex;align-items:center;justify-content:center;text-align:center;
+    font-weight:700;font-size:14px;padding:22px;min-height:340px;border:2px dashed rgba(0,0,0,.4)}
+  .ph small{display:block;color:#fff;opacity:.7;font-weight:500;margin-top:8px;font-size:12px}
+
+  /* ---------- Identificação (dor) ---------- */
+  .dor{background:var(--off)}
+  .dor h2{font-size:clamp(24px,3.2vw,36px);margin-bottom:16px}
+  .dor p{font-size:18px;max-width:760px;margin:0 auto}
+  .dor .nada{color:var(--vermelho);font-family:'Anton';font-size:1.15em}
+
+  /* ---------- História ---------- */
+  .hist{background:var(--preto);color:#fff}
+  .hist-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px;align-items:center}
+  .hist h2{color:var(--amarelo);font-size:clamp(24px,3.2vw,38px);margin-bottom:18px}
+  .hist p{font-size:17px;color:#e6e6e6;margin-bottom:16px}
+  .metric{display:flex;align-items:center;gap:14px;font-family:'Anton';margin-top:8px}
+  .metric .from{color:#ff6a5e;font-size:clamp(26px,4vw,40px)}
+  .metric .arrow{color:#fff;font-size:26px}
+  .metric .to{color:var(--verde);font-size:clamp(30px,5vw,52px)}
+  .hist .ph{min-height:300px;background:
+      repeating-linear-gradient(45deg,rgba(255,255,255,.05) 0 12px,rgba(255,255,255,.09) 12px 24px),#000;border-color:rgba(255,255,255,.35)}
+
+  /* ---------- O que é / pra quem ---------- */
+  .que h2{font-size:clamp(24px,3.2vw,36px);margin-bottom:16px}
+  .que p{font-size:18px;max-width:780px;margin:0 auto}
+  .que .high{background:var(--amarelo);padding:1px 6px;font-weight:700}
+
+  /* ---------- Recebe (empilhamento) ---------- */
+  .recebe{background:var(--amarelo)}
+  .recebe h2{font-size:clamp(24px,3.2vw,36px);text-align:center;margin-bottom:8px}
+  .recebe .lead{text-align:center;font-weight:600;margin-bottom:36px}
+  .grid-mod{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .mod{background:var(--preto);color:#fff;border-radius:var(--radius);padding:22px 20px}
+  .mod .ic{font-size:22px}
+  .mod h3{font-family:'Inter';text-transform:none;font-size:17px;font-weight:800;margin:10px 0 6px;letter-spacing:0;line-height:1.2}
+  .mod p{font-size:14px;color:#cfcfcf}
+  .bonus-wrap{margin-top:30px}
+  .bonus-wrap h3{text-align:center;font-size:22px;margin-bottom:16px}
+  .grid-bonus{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .bonus{background:#fff;border-radius:var(--radius);padding:18px;border:2px solid var(--preto);position:relative}
+  .bonus .tag{position:absolute;top:-11px;left:14px;background:var(--vermelho);color:#fff;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
+  .bonus h4{font-size:15px;font-weight:800;margin:6px 0 4px}
+  .bonus p{font-size:13px;color:var(--cinza)}
+  .bonus .val{font-weight:800;font-size:13px;color:var(--vermelho);margin-top:8px}
+
+  /* ---------- Prova ---------- */
+  .prova{background:var(--off)}
+  .prova h2{text-align:center;font-size:clamp(24px,3.2vw,36px);margin-bottom:8px}
+  .prova .lead{text-align:center;color:var(--cinza);margin-bottom:34px;font-weight:500}
+  .grid-dep{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .dep{background:#fff;border-radius:var(--radius);padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+  .dep .who{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .dep .av{width:46px;height:46px;border-radius:50%;background:var(--amarelo);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--preto);flex:0 0 auto}
+  .dep .who b{display:block;font-size:15px}
+  .dep .who span{font-size:12px;color:var(--cinza)}
+  .dep .stars{color:#f5b301;font-size:14px;letter-spacing:2px}
+  .dep q{display:block;font-size:15px;margin-top:6px}
+  .dep .res{margin-top:10px;font-weight:800;font-size:14px}
+  .ph-note{text-align:center;font-size:12px;color:var(--cinza);margin-top:18px;font-style:italic}
+
+  /* ---------- Oferta ---------- */
+  .oferta{background:var(--preto);color:#fff;text-align:center}
+  .oferta h2{font-size:clamp(26px,3.6vw,40px);color:#fff}
+  .lista-check{max-width:520px;margin:26px auto 30px;text-align:left}
+  .lista-check li{list-style:none;display:flex;gap:10px;padding:7px 0;font-size:15px;color:#eaeaea}
+  .lista-check li::before{content:"✔";color:var(--verde);font-weight:800}
+  .preco-box{margin:10px 0 6px}
+  .de{color:#ff6a5e;font-family:'Anton';font-size:22px}
+  .de s{opacity:.85}
+  .por{color:#bdbdbd;font-weight:700;letter-spacing:2px;font-size:14px;margin-top:6px}
+  .preco{font-family:'Anton';color:var(--verde);font-size:clamp(46px,9vw,84px);line-height:1}
+  .parcela{font-weight:700;margin:6px 0 4px;font-size:18px}
+  .subprice{color:#bdbdbd;font-size:14px;margin-bottom:26px}
+  .urg{display:inline-block;background:var(--vermelho);color:#fff;font-weight:800;font-size:13px;padding:8px 16px;border-radius:30px;margin-bottom:24px}
+  .pay{margin-top:20px;color:#9a9a9a;font-size:12px;letter-spacing:.5px}
+
+  /* ---------- Garantia ---------- */
+  .gar{background:var(--amarelo)}
+  .gar-grid{display:grid;grid-template-columns:1fr 260px;gap:30px;align-items:center}
+  .gar h2{font-size:clamp(24px,3.2vw,34px);margin-bottom:12px}
+  .gar p{font-size:17px;font-weight:500;margin-bottom:20px;max-width:560px}
+  .selo{width:220px;height:220px;border-radius:50%;background:var(--preto);color:var(--amarelo);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    font-family:'Anton';border:8px solid var(--preto-2);justify-self:center}
+  .selo b{font-size:52px;line-height:.9}
+  .selo span{font-size:16px;letter-spacing:2px;margin-top:4px}
+
+  /* ---------- FAQ ---------- */
+  .faq h2{text-align:center;font-size:clamp(24px,3.2vw,36px);margin-bottom:28px}
+  .acc{max-width:760px;margin:0 auto}
+  .acc-item{border:2px solid var(--preto);border-radius:12px;margin-bottom:12px;overflow:hidden}
+  .acc-q{width:100%;background:#fff;border:0;text-align:left;font-family:'Inter';font-weight:800;font-size:16px;
+    padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .acc-q .pm{font-family:'Anton';font-size:22px;flex:0 0 auto}
+  .acc-a{max-height:0;overflow:hidden;transition:max-height .28s ease;background:#fafafa}
+  .acc-a p{padding:0 20px;font-size:15px;color:#333}
+  .acc-item.open .acc-a{max-height:260px}
+  .acc-item.open .acc-a p{padding:4px 20px 20px}
+  .acc-item.open .acc-q{background:var(--amarelo)}
+  .zap-link{text-align:center;margin-top:24px;font-size:15px}
+  .zap-link a{color:var(--verde-esc);font-weight:700}
+
+  /* ---------- CTA final ---------- */
+  .final{background:var(--preto);color:#fff;text-align:center}
+  .final h2{font-size:clamp(26px,3.6vw,42px);color:var(--amarelo);margin-bottom:14px}
+  .final p{color:#ddd;margin-bottom:26px;font-size:17px}
+
+  footer{background:#000;color:#8a8a8a;font-size:12px;text-align:center;padding:26px 20px;line-height:1.7}
+
+  /* ---------- Sticky mobile ---------- */
+  .sticky{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(16,16,16,.96);
+    padding:10px 14px;display:none;box-shadow:0 -4px 18px rgba(0,0,0,.3)}
+  .sticky .btn{padding:14px;font-size:16px}
+
+  /* ---------- Imagens reais ---------- */
+  .img-fill{width:100%;height:100%;min-height:340px;object-fit:cover;border-radius:var(--radius);display:block}
+  .hist .img-fill{min-height:300px}
+  .ibge-print{display:block;max-width:620px;width:100%;margin:28px auto 0;border-radius:10px;
+    border:1px solid rgba(0,0,0,.12);box-shadow:0 8px 24px rgba(0,0,0,.10)}
+  .bonus .cap{display:block;width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:10px;background:#111}
+  .selo-img{width:220px;height:auto;justify-self:center;display:block;filter:drop-shadow(0 8px 18px rgba(0,0,0,.25))}
+  .pay-icons{display:block;max-width:420px;width:100%;margin:16px auto 0;opacity:.92}
+
+  /* ---------- Prints de depoimento ---------- */
+  .grid-prints{column-count:3;column-gap:16px}
+  .grid-prints img{width:100%;margin:0 0 16px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.10);border:1px solid #eaeaea;break-inside:avoid;display:block}
+
+  /* ---------- Cursos / value stack ---------- */
+  .grid-cursos{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .curso{background:var(--preto);border-radius:14px;padding:10px 10px 14px;text-align:center;
+    transition:transform .14s ease, box-shadow .14s ease}
+  .curso:hover,.bonus:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(0,0,0,.18)}
+  .bonus{transition:transform .14s ease, box-shadow .14s ease}
+  .grid-prints img{transition:transform .14s ease}
+  .grid-prints img:hover{transform:scale(1.015)}
+  .curso img{width:100%;border-radius:10px;display:block}
+  .curso .valor{display:block;margin-top:10px;color:#fff;font-weight:800;font-size:14px}
+  .curso .valor s{color:#ff6a5e;opacity:.85;font-weight:700;margin-right:4px}
+  .stack{max-width:640px;margin:36px auto 0;background:var(--preto);border-radius:16px;padding:24px 26px;color:#fff}
+  .stack .srow{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.15);font-size:15px}
+  .stack .srow span{color:#F6C21C;font-weight:800;white-space:nowrap}
+  .stack .tot{display:flex;justify-content:space-between;margin-top:16px;font-family:'Anton';font-size:22px;align-items:baseline}
+  .stack .tot .v{color:#ff6a5e}
+  .stack .hoje{text-align:center;margin-top:18px}
+  .stack .hoje .p{font-family:'Anton';color:var(--verde);font-size:46px;line-height:1}
+
+  /* ---------- Contador ---------- */
+  .timer-wrap{background:var(--vermelho);color:#fff;border-radius:14px;padding:16px 20px;max-width:460px;margin:0 auto 26px;text-align:center;box-shadow:0 8px 22px rgba(229,55,42,.35)}
+  .timer-wrap .lbl{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px}
+  .timer{display:flex;gap:10px;justify-content:center;font-family:'Anton'}
+  .timer .box{background:rgba(0,0,0,.35);border-radius:10px;padding:8px 14px;min-width:66px}
+  .timer .num{font-size:34px;line-height:1}
+  .timer .u{font-size:11px;font-family:'Inter';font-weight:700;opacity:.85;letter-spacing:1px}
+
+  /* ---------- Responsivo ---------- */
+  @media(max-width:900px){
+    .grid-mod{grid-template-columns:repeat(2,1fr)}
+    .grid-bonus{grid-template-columns:repeat(2,1fr)}
+    .grid-dep{grid-template-columns:1fr}
+    .grid-cursos{grid-template-columns:repeat(2,1fr)}
+    .grid-prints{column-count:2}
+  }
+  @media(max-width:768px){
+    .sec{padding:48px 0}
+    .hero-grid,.hist-grid,.gar-grid{grid-template-columns:1fr}
+    .hero h1{font-size:clamp(26px,7vw,34px)}
+    .ph{min-height:200px}
+    .hist .ph{min-height:200px}
+    .img-fill,.hist .img-fill{min-height:210px}
+    .selo-img{width:180px}
+    .selo{width:180px;height:180px}.selo b{font-size:42px}
+    .gar-grid{text-align:center}.gar p{margin-left:auto;margin-right:auto}
+    .sticky{display:block}
+    body{padding-bottom:84px}
+  }
+  @media(max-width:480px){
+    .grid-mod,.grid-bonus{grid-template-columns:1fr}
+    .grid-cursos{grid-template-columns:repeat(2,1fr)}
+    .grid-prints{column-count:1}
+    .proof-strip{font-size:13px}
+    .timer .box{min-width:58px;padding:8px 10px}.timer .num{font-size:28px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="logo-badge">🛵 PARA DONOS DE DELIVERY QUE FATURAM ATÉ R$20 MIL</span>
+      <h1>Você trabalha o mês inteiro no delivery e, quando olha o caixa, <span class="hl">não sobra nada</span>?</h1>
+      <p class="sub">Não é porque você vende pouco — é porque ninguém te ensinou a <b>precificar e fazer a conta certa</b>. Foi exatamente daqui que eu saí: de <b>R$24 mil e cheio de dívida</b> a <b>mais de R$500 mil por mês</b>. A Vivendo de Delivery é o passo a passo, direto ao ponto, pra você parar de vender no prejuízo, lotar o delivery de pedido e <b>viver da sua operação</b>.</p>
+      <a href="#oferta" class="btn">Quero destravar meu delivery</a>
+      <div class="proof-strip">
+        <span><i class="dot"></i> +900 alunos</span>
+        <span><i class="dot"></i> 70+ aulas</span>
+        <span><i class="dot"></i> Aplicado no Burger FC e Pizza FC · +R$500 mil/mês</span>
+      </div>
+    </div>
+    <div class="hero-media">
+      <img class="img-fill" src="https://audenscompany.com.br/wp-content/uploads/2024/08/Design-sem-nome-37.jpg" alt="Lucas Siqueira na operação">
+    </div>
+  </div>
+</header>
+
+<!-- ================= DOR / IDENTIFICAÇÃO ================= -->
+<section class="sec dor center">
+  <div class="container">
+    <h2>Você trabalha demais e ganha de menos</h2>
+    <p>Você paga fornecedor, funcionário, aluguel, água, luz, imposto… e no fim do mês olha o caixa e não sobra <span class="nada">NADA</span>. Não é porque você trabalha pouco — é porque ninguém te ensinou a fazer a conta certa. E faturando menos de R$20 mil, cada erro de preço dói no seu bolso todos os dias.</p>
+    <img class="ibge-print" src="https://audenscompany.com.br/wp-content/uploads/2025/02/Captura-de-tela-2025-02-06-162247.jpeg" alt="Notícia do IBGE: 60% dos brasileiros vivem com até 1 salário mínimo por mês">
+  </div>
+</section>
+
+<!-- ================= HISTÓRIA / VIRADA ================= -->
+<section class="sec hist">
+  <div class="container hist-grid">
+    <img class="img-fill" src="https://audenscompany.com.br/wp-content/uploads/2025/02/Design-sem-nome-53.jpg" alt="O começo da operação — botando a mão na massa">
+
+    <div>
+      <h2>Eu estive exatamente no seu lugar</h2>
+      <p>Em 2020 meu delivery faturava R$24 mil por mês. Eram tantas dívidas que eu chamei meu sócio e disse que queria fechar — não aguentava mais.</p>
+      <p>O que virou o jogo não foi trabalhar mais. Foi <b>precificar do jeito certo e aplicar o método</b>. Em menos de 6 meses saímos de R$24 mil para mais de R$60 mil. Hoje são duas operações e mais de R$500 mil por mês.</p>
+      <p style="color:var(--amarelo);font-weight:700">Esse caminho inteiro está dentro da formação.</p>
+      <div class="metric">
+        <span class="from">R$24 mil</span>
+        <span class="arrow">→</span>
+        <span class="to">R$500 mil</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= O QUE É / PRA QUEM ================= -->
+<section class="sec que center">
+  <div class="container">
+    <h2>Conheça a formação Vivendo de Delivery</h2>
+    <p>É a formação mais completa e direta pra dono de delivery que quer sair do sufoco. <span class="high">É pra você que já tem uma operação — mesmo faturando pouco — e está cansado de trabalhar muito e ganhar de menos.</span> São mais de 70 aulas cobrindo tudo que faz a operação dar lucro de verdade.</p>
+  </div>
+</section>
+
+<!-- ================= O QUE RECEBE ================= -->
+<section class="sec recebe">
+  <div class="container">
+    <h2>Tudo que você recebe ao entrar</h2>
+    <p class="lead">Da precificação ao marketing — o método completo, sem enrolação.</p>
+    <!-- IMPORTANTE: valores abaixo são EXEMPLO — Lucas deve confirmar os reais antes de publicar -->
+    <div class="grid-cursos">
+      <div class="curso"><img src="https://audenscompany.com.br/wp-content/uploads/2025/02/capas-4.jpg" alt="Precificação Eficiente"><span class="valor">Valor: R$297</span></div>
+      <div class="curso"><img src="https://audenscompany.com.br/wp-content/uploads/2025/02/capas-3.jpg" alt="Gestão para Delivery"><span class="valor">Valor: R$197</span></div>
+      <div class="curso"><img src="https://audenscompany.com.br/wp-content/uploads/2025/02/capas-5.jpg" alt="Custo de Mercadoria Vendida (CMV)"><span class="valor">Valor: R$147</span></div>
+      <div class="curso"><img src="https://audenscompany.com.br/wp-content/uploads/2025/02/capas-6.jpg" alt="Como Montar um Cardápio que Vende"><span class="valor">Valor: R$147</span></div>
+      <div class="curso"><img src="https://audenscompany.com.br/wp-content/uploads/2025/02/capas-1.jpg" alt="Tráfego Pago na Prática"><span class="valor">Valor: R$297</span></div>
+      <div class="curso"><img src="https://audenscompany.com.br/wp-content/uploads/2025/02/capas-2.jpg" alt="iFood de Alta Performance"><span class="valor">Valor: R$197</span></div>
+      <div class="curso"><img src="https://audenscompany.com.br/wp-content/uploads/2025/02/capas-8.jpg" alt="Automações de WhatsApp"><span class="valor">Valor: R$197</span></div>
+      <div class="curso"><img src="https://audenscompany.com.br/wp-content/uploads/2025/02/capas-7.jpg" alt="Mentalidade de Empresário"><span class="valor">Valor: R$97</span></div>
+    </div>
+
+    <div class="bonus-wrap">
+      <h3>E ainda leva estes bônus 🎁</h3>
+      <div class="grid-bonus">
+        <div class="bonus"><span class="tag">BÔNUS</span><img class="cap" src="https://audenscompany.com.br/wp-content/uploads/2025/02/CAPS-1.jpg" alt="Planilha Delivery Lucrativo"><h4>Planilha Delivery Lucrativo</h4><p>Planilha automática de preço pronta pra usar.</p><div class="val">Valor: R$197</div></div>
+        <div class="bonus"><span class="tag">BÔNUS</span><img class="cap" src="https://audenscompany.com.br/wp-content/uploads/2025/02/CAPS-2.jpg" alt="Dashboard Financeiro"><h4>Dashboard Financeiro</h4><p>Enxergue faturamento, custo e lucro num lugar só.</p><div class="val">Valor: R$147</div></div>
+        <div class="bonus"><span class="tag">BÔNUS</span><img class="cap" src="https://audenscompany.com.br/wp-content/uploads/2025/02/CAPS-3.jpg" alt="Grupo de Alunos no WhatsApp"><h4>Grupo de Alunos no WhatsApp</h4><p>Comunidade exclusiva de donos como você.</p><div class="val">Valor: R$97</div></div>
+        <div class="bonus"><span class="tag">BÔNUS</span><img class="cap" src="https://audenscompany.com.br/wp-content/uploads/2023/09/WhatsApp_Logo_PNG_Sem_Fundo_Transparente-1.png" alt="Suporte no WhatsApp" style="object-fit:contain;background:#0b3d2e;padding:14px"><h4>Suporte no WhatsApp</h4><p>Tire qualquer dúvida direto com o time.</p><div class="val">Valor: R$97</div></div>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="srow"><b>Formação Vivendo de Delivery (8 módulos · 70+ aulas)</b><span>R$1.576</span></div>
+      <div class="srow"><b>Planilha Delivery Lucrativo + Dashboard Financeiro</b><span>R$344</span></div>
+      <div class="srow"><b>Grupo de Alunos + Suporte no WhatsApp</b><span>R$194</span></div>
+      <div class="tot"><span>Valor total</span><span class="v"><s>R$2.114</s></span></div>
+      <div class="hoje">Hoje, só pra quem chegou até aqui:<div class="p">R$397</div><div style="opacity:.85;font-size:14px;margin-top:4px">ou 12x de R$41,06 no cartão</div></div>
+    </div>
+    <div class="center" style="margin-top:34px">
+      <a href="#oferta" class="btn">Quero garantir por 12x de R$41</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROVA ================= -->
+<section class="sec prova">
+  <div class="container">
+    <h2>Quem aplicou, virou o jogo</h2>
+    <p class="lead">Prints reais de alunos que aplicaram o método.</p>
+    <div class="grid-prints">
+      <img src="https://audenscompany.com.br/wp-content/uploads/2023/12/Depoimento-Planilha-2.jpg" alt="Print de depoimento de aluno sobre precificação">
+      <img src="https://audenscompany.com.br/wp-content/uploads/2023/12/Depoimento-Planilha-1.jpg" alt="Print de depoimento de aluno sobre a planilha">
+      <img src="https://audenscompany.com.br/wp-content/uploads/2024/08/8969e659-f9ae-483a-ac7b-40873288cf21-1.jpg" alt="Print de depoimento de aluno">
+      <img src="https://audenscompany.com.br/wp-content/uploads/2025/02/16e9fef6-4188-49b3-9e13-f050c91a7fcc.jpg" alt="Print de depoimento de aluno sobre resultados">
+      <img src="https://audenscompany.com.br/wp-content/uploads/2024/01/Depoimento-planilha-6.jpg" alt="Print de depoimento de aluno">
+      <img src="https://audenscompany.com.br/wp-content/uploads/2023/12/Depoimento-Planilha-5.jpg" alt="Print de depoimento de aluno sobre clareza">
+      <img src="https://audenscompany.com.br/wp-content/uploads/2025/02/79971a56-4ace-4772-aaf7-b969c5d336f1.jpg" alt="Print de depoimento de aluno">
+    </div>
+  </div>
+</section>
+
+<!-- ================= OFERTA ================= -->
+<section class="sec oferta" id="oferta">
+  <div class="container">
+    <h2>Oferta especial de entrada</h2>
+    <ul class="lista-check">
+      <li>Formação completa Vivendo de Delivery — 8 módulos, 70+ aulas</li>
+      <li>Precificação Eficiente + CMV + Gestão para Delivery</li>
+      <li>Cardápio que Vende + iFood de Alta Performance</li>
+      <li>Tráfego Pago na Prática + Automações de WhatsApp</li>
+      <li>Mentalidade de Empresário</li>
+      <li>Bônus: Planilha Delivery Lucrativo + Dashboard Financeiro</li>
+      <li>Grupo de Alunos + Suporte no WhatsApp</li>
+      <li>7 dias de garantia incondicional</li>
+    </ul>
+    <div class="urg">🔒 Oferta exclusiva pra quem chegou até aqui</div>
+    <div class="timer-wrap">
+      <span class="lbl">Sua oferta expira em</span>
+      <div class="timer">
+        <div class="box"><div class="num" id="cd-min">10</div><div class="u">MIN</div></div>
+        <div class="box"><div class="num" id="cd-sec">00</div><div class="u">SEG</div></div>
+      </div>
+    </div>
+    <div class="preco-box">
+      <div class="de">De <s>R$2.114</s></div>
+      <div class="por">POR APENAS</div>
+      <div class="preco">R$397</div>
+      <div class="parcela">ou 12x de R$41,06 no cartão</div>
+      <div class="subprice">Menos do que você perde num mês precificando errado.</div>
+    </div>
+    <!-- TODO: trocar href pelo LINK DO CHECKOUT (Hotmart) -->
+    <a href="https://pay.hotmart.com/D98009278J?off=mxse7c4z" class="btn btn--full" style="max-width:460px;margin:0 auto">
+      Quero aproveitar o desconto
+    </a>
+    <div class="pay">Pagamento seguro · Hotmart · Pix · Cartão · Boleto</div>
+    <img class="pay-icons" src="https://audenscompany.com.br/wp-content/uploads/2023/10/icons-meio-de-pagamento-1.png" alt="Hotmart, Pix, Visa, Mastercard, Boleto, PayPal">
+  </div>
+</section>
+
+<!-- ================= GARANTIA ================= -->
+<section class="sec gar">
+  <div class="container gar-grid">
+    <div>
+      <h2>O risco é todo meu</h2>
+      <p>7 dias de garantia incondicional. Você entra, assiste todo o conteúdo e, se por algum motivo não fizer sentido pra você, é só pedir o dinheiro de volta — sem burocracia e sem letra miúda.</p>
+      <a href="#oferta" class="btn">Quero entrar sem risco</a>
+    </div>
+    <img class="selo-img" src="https://audenscompany.com.br/wp-content/uploads/2025/09/GARANTIA-7-DIAS-1.png" alt="Garantia de 7 dias">
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="sec faq">
+  <div class="container">
+    <h2>Perguntas frequentes</h2>
+    <div class="acc">
+      <div class="acc-item">
+        <button class="acc-q">Meu delivery fatura pouco. Serve pra mim? <span class="pm">+</span></button>
+        <div class="acc-a"><p>Serve — e foi feita justamente pra você. A formação parte do zero e mostra como virar o jogo mesmo faturando pouco hoje, do mesmo jeito que eu fiz saindo de R$24 mil.</p></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-q">Não tenho tempo, vou conseguir assistir? <span class="pm">+</span></button>
+        <div class="acc-a"><p>Sim. As aulas são diretas ao ponto e você assiste no seu ritmo, pelo celular ou computador, quando der.</p></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-q">E se eu não entender nada de gestão ou de preço? <span class="pm">+</span></button>
+        <div class="acc-a"><p>Sem problema. O passo a passo começa do básico e você tem as planilhas prontas + o suporte no WhatsApp pra tirar dúvida.</p></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-q">Quanto tempo terei acesso? <span class="pm">+</span></button>
+        <div class="acc-a"><p>Assim que entra, você libera na hora todas as aulas e as planilhas, e assiste no seu ritmo — quando e quantas vezes quiser, pelo celular ou computador.</p></div>
+      </div>
+      <div class="acc-item">
+        <button class="acc-q">Possui garantia? <span class="pm">+</span></button>
+        <div class="acc-a"><p>Sim, 7 dias de garantia incondicional. Você entra, assiste e, se não fizer sentido, basta pedir o reembolso.</p></div>
+      </div>
+    </div>
+    <p class="zap-link">Ainda com dúvida? A garantia de 7 dias é justamente pra você entrar sem risco e decidir com calma.</p>
+  </div>
+</section>
+
+<!-- ================= CTA FINAL ================= -->
+<section class="sec final">
+  <div class="container">
+    <h2>Chegou a hora de viver do seu delivery</h2>
+    <p>Comece hoje por 12x de R$41,06 — com 7 dias de garantia. O risco é meu.</p>
+    <a href="https://pay.hotmart.com/D98009278J?off=mxse7c4z" class="btn">Quero garantir minha vaga</a>
+  </div>
+</section>
+
+<footer>
+  Vivendo de Delivery · Audens Company<br>
+  © 2026 — Todos os direitos reservados. Este produto não garante resultados. Resultados variam conforme aplicação.
+</footer>
+
+<!-- ================= STICKY MOBILE CTA ================= -->
+<div class="sticky">
+  <a href="#oferta" class="btn btn--full">Começar por 12x de R$41 <small>7 dias de garantia</small></a>
+</div>
+
+<script>
+  // FAQ accordion
+  document.querySelectorAll('.acc-q').forEach(function(b){
+    b.addEventListener('click',function(){
+      var item=b.parentElement;
+      var open=item.classList.contains('open');
+      document.querySelectorAll('.acc-item').forEach(function(i){i.classList.remove('open');i.querySelector('.pm').textContent='+';});
+      if(!open){item.classList.add('open');item.querySelector('.pm').textContent='–';}
+    });
+  });
+
+  // Contador regressivo de 10 minutos (reinicia a cada visita)
+  (function(){
+    var total = 10*60; // 10 minutos em segundos
+    var mEl = document.getElementById('cd-min');
+    var sEl = document.getElementById('cd-sec');
+    function render(){
+      var m = Math.floor(total/60), s = total%60;
+      if(mEl) mEl.textContent = (m<10?'0':'')+m;
+      if(sEl) sEl.textContent = (s<10?'0':'')+s;
+    }
+    render();
+    var iv = setInterval(function(){
+      if(total<=0){ clearInterval(iv); return; }
+      total--; render();
+    },1000);
+  })();
+</script>
+</body>
+</html>
