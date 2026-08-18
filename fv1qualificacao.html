@@ -597,7 +597,26 @@ function buildDiagnostico(){
   };
 }
 
-function viewFinal(){ return isQualified()?viewAgenda():viewYoutube(); }
+function viewFinal(){
+  if(valOf('faturamento')==='ate-15') return viewCurso();
+  return isQualified()?viewAgenda():viewYoutube();
+}
+function viewCurso(){
+  var nome=(STATE.nome||'').split(' ')[0]||'';
+  return ''+
+  '<div class="final">'+
+    '<div class="badge purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.1 2.7 2 6 2s6-.9 6-2v-4.5"/></svg></div>'+
+    '<h2>'+(nome?esc(nome)+', ':'')+'esse é o seu próximo passo 👇</h2>'+
+    '<p class="sub">No momento, investir em anúncios e assessoria pode não ser o ideal pra você — pelo custo e pela fase do seu negócio. Sem problema: o caminho agora é dominar gestão, precificação e vendas e finalmente ter lucro de verdade.</p>'+
+  '</div>'+
+  '<div class="yt-card">'+
+    '<div class="yt-top"><span class="yt-ic" style="background:#7c34f0;color:#fff">🎓</span>'+
+      '<div><b>Vivendo de Delivery</b><span>A formação acessível pra essa fase do seu negócio</span></div></div>'+
+    '<div class="yt-body"><p>Feita pra quem está começando, fatura menos de R$20 mil e ainda não tem lucro — ou já vende bem mas ainda não domina gestão e precificação. É o passo que falta pra destravar seu crescimento.</p>'+
+      '<a class="btn btn-primary btn-block" id="cursoBtn" href="'+esc(CONFIG.LP_VIVENDO_URL)+'" rel="noopener">Conhecer o Vivendo de Delivery <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></a></div>'+
+  '</div>'+
+  '<p class="small" style="text-align:center">Recebemos suas respostas. Quando sua operação crescer, a gente conversa sobre a assessoria.</p>';
+}
 
 function viewAgenda(){
   var nome=(STATE.nome||'').split(' ')[0]||'';
@@ -726,12 +745,11 @@ function bind(step){
       if(!ok){ statusEl.textContent='Confira o nome e o WhatsApp pra continuar.'; return; }
       statusEl.textContent='';
       STATE.nome=nome.value.trim(); STATE.whats=tel.value.trim(); STATE.email=email.value.trim(); STATE.insta=(document.getElementById('insta').value||'').trim();
-      /* Faixa baixa (< R$15 mil): manda pra LP Vivendo de Delivery e arquiva no CRM (sem mensagem) */
+      /* Faixa baixa (< R$15 mil): arquiva no CRM (sem mensagem) e vai pra tela do curso Vivendo de Delivery */
       if(valOf('faturamento')==='ate-15'){
         pushEvent('lead_submit',{qualificado:false});
         if(!leadSent){leadSent=true;enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'});}
-        pushEvent('lp_vivendo_redirect',{faixa:'ate-15'});
-        window.location.href=CONFIG.LP_VIVENDO_URL; return;
+        goNext(); return;
       }
       var qualified=isQualified();
       pushEvent('lead_submit',{qualificado:qualified});
@@ -743,6 +761,11 @@ function bind(step){
   }
 
   if(step.type==='final'){
+    if(valOf('faturamento')==='ate-15'){
+      pushEvent('lp_vivendo_view',{faixa:'ate-15'});
+      var cbtn=document.getElementById('cursoBtn'); if(cbtn)cbtn.addEventListener('click',function(){pushEvent('lp_vivendo_click');});
+      return;
+    }
     if(isQualified()){
       pushEvent('prova_view',{faixa:valOf('faturamento')});
       renderCases();
@@ -755,7 +778,12 @@ function bind(step){
   }
 }
 
-function goNext(){ if(idx<FLOW.length-1) render(idx+1); }
+function goNext(){
+  var ni=idx+1;
+  /* Faixa baixa (<15k) não passa pela pergunta de investir */
+  if(valOf('faturamento')==='ate-15' && FLOW[ni] && FLOW[ni].id==='investimento') ni++;
+  if(ni<FLOW.length) render(ni);
+}
 function goPrev(){ if(idx>0) render(idx-1); }
 
 /* =======================================================================
