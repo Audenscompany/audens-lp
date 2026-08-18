@@ -1312,6 +1312,9 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
     if(status)status.textContent='';
     var data={}; form.querySelectorAll('input,select').forEach(function(el,i){ if(el.type!=='checkbox') data[(el.name||el.id||'campo'+i)]=el.value; });
     var fat=(form.querySelector('select[name="faturamento"]')||{}).value||'';
+    var LP_FAIXA={'Até R$ 20 mil':'ate-20','R$ 20 mil a R$ 50 mil':'20-50','R$ 50 mil a R$ 100 mil':'50-100','R$ 100 mil a R$ 300 mil':'100-300','Acima de R$ 300 mil':'300+'};
+    var faixaLP=LP_FAIXA[(fat||'').trim()]||'';
+    var faixaBaixa=(faixaLP==='ate-20');   /* < R$20 mil -> LP Vivendo de Delivery + arquiva no CRM */
     var qualified = /100 mil|300 mil|Acima/.test(fat);
     pushEvent('lead_submit', {form:formId});
     if(qualified) pushEvent('qualified_lead', {faixa:fat});
@@ -1321,6 +1324,9 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       telefone:    (tel && tel.value || ''),
       email:       (email && email.value || '').trim(),
       faturamento: fat,
+      faixa:       faixaLP,
+      status:      faixaBaixa?'arquivado':'',
+      destino:     faixaBaixa?'lp-vivendo':'',
       instagram:   (form.querySelector('[name="insta"]')||{}).value || '',
       segmento:    (form.querySelector('[name="segmento"]')||{}).value || '',
       canal:       (form.querySelector('[name="canal"]')||{}).value || '',
@@ -1330,6 +1336,7 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       utm_medium:   utm('utm_medium','adset'),
       utm_source:   utm('utm_source') || 'meta'
     });
+    if(faixaBaixa){ pushEvent('lp_vivendo_redirect',{faixa:'ate-20'}); window.location.href='https://assessoriaaudens.com.br/vivendo-de-delivery/'; return; }
     form.style.display='none'; var prog=form.previousElementSibling; if(prog&&prog.classList.contains('prog'))prog.style.display='none';
     if(done)done.style.display='block';
   });
