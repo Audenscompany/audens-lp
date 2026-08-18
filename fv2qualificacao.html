@@ -130,10 +130,11 @@ fbq('init','288150133971064');fbq('track','PageView');
 var CONFIG = {
   CALENDLY_URL: 'https://calendly.com/audenscompany/diagnosticoestrategico',
   YOUTUBE_URL:  'https://www.youtube.com/@LucasRamong',
+  LP_VIVENDO_URL: 'https://assessoriaaudens.com.br/vivendo-de-delivery/',
   CRM_ENDPOINT: 'https://receberlead-471063273836.us-central1.run.app',
   CRM_SECRET:   'audens2025xk',
-  /* faixas que qualificam para reunião: R$30 mil+ (mapeadas p/ o padrão do CRM) */
-  FAIXAS_QUALIFICA: ['30-50','50-100','100-300'],
+  /* faixas que qualificam para reunião: R$15 mil+ (mapeadas p/ o padrão do CRM) */
+  FAIXAS_QUALIFICA: ['15-30','30-50','50-100','100-300'],
   CAPTURAR_NAO_QUALIFICADO: true
 };
 
@@ -331,6 +332,13 @@ function tplChoice(s){
 /* ---------- passo final: envia CRM e ramifica ---------- */
 function renderFinal(wrap){
   finalReached=true; updateProgress();
+  /* Faixa baixa (< R$15 mil): manda pra LP Vivendo de Delivery e arquiva no CRM (sem mensagem) */
+  if(faixaCod()==='0-15'){
+    pushEvent('lead_submit',{qualificado:false});
+    if(!leadSent){ leadSent=true; enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'}); }
+    pushEvent('lp_vivendo_redirect',{faixa:'0-15'});
+    location.href=CONFIG.LP_VIVENDO_URL; return;
+  }
   var qualified=isQualified();
   pushEvent('lead_submit',{qualificado:qualified});
   if(qualified){
