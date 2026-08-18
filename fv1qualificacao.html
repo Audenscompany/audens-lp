@@ -318,12 +318,13 @@ footer a{color:var(--purple-2)}
 var CONFIG = {
   CALENDLY_URL: 'https://calendly.com/audenscompany/diagnosticoestrategico',
   YOUTUBE_URL:  'https://www.youtube.com/@LucasRamong',
+  LP_VIVENDO_URL: 'https://assessoriaaudens.com.br/vivendo-de-delivery/',
   CRM_ENDPOINT: 'https://receberlead-471063273836.us-central1.run.app',
   CRM_SECRET:   'audens2025xk',
   /* De onde a LP puxa os cases (mesmo arquivo que o painel publica). */
   CLIENTES_URL: 'https://assessoriaaudens.com.br/clientes-data.js',
   IMG_BASE:     'https://assessoriaaudens.com.br/',
-  FAIXAS_QUALIFICA: ['20-50','50-100','100-300','300+'],
+  FAIXAS_QUALIFICA: ['15-20','20-50','50-100','100-300','300+'],
   CAPTURAR_NAO_QUALIFICADO: true
 };
 
@@ -431,7 +432,8 @@ var QUESTIONS = {
     ]},
   faturamento:{ kind:'choice', cols:1, qualifier:true, eyebrow:'Tamanho da operação', title:'Qual o faturamento mensal hoje?', sub:'É a informação que mais muda o tipo de plano que faz sentido pra você.',
     options:[
-      {value:'ate-20',label:'Até R$ 20 mil / mês',icon:'seed'},
+      {value:'ate-15',label:'Até R$ 15 mil / mês',icon:'seed'},
+      {value:'15-20',label:'De R$ 15 mil a R$ 20 mil / mês',icon:'seed'},
       {value:'20-50',label:'R$ 20 mil a R$ 50 mil / mês',icon:'bars1'},
       {value:'50-100',label:'R$ 50 mil a R$ 100 mil / mês',icon:'bars2'},
       {value:'100-300',label:'R$ 100 mil a R$ 300 mil / mês',icon:'bars3'},
@@ -724,6 +726,13 @@ function bind(step){
       if(!ok){ statusEl.textContent='Confira o nome e o WhatsApp pra continuar.'; return; }
       statusEl.textContent='';
       STATE.nome=nome.value.trim(); STATE.whats=tel.value.trim(); STATE.email=email.value.trim(); STATE.insta=(document.getElementById('insta').value||'').trim();
+      /* Faixa baixa (< R$15 mil): manda pra LP Vivendo de Delivery e arquiva no CRM (sem mensagem) */
+      if(valOf('faturamento')==='ate-15'){
+        pushEvent('lead_submit',{qualificado:false});
+        if(!leadSent){leadSent=true;enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'});}
+        pushEvent('lp_vivendo_redirect',{faixa:'ate-15'});
+        window.location.href=CONFIG.LP_VIVENDO_URL; return;
+      }
       var qualified=isQualified();
       pushEvent('lead_submit',{qualificado:qualified});
       if(qualified){ pushEvent('qualified_lead',{faixa:valOf('faturamento')}); if(!leadSent){leadSent=true;enviarCRM({status:'qualificado',reuniao_agendada:'nao'});} }
