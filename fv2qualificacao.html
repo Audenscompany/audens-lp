@@ -332,12 +332,15 @@ function tplChoice(s){
 /* ---------- passo final: envia CRM e ramifica ---------- */
 function renderFinal(wrap){
   finalReached=true; updateProgress();
-  /* Faixa baixa (< R$15 mil): manda pra LP Vivendo de Delivery e arquiva no CRM (sem mensagem) */
+  /* Faixa baixa (< R$15 mil): arquiva no CRM (sem mensagem) e mostra a tela do curso Vivendo de Delivery */
   if(faixaCod()==='0-15'){
     pushEvent('lead_submit',{qualificado:false});
     if(!leadSent){ leadSent=true; enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'}); }
-    pushEvent('lp_vivendo_redirect',{faixa:'0-15'});
-    location.href=CONFIG.LP_VIVENDO_URL; return;
+    pushEvent('lp_vivendo_view',{faixa:'0-15'});
+    wrap.innerHTML = tplCurso();
+    stage.appendChild(wrap);
+    var cb=document.getElementById('cursoBtn'); if(cb) cb.addEventListener('click',function(){ pushEvent('lp_vivendo_click'); });
+    return;
   }
   var qualified=isQualified();
   pushEvent('lead_submit',{qualificado:qualified});
@@ -369,6 +372,18 @@ function tplCalendar(){
     <div class="cal-inline" id="calInline"></div>`;
 }
 
+function tplCurso(){
+  fill.style.width='100%';
+  return `<div class="yt-wrap">
+    <div class="yt-ico">🎓</div>
+    <h1>Esse é o seu próximo passo 👇</h1>
+    <p class="subtitle">No momento, investir em anúncios e assessoria pode não ser o ideal pra você — pelo custo e pela fase do negócio. Sem problema: o caminho agora é dominar <b>gestão, precificação e vendas</b> e finalmente ter lucro de verdade.</p>
+    <div class="yt-card">
+      <p class="subtitle" style="margin-top:0"><b>🎓 Vivendo de Delivery</b> — a formação acessível feita pra quem está começando, fatura menos de R$20 mil e ainda não tem lucro (ou já vende bem, mas ainda não domina gestão e precificação).</p>
+      <a class="btn cta" id="cursoBtn" href="${CONFIG.LP_VIVENDO_URL}" rel="noopener" style="display:inline-block;text-decoration:none;margin-top:18px">Conhecer o Vivendo de Delivery →</a>
+    </div>
+  </div>`;
+}
 function tplYoutube(){
   fill.style.width='100%';
   return `<div class="yt-wrap">
@@ -423,6 +438,8 @@ function attemptNext(s){
   if(s.type==='choice'){
     if(s.required && !answers[s.key]){ document.getElementById('err').classList.add('show'); return; }
   }
+  /* Faixa baixa (<15k) pula a pergunta de investir e vai direto pra tela do curso */
+  if(s.key==='faturamento' && answers.faturamento==='Menos de R$15.000'){ go(steps.length-1); return; }
   go(idx+1);
 }
 
