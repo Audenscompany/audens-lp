@@ -270,6 +270,7 @@ footer a{color:var(--purple-2)}
 </style>
 </head>
 <body>
+<script src="https://assessoriaaudens.com.br/depoimentos-data.js" onerror="void 0"></script>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -607,8 +608,9 @@ function viewFinal(){
   var f=valOf('faturamento');
   var cursoNaoQuer = !isQualified() && ['15-20','20-50','15-30','30-50'].indexOf(f)>=0; /* 15-50k não quer investir -> curso */
   if(f==='ate-15' || cursoNaoQuer) return viewCurso();
-  var consc = !isQualified() && ['50-100','100-300','300+'].indexOf(f)>=0; /* >=50k não quer -> conscientização (cases+agenda) */
-  return (isQualified()||consc)?viewAgenda():viewYoutube();
+  var consc = !isQualified() && ['50-100','100-300','300+'].indexOf(f)>=0; /* >=50k não quer -> conscientização (vídeos + agenda) */
+  if(consc) return viewConsc();
+  return isQualified()?viewAgenda():viewYoutube();
 }
 function viewCurso(){
   var nome=(STATE.nome||'').split(' ')[0]||'';
@@ -685,6 +687,33 @@ function showCalendarScreen(){
   initCalendly();
 }
 
+function videoDepoimentos(){
+  var list=(window.AUDENS_DEPOIMENTOS&&window.AUDENS_DEPOIMENTOS.length)?window.AUDENS_DEPOIMENTOS:[];
+  var items=list.map(function(v){ if(!v||!v.video) return ''; var m=String(v.video).match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]{11})/); if(!m) return '';
+    return '<div style="flex:0 0 auto;width:188px;scroll-snap-align:start">'+
+      '<div style="position:relative;width:100%;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#000">'+
+      '<iframe src="https://www.youtube.com/embed/'+m[1]+'" title="depoimento" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>'+
+      (v.quote?'<p style="font-size:13px;margin:8px 2px 0;font-weight:600;line-height:1.35;color:#fff">“'+esc(v.quote)+'”</p>':'')+
+      '<p style="font-size:12px;color:var(--muted);margin:2px">'+esc(v.role||v.name||'')+'</p></div>';
+  }).filter(Boolean).join('');
+  if(!items) return '';
+  return '<div style="display:flex;gap:12px;overflow-x:auto;padding:6px 2px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch">'+items+'</div>';
+}
+function viewConsc(){
+  var nome=(STATE.nome||'').split(' ')[0]||'';
+  var provas=videoDepoimentos();
+  return ''+
+  '<div class="final">'+
+    '<div class="badge purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></div>'+
+    '<h2>'+(nome?esc(nome)+', ':'')+'antes de decidir, veja quem já passou por isso 👇</h2>'+
+    '<p class="sub">A gente entende o receio de investir em tráfego. Veja no vídeo o que donos como você conseguiram — e, se fizer sentido, marque um diagnóstico gratuito e sem compromisso.</p>'+
+  '</div>'+
+  (provas||'')+
+  '<div class="pre-sched" style="margin-top:18px">'+
+    '<div class="who"><span class="av">📅</span><div><b>Diagnóstico Estratégico do seu delivery</b><br><span class="small">Online · ~30 min · 100% gratuito</span></div></div>'+
+  '</div>'+
+  '<div class="qnav"><button class="btn btn-primary btn-block toAgendaBtn">Agendar meu diagnóstico gratuito <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button></div>';
+}
 function viewYoutube(){
   var nome=(STATE.nome||'').split(' ')[0]||'';
   return ''+
@@ -786,7 +815,7 @@ function bind(step){
     var consc=!isQualified() && ['50-100','100-300','300+'].indexOf(fFim)>=0;
     if(isQualified() || consc){
       pushEvent(consc?'conscientizacao_view':'prova_view',{faixa:valOf('faturamento')});
-      renderCases();
+      if(!consc) renderCases();
       stage.querySelectorAll('.toAgendaBtn').forEach(function(b){ b.addEventListener('click', showCalendarScreen); });
     } else {
       pushEvent('youtube_redirect',{faixa:valOf('faturamento')});
