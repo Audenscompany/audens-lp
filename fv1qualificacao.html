@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script>
+/* Atribuição (UTMs do anúncio + fbp/fbc) — captura na 1ª visita e persiste p/ não perder na navegação */
+(function(){var KEYS=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid'];var qs;try{qs=new URLSearchParams(window.location.search);}catch(e){qs={get:function(){return null;}};}var salvo={};try{salvo=JSON.parse(localStorage.getItem('audens_attrib')||'{}');}catch(e){}KEYS.forEach(function(k){var v=qs.get(k);if(v)salvo[k]=v;});var m;m=document.cookie.match(/_fbp=([^;]+)/);if(m)salvo.fbp=m[1];m=document.cookie.match(/_fbc=([^;]+)/);if(m)salvo.fbc=m[1];if(!salvo.fbc&&salvo.fbclid)salvo.fbc='fb.1.'+Date.now()+'.'+salvo.fbclid;try{localStorage.setItem('audens_attrib',JSON.stringify(salvo));}catch(e){}window.__audensAttrib=salvo;})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Raio-X do Delivery · Audens Company</title>
@@ -370,14 +374,16 @@ function pushEvent(name,params){
    CRM
    ======================================================================= */
 var URLQ; try{ URLQ=new URLSearchParams(location.search); }catch(e){ URLQ={get:function(){return '';}}; }
-function utmv(){ for(var i=0;i<arguments.length;i++){ var v=URLQ.get(arguments[i]); if(v) return v; } return ''; }
+function utmv(){ var A=window.__audensAttrib||{}; for(var i=0;i<arguments.length;i++){ var k=arguments[i]; if(A[k]) return A[k]; var v=URLQ.get(k); if(v) return v; } return ''; }
 function enviarCRM(extra){
   if(!CONFIG.CRM_ENDPOINT || !CONFIG.CRM_SECRET) return;
   var base = {
     nome:(STATE.nome||'').trim(), telefone:(STATE.whats||''), email:(STATE.email||'').trim(), instagram:(STATE.insta||''),
     faturamento:labelOf('faturamento'), faixa:valOf('faturamento'), segmento:labelOf('segmento'), canal:labelOf('canal'), desafio:labelOf('desafio'), investimento:labelOf('investimento'),
     origem:'lp-audens-quiz-fv1',
-    utm_campaign:utmv('utm_campaign','campaign'), utm_content:utmv('utm_content','ad'), utm_medium:utmv('utm_medium','adset'), utm_source:utmv('utm_source')||'meta'
+    utm_campaign:utmv('utm_campaign','campaign'), utm_content:utmv('utm_content','ad'), utm_medium:utmv('utm_medium','adset'), utm_source:utmv('utm_source')||'meta',
+    ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'), conjunto:utmv('utm_medium','adset'),
+    fbp:(document.cookie.match(/_fbp=([^;]+)/)||[])[1]||(window.__audensAttrib||{}).fbp||'', fbc:(document.cookie.match(/_fbc=([^;]+)/)||[])[1]||(window.__audensAttrib||{}).fbc||''
   };
   if(extra) for(var k in extra) base[k]=extra[k];
   try{ fetch(CONFIG.CRM_ENDPOINT,{method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json','X-Webhook-Secret':CONFIG.CRM_SECRET},body:JSON.stringify(base)}).catch(function(){}); }catch(e){}
