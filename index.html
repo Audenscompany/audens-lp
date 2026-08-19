@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<script>
+/* Atribuição (UTMs do anúncio + fbp/fbc) — captura na 1ª visita e persiste p/ não perder na navegação */
+(function(){var KEYS=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid'];var qs;try{qs=new URLSearchParams(window.location.search);}catch(e){qs={get:function(){return null;}};}var salvo={};try{salvo=JSON.parse(localStorage.getItem('audens_attrib')||'{}');}catch(e){}KEYS.forEach(function(k){var v=qs.get(k);if(v)salvo[k]=v;});var m;m=document.cookie.match(/_fbp=([^;]+)/);if(m)salvo.fbp=m[1];m=document.cookie.match(/_fbc=([^;]+)/);if(m)salvo.fbc=m[1];if(!salvo.fbc&&salvo.fbclid)salvo.fbc='fb.1.'+Date.now()+'.'+salvo.fbclid;try{localStorage.setItem('audens_attrib',JSON.stringify(salvo));}catch(e){}window.__audensAttrib=salvo;})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Audens Company — Marketing de delivery feito por operador</title>
@@ -1125,7 +1129,7 @@ window.dataLayer = window.dataLayer || [];
   try{ sid = sessionStorage.getItem('audens_sid'); if(!sid){ sid = rid(); sessionStorage.setItem('audens_sid', sid); } }catch(e){ sid = rid(); }
   var Q = URLQ_SAFE();
   function URLQ_SAFE(){ try{ return new URLSearchParams(location.search); }catch(e){ return {get:function(){return '';}}; } }
-  function utm(k){ try{ return Q.get(k)||''; }catch(e){ return ''; } }
+  function utm(k){ try{ var A=window.__audensAttrib||{}; return A[k]||Q.get(k)||''; }catch(e){ return ''; } }
   var UTMS = { source:utm('utm_source'), medium:utm('utm_medium'), campaign:utm('utm_campaign'), content:utm('utm_content'), term:utm('utm_term') };
   function device(){ return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'mobile' : 'desktop'; }
   var queue = [], timer = null;
@@ -1265,7 +1269,7 @@ document.querySelectorAll('.qa button').forEach(function(btn){
 var CRM_ENDPOINT = 'https://receberlead-471063273836.us-central1.run.app';
 var CRM_SECRET   = 'audens2025xk';   /* WEBHOOK_SECRET do Cloud Run */
 var URLQ = new URLSearchParams(location.search);
-function utm(){ for(var i=0;i<arguments.length;i++){ var v=URLQ.get(arguments[i]); if(v) return v; } return ''; }
+function utm(){ var A=window.__audensAttrib||{}; for(var i=0;i<arguments.length;i++){ var k=arguments[i]; if(A[k]) return A[k]; var v=URLQ.get(k); if(v) return v; } return ''; }
 function enviarCRM(lead){
   if(!CRM_ENDPOINT || !CRM_SECRET) return;   /* sem secret configurado, não dispara */
   try{
@@ -1334,7 +1338,12 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       utm_campaign: utm('utm_campaign','campaign'),
       utm_content:  utm('utm_content','ad'),
       utm_medium:   utm('utm_medium','adset'),
-      utm_source:   utm('utm_source') || 'meta'
+      utm_source:   utm('utm_source') || 'meta',
+      ad:           utm('utm_content','ad'),
+      campanha:     utm('utm_campaign','campaign'),
+      conjunto:     utm('utm_medium','adset'),
+      fbp:          (document.cookie.match(/_fbp=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbp || '',
+      fbc:          (document.cookie.match(/_fbc=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbc || ''
     });
     if(faixaBaixa){ pushEvent('lp_vivendo_redirect',{faixa:'ate-20'}); window.location.href='https://assessoriaaudens.com.br/vivendo-de-delivery/'; return; }
     form.style.display='none'; var prog=form.previousElementSibling; if(prog&&prog.classList.contains('prog'))prog.style.display='none';
