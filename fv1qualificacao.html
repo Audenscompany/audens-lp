@@ -604,7 +604,9 @@ function buildDiagnostico(){
 }
 
 function viewFinal(){
-  if(valOf('faturamento')==='ate-15') return viewCurso();
+  var f=valOf('faturamento');
+  var cursoNaoQuer = !isQualified() && ['15-20','20-50','15-30','30-50'].indexOf(f)>=0; /* 15-50k não quer investir -> curso */
+  if(f==='ate-15' || cursoNaoQuer) return viewCurso();
   return isQualified()?viewAgenda():viewYoutube();
 }
 function viewCurso(){
@@ -618,7 +620,7 @@ function viewCurso(){
   '<div class="yt-card">'+
     '<div class="yt-top"><span class="yt-ic" style="background:#7c34f0;color:#fff">🎓</span>'+
       '<div><b>Vivendo de Delivery</b><span>A formação acessível pra essa fase do seu negócio</span></div></div>'+
-    '<div class="yt-body"><p>Feita pra quem está começando, fatura menos de R$20 mil e ainda não tem lucro — ou já vende bem mas ainda não domina gestão e precificação. É o passo que falta pra destravar seu crescimento.</p>'+
+    '<div class="yt-body"><p>Feita pra você dominar gestão, precificação e vendas e ter lucro de verdade — no seu ritmo e por conta própria, sem depender de investir pesado em anúncio agora. É o passo que falta pra destravar seu crescimento.</p>'+
       '<a class="btn btn-primary btn-block" id="cursoBtn" href="'+esc(CONFIG.LP_VIVENDO_URL)+'" rel="noopener">Conhecer o Vivendo de Delivery <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></a></div>'+
   '</div>'+
   '<p class="small" style="text-align:center">Recebemos suas respostas. Quando sua operação crescer, a gente conversa sobre a assessoria.</p>';
@@ -760,15 +762,23 @@ function bind(step){
       var qualified=isQualified();
       pushEvent('lead_submit',{qualificado:qualified});
       if(qualified){ pushEvent('qualified_lead',{faixa:valOf('faturamento')}); if(!leadSent){leadSent=true;enviarCRM({status:'qualificado',reuniao_agendada:'nao'});} }
-      else { if(CONFIG.CAPTURAR_NAO_QUALIFICADO && !leadSent){leadSent=true;enviarCRM({status:'nao-qualificado',prioridade:'baixa',destino:'youtube'});} }
+      else {
+        var fBaixo=valOf('faturamento');
+        if(['15-20','20-50','15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso + arquiva */
+          if(!leadSent){leadSent=true;enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'});}
+        } else { /* >=50k não quer -> YouTube (conscientização vem na Fase 2) */
+          if(CONFIG.CAPTURAR_NAO_QUALIFICADO && !leadSent){leadSent=true;enviarCRM({status:'nao-qualificado',prioridade:'baixa',destino:'youtube'});}
+        }
+      }
       goNext();
     });
     return;
   }
 
   if(step.type==='final'){
-    if(valOf('faturamento')==='ate-15'){
-      pushEvent('lp_vivendo_view',{faixa:'ate-15'});
+    var fFim=valOf('faturamento');
+    if(fFim==='ate-15' || (!isQualified() && ['15-20','20-50','15-30','30-50'].indexOf(fFim)>=0)){
+      pushEvent('lp_vivendo_view',{faixa:fFim});
       var cbtn=document.getElementById('cursoBtn'); if(cbtn)cbtn.addEventListener('click',function(){pushEvent('lp_vivendo_click');});
       return;
     }
