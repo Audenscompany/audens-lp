@@ -366,12 +366,14 @@ function renderFinal(wrap){
       wrap.innerHTML = tplCurso();
       stage.appendChild(wrap);
       var cb2=document.getElementById('cursoBtn'); if(cb2) cb2.addEventListener('click',function(){ pushEvent('lp_vivendo_click'); });
-    } else { /* >=50k não quer -> YouTube (conscientização vem na Fase 2) */
-      if(CONFIG.CAPTURAR_NAO_QUALIFICADO && !leadSent){ leadSent=true; enviarCRM({status:'nao-qualificado',prioridade:'baixa',destino:'youtube'}); }
-      wrap.innerHTML = tplYoutube();
+    } else { /* >=50k não quer -> conscientização (cases + Calendly), mantém como lead ativo */
+      if(!leadSent){ leadSent=true; enviarCRM({status:'nao-qualificado',prioridade:'media',destino:'conscientizacao'}); }
+      pushEvent('conscientizacao_view',{faixa:fBaixo});
+      wrap.innerHTML = tplConscientizacao();
+      stage.className='stage wide cal';
       stage.appendChild(wrap);
-      pushEvent('youtube_redirect',{faixa:fBaixo});
-      var yt=document.getElementById('ytBtn'); if(yt) yt.addEventListener('click',function(){ pushEvent('youtube_click'); });
+      pushEvent('schedule_view',{faixa:fBaixo});
+      initCalendly();
     }
   }
 }
@@ -387,6 +389,24 @@ function tplCalendar(){
     <div class="cal-inline" id="calInline"></div>`;
 }
 
+function tplConscientizacao(){
+  fill.style.width='95%';
+  return `<h1>Antes de decidir, veja o que quem investiu conseguiu 👇</h1>
+    <p class="subtitle">A gente entende o receio de investir em tráfego — mas costuma ser justamente essa decisão que separa quem cresce de quem estaciona. Alguns resultados reais de operações como a sua:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0">
+      <div style="background:#fff;border:1px solid #ececf2;border-radius:12px;padding:12px 14px;text-align:left"><b style="display:block">Perto do Fogo</b><span style="color:#555;font-size:14px">R$27 mil → <b style="color:#16a34a">R$224 mil</b>/mês</span></div>
+      <div style="background:#fff;border:1px solid #ececf2;border-radius:12px;padding:12px 14px;text-align:left"><b style="display:block">Gerrá Burguer</b><span style="color:#555;font-size:14px">R$37 mil → <b style="color:#16a34a">R$120 mil</b>/mês</span></div>
+      <div style="background:#fff;border:1px solid #ececf2;border-radius:12px;padding:12px 14px;text-align:left"><b style="display:block">63 Hamburgueria</b><span style="color:#555;font-size:14px">Dobrou o faturamento em <b style="color:#16a34a">60 dias</b></span></div>
+      <div style="background:#fff;border:1px solid #ececf2;border-radius:12px;padding:12px 14px;text-align:left"><b style="display:block">Naliati'S</b><span style="color:#555;font-size:14px">R$37,6 mil → <b style="color:#16a34a">R$73,1 mil</b> em 60 dias</span></div>
+    </div>
+    <p class="subtitle">Que tal um <b>diagnóstico gratuito</b> e sem compromisso pra ver se faz sentido pro seu momento? Você sai com o que mudar primeiro — e investe só se quiser.</p>
+    <div class="meet-card">
+      <div class="meet-ico">📅</div>
+      <div><div class="t">Diagnóstico Estratégico de Tráfego</div>
+      <div class="d">⏱ 60 minutos · 🌐 Horário de Brasília · 100% gratuito</div></div>
+    </div>
+    <div class="cal-inline" id="calInline"></div>`;
+}
 function tplCurso(){
   fill.style.width='100%';
   return `<div class="yt-wrap">
