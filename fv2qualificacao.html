@@ -117,6 +117,7 @@ fbq('init','288150133971064');fbq('track','PageView');
 </style>
 </head>
 <body>
+<script src="https://assessoriaaudens.com.br/depoimentos-data.js" onerror="void 0"></script>
 <div id="progress-track"><div id="progress-fill"></div></div>
 <button id="back" title="Voltar">&#8249;</button>
 
@@ -389,23 +390,34 @@ function tplCalendar(){
     <div class="cal-inline" id="calInline"></div>`;
 }
 
+function _escFV2(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
+function videoDepoimentos(){
+  var list=(window.AUDENS_DEPOIMENTOS&&window.AUDENS_DEPOIMENTOS.length)?window.AUDENS_DEPOIMENTOS:[];
+  var items=list.map(function(v){ if(!v||!v.video) return ''; var m=String(v.video).match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]{11})/); if(!m) return '';
+    return '<div style="flex:0 0 auto;width:188px;scroll-snap-align:start">'+
+      '<div style="position:relative;width:100%;aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 6px 18px rgba(0,0,0,.12)">'+
+      '<iframe src="https://www.youtube.com/embed/'+m[1]+'" title="depoimento" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>'+
+      (v.quote?'<p style="font-size:13px;margin:8px 2px 0;font-weight:600;line-height:1.35;text-align:left">“'+_escFV2(v.quote)+'”</p>':'')+
+      '<p style="font-size:12px;color:#777;margin:2px;text-align:left">'+_escFV2(v.role||v.name||'')+'</p></div>';
+  }).filter(Boolean).join('');
+  if(!items) return '';
+  return '<div style="display:flex;gap:12px;overflow-x:auto;padding:6px 2px 12px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch">'+items+'</div>';
+}
 function tplConscientizacao(){
   fill.style.width='95%';
-  return `<h1>Antes de decidir, veja o que quem investiu conseguiu 👇</h1>
-    <p class="subtitle">A gente entende o receio de investir em tráfego — mas costuma ser justamente essa decisão que separa quem cresce de quem estaciona. Alguns resultados reais de operações como a sua:</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0">
-      <div style="background:#fff;border:1px solid #ececf2;border-radius:12px;padding:12px 14px;text-align:left"><b style="display:block">Perto do Fogo</b><span style="color:#555;font-size:14px">R$27 mil → <b style="color:#16a34a">R$224 mil</b>/mês</span></div>
-      <div style="background:#fff;border:1px solid #ececf2;border-radius:12px;padding:12px 14px;text-align:left"><b style="display:block">Gerrá Burguer</b><span style="color:#555;font-size:14px">R$37 mil → <b style="color:#16a34a">R$120 mil</b>/mês</span></div>
-      <div style="background:#fff;border:1px solid #ececf2;border-radius:12px;padding:12px 14px;text-align:left"><b style="display:block">63 Hamburgueria</b><span style="color:#555;font-size:14px">Dobrou o faturamento em <b style="color:#16a34a">60 dias</b></span></div>
-      <div style="background:#fff;border:1px solid #ececf2;border-radius:12px;padding:12px 14px;text-align:left"><b style="display:block">Naliati'S</b><span style="color:#555;font-size:14px">R$37,6 mil → <b style="color:#16a34a">R$73,1 mil</b> em 60 dias</span></div>
-    </div>
-    <p class="subtitle">Que tal um <b>diagnóstico gratuito</b> e sem compromisso pra ver se faz sentido pro seu momento? Você sai com o que mudar primeiro — e investe só se quiser.</p>
-    <div class="meet-card">
-      <div class="meet-ico">📅</div>
-      <div><div class="t">Diagnóstico Estratégico de Tráfego</div>
-      <div class="d">⏱ 60 minutos · 🌐 Horário de Brasília · 100% gratuito</div></div>
-    </div>
-    <div class="cal-inline" id="calInline"></div>`;
+  var card=function(n,r){return '<div style="background:#fff;border:1px solid #ececf2;border-radius:12px;padding:12px 14px;text-align:left"><b style="display:block">'+n+'</b><span style="color:#555;font-size:14px">'+r+'</span></div>';};
+  var fallback='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0">'+
+    card('Perto do Fogo','R$27 mil → <b style="color:#16a34a">R$224 mil</b>/mês')+
+    card('Gerrá Burguer','R$37 mil → <b style="color:#16a34a">R$120 mil</b>/mês')+
+    card('63 Hamburgueria','Dobrou o faturamento em <b style="color:#16a34a">60 dias</b>')+
+    card("Naliati'S",'R$37,6 mil → <b style="color:#16a34a">R$73,1 mil</b> em 60 dias')+'</div>';
+  var provas = videoDepoimentos() || fallback;
+  return '<h1>Antes de decidir, veja quem já passou por isso 👇</h1>'+
+    '<p class="subtitle">A gente entende o receio de investir em tráfego. Veja no vídeo o que donos como você conseguiram — e, se fizer sentido, marque um diagnóstico gratuito e sem compromisso.</p>'+
+    provas+
+    '<p class="subtitle" style="margin-top:14px">Você sai do diagnóstico com o que mudar primeiro — e investe só se quiser.</p>'+
+    '<div class="meet-card"><div class="meet-ico">📅</div><div><div class="t">Diagnóstico Estratégico de Tráfego</div><div class="d">⏱ 60 minutos · 🌐 Horário de Brasília · 100% gratuito</div></div></div>'+
+    '<div class="cal-inline" id="calInline"></div>';
 }
 function tplCurso(){
   fill.style.width='100%';
