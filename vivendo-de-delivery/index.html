@@ -496,5 +496,45 @@
     },1000);
   })();
 </script>
+<!-- ===== Tracking Audens (Growth Central) — curso Vivendo de Delivery ===== -->
+<script>
+(function(){
+  var TRACK_URL='https://receberlead-471063273836.us-central1.run.app/track';
+  function rid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,10);}
+  var sid; try{sid=sessionStorage.getItem('audens_sid');if(!sid){sid=rid();sessionStorage.setItem('audens_sid',sid);}}catch(e){sid=rid();}
+  var Q; try{Q=new URLSearchParams(location.search);}catch(e){Q={get:function(){return '';}};}
+  function utm(k){try{return Q.get(k)||'';}catch(e){return '';}}
+  var UTMS={source:utm('utm_source'),medium:utm('utm_medium'),campaign:utm('utm_campaign'),content:utm('utm_content'),term:utm('utm_term')};
+  function device(){return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'mobile':'desktop';}
+  var queue=[],timer=null;
+  function flush(useBeacon){
+    if(timer){clearTimeout(timer);timer=null;}
+    if(!queue.length)return;
+    var batch=queue.splice(0,queue.length);
+    var payload=JSON.stringify({sid:sid,page:location.pathname,device:device(),ref:(document.referrer||''),utms:UTMS,events:batch});
+    try{
+      if(useBeacon&&navigator.sendBeacon){navigator.sendBeacon(TRACK_URL,new Blob([payload],{type:'text/plain'}));}
+      else{fetch(TRACK_URL,{method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json'},body:payload}).catch(function(){});}
+    }catch(e){}
+  }
+  function enqueue(name,params){
+    queue.push({e:name,p:params||{},t:Date.now()});
+    if(name==='checkout_click'){flush(true);return;}
+    if(!timer)timer=setTimeout(function(){flush();},3000);
+  }
+  addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')flush(true);});
+  addEventListener('pagehide',function(){flush(true);});
+  window.__ownTrack=enqueue;
+  function ev(n,p){try{window.__ownTrack(n,p||{});}catch(e){}}
+  addEventListener('load',function(){ev('lp_view',{variante:'curso'});});
+  document.addEventListener('click',function(e){
+    var a=e.target&&e.target.closest?e.target.closest('a'):null; if(!a)return;
+    var href=a.getAttribute('href')||'';
+    if(/pay\.hotmart\.com/i.test(href)){ ev('checkout_click',{dest:'hotmart'}); }
+    else if(href.indexOf('#oferta')>=0){ ev('offer_cta_click',{}); }
+  },true);
+})();
+</script>
+
 </body>
 </html>
