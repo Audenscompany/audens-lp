@@ -359,11 +359,20 @@ function renderFinal(wrap){
     pushEvent('schedule_view',{faixa:faixaCod()});
     initCalendly();
   } else {
-    if(CONFIG.CAPTURAR_NAO_QUALIFICADO && !leadSent){ leadSent=true; enviarCRM({status:'nao-qualificado',prioridade:'baixa',destino:'youtube'}); }
-    wrap.innerHTML = tplYoutube();
-    stage.appendChild(wrap);
-    pushEvent('youtube_redirect',{faixa:faixaCod()});
-    var yt=document.getElementById('ytBtn'); if(yt) yt.addEventListener('click',function(){ pushEvent('youtube_click'); });
+    var fBaixo=faixaCod();
+    if(['15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso + arquiva */
+      if(!leadSent){ leadSent=true; enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'}); }
+      pushEvent('lp_vivendo_view',{faixa:fBaixo});
+      wrap.innerHTML = tplCurso();
+      stage.appendChild(wrap);
+      var cb2=document.getElementById('cursoBtn'); if(cb2) cb2.addEventListener('click',function(){ pushEvent('lp_vivendo_click'); });
+    } else { /* >=50k não quer -> YouTube (conscientização vem na Fase 2) */
+      if(CONFIG.CAPTURAR_NAO_QUALIFICADO && !leadSent){ leadSent=true; enviarCRM({status:'nao-qualificado',prioridade:'baixa',destino:'youtube'}); }
+      wrap.innerHTML = tplYoutube();
+      stage.appendChild(wrap);
+      pushEvent('youtube_redirect',{faixa:fBaixo});
+      var yt=document.getElementById('ytBtn'); if(yt) yt.addEventListener('click',function(){ pushEvent('youtube_click'); });
+    }
   }
 }
 
@@ -385,7 +394,7 @@ function tplCurso(){
     <h1>Esse é o seu próximo passo 👇</h1>
     <p class="subtitle">No momento, investir em anúncios e assessoria pode não ser o ideal pra você — pelo custo e pela fase do negócio. Sem problema: o caminho agora é dominar <b>gestão, precificação e vendas</b> e finalmente ter lucro de verdade.</p>
     <div class="yt-card">
-      <p class="subtitle" style="margin-top:0"><b>🎓 Vivendo de Delivery</b> — a formação acessível feita pra quem está começando, fatura menos de R$20 mil e ainda não tem lucro (ou já vende bem, mas ainda não domina gestão e precificação).</p>
+      <p class="subtitle" style="margin-top:0"><b>🎓 Vivendo de Delivery</b> — a formação acessível pra você dominar gestão, precificação e vendas e ter lucro de verdade, no seu ritmo e por conta própria (sem depender de investir pesado em anúncio agora).</p>
       <a class="btn cta" id="cursoBtn" href="${CONFIG.LP_VIVENDO_URL}" rel="noopener" style="display:inline-block;text-decoration:none;margin-top:18px">Conhecer o Vivendo de Delivery →</a>
     </div>
   </div>`;
