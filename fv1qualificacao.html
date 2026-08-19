@@ -607,7 +607,8 @@ function viewFinal(){
   var f=valOf('faturamento');
   var cursoNaoQuer = !isQualified() && ['15-20','20-50','15-30','30-50'].indexOf(f)>=0; /* 15-50k não quer investir -> curso */
   if(f==='ate-15' || cursoNaoQuer) return viewCurso();
-  return isQualified()?viewAgenda():viewYoutube();
+  var consc = !isQualified() && ['50-100','100-300','300+'].indexOf(f)>=0; /* >=50k não quer -> conscientização (cases+agenda) */
+  return (isQualified()||consc)?viewAgenda():viewYoutube();
 }
 function viewCurso(){
   var nome=(STATE.nome||'').split(' ')[0]||'';
@@ -766,8 +767,8 @@ function bind(step){
         var fBaixo=valOf('faturamento');
         if(['15-20','20-50','15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso + arquiva */
           if(!leadSent){leadSent=true;enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'});}
-        } else { /* >=50k não quer -> YouTube (conscientização vem na Fase 2) */
-          if(CONFIG.CAPTURAR_NAO_QUALIFICADO && !leadSent){leadSent=true;enviarCRM({status:'nao-qualificado',prioridade:'baixa',destino:'youtube'});}
+        } else { /* >=50k não quer -> conscientização (cases + agenda), mantém como lead ativo */
+          if(!leadSent){leadSent=true;enviarCRM({status:'nao-qualificado',prioridade:'media',destino:'conscientizacao'});}
         }
       }
       goNext();
@@ -782,8 +783,9 @@ function bind(step){
       var cbtn=document.getElementById('cursoBtn'); if(cbtn)cbtn.addEventListener('click',function(){pushEvent('lp_vivendo_click');});
       return;
     }
-    if(isQualified()){
-      pushEvent('prova_view',{faixa:valOf('faturamento')});
+    var consc=!isQualified() && ['50-100','100-300','300+'].indexOf(fFim)>=0;
+    if(isQualified() || consc){
+      pushEvent(consc?'conscientizacao_view':'prova_view',{faixa:valOf('faturamento')});
       renderCases();
       stage.querySelectorAll('.toAgendaBtn').forEach(function(b){ b.addEventListener('click', showCalendarScreen); });
     } else {
