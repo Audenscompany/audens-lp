@@ -226,12 +226,12 @@ function enviarCRM(extra){
    ======================================================================= */
 const steps = [
   { type:'intro',
-    h:'Descubra em 1 minuto o que está travando o faturamento do seu delivery.',
-    list:['🔍 Uma análise gratuita da estrutura de marketing e vendas da sua operação',
-          '📈 Onde está o gargalo do seu crescimento: no funil, na oferta ou no cardápio',
-          '🍔 Feita por quem fatura +R$500 mil/mês na própria operação (Burguer FC + Pizza FC)',
-          '⏱️ Leva menos de 1 minuto pra responder'],
-    note:'Rápido, gratuito e sem compromisso.',
+    h:'Uma análise completa do seu delivery, feita por quem vive disso todo dia.',
+    list:['🎥 50 minutos numa chamada de vídeo, olhando o SEU negócio de perto',
+          '📈 A gente aponta onde está o gargalo: no funil, na oferta ou no cardápio',
+          '🍔 Feita por quem opera uma hamburgueria e uma pizzaria que vendem +R$500 mil/mês (Burguer FC + Pizza FC)',
+          '✅ 100% gratuita e sem compromisso'],
+    note:'Responda em menos de 1 minuto pra ver se o seu negócio tem perfil.',
     cta:'QUERO MINHA ANÁLISE GRATUITA' },
 
   { type:'text', key:'nome', h:'Qual seu nome e sobrenome?', required:true },
@@ -539,11 +539,17 @@ function dispararReuniaoAgendada(){
 function showConfirmacao(){
   finalReached=true; fill.style.width='100%'; back.style.display='none';
   stage.className='stage';
+  var pnome=(answers.nome||'').split(' ')[0];
   stage.innerHTML=`<div class="step active" id="done">
     <div class="check">✓</div>
-    <h1>Horário agendado!</h1>
-    <p class="subtitle">Enviamos os detalhes do seu<br><b>Diagnóstico Estratégico de Tráfego</b> para o seu WhatsApp e e-mail.</p>
-    <p class="subtitle" style="margin-top:14px">${answers.nome||''}</p>
+    <h1>Horário reservado${pnome? ', '+_escFV2(pnome):''}!</h1>
+    <p class="subtitle">Seu <b>Diagnóstico Estratégico</b> é uma <b>chamada de vídeo de 50 minutos</b>, olhando o seu negócio de perto. Enviamos os detalhes pro seu WhatsApp e e-mail.</p>
+    <div class="meet-card" style="margin-top:20px;text-align:left">
+      <div class="meet-ico">📞</div>
+      <div><div class="t">Vamos te ligar pra confirmar</div>
+      <div class="d">Precisamos dessa confirmação pra reservar esse horário <b>exclusivamente pra você</b> — é só uma vaga por horário.</div></div>
+    </div>
+    <p class="subtitle" style="margin-top:18px">Na reunião, <b>chame quem decide com você</b>: sócio(s), esposo(a) ou o time. A análise rende muito mais com todo mundo junto. 🤝</p>
   </div>`;
 }
 
