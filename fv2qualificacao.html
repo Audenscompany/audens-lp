@@ -650,7 +650,7 @@ async function gravarReuniao(slot, closer){
   /* WhatsApp de confirmação COM o horário (endpoint já existente) + atribuição do closer */
   try{ fetch(CONFIG.CRM_ENDPOINT+'/agendar?secret='+encodeURIComponent(CONFIG.CRM_SECRET),
     {method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json'},
-     body:JSON.stringify({telefone:tel,nome:(answers.nome||''),meetingDisplay:disp,responsavel:closer})}).catch(function(){}); }catch(e){}
+     body:JSON.stringify({telefone:tel,nome:(answers.nome||''),meetingDisplay:disp,responsavel:closer,avisarEquipe:true})}).catch(function(){}); }catch(e){}
   return disp;
 }
 function showConfirmacao(disp, closer){
