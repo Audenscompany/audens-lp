@@ -634,7 +634,7 @@ async function gravarReuniao(slot, closer){
   var iso=new Date(slot.startUTC).toISOString();
   var disp=_p2(slot.d)+'/'+_p2(slot.m+1)+'/'+slot.y+' '+_p2(slot.H)+':00';
   var base=CONFIG.FIREBASE_URL;
-  var kb={ status:'reuniao', statusAt:Date.now(), responsavel:closer,
+  var kb={ status:'reuniao', statusAt:Date.now(), responsavel:closer, sdrName:'LP', sdr:'LP',
     meetingISO:iso, meetingDisplay:disp, meetingId:mid, lembretes:{h1:false,h2:false,m10:false},
     faixa:faixaCod(), nome:(answers.nome||''), telefone:tel, email:(answers.email||'').trim(),
     instagram:(answers.instagram||'').trim(), faturamento:(answers.faturamento||''),
