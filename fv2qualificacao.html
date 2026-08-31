@@ -114,6 +114,29 @@ fbq('init','288150133971064');fbq('track','PageView');
   #done{text-align:center}
   #done .check{width:70px;height:70px;border-radius:50%;background:var(--orange);color:#fff;font-size:36px;
     display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+  /* ===== agendador nativo ===== */
+  .agenda{width:100%;margin-top:6px}
+  .ag-load,.ag-empty{padding:34px 8px;text-align:center;color:var(--gray);font-size:15px}
+  .ag-warn{background:#fff4f4;border:1px solid #f3c9c9;color:#c0392b;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:12px}
+  .ag-label{font-family:'Lato',sans-serif;font-weight:700;font-size:14px;color:#374151;margin:18px 0 10px}
+  .ag-label:first-child{margin-top:4px}
+  .ag-tz{font-weight:400;color:#9ca3af;font-size:12px}
+  .ag-days{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 6px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+  .ag-day{flex:0 0 auto;scroll-snap-align:start;width:66px;border:1px solid var(--line);background:#fff;border-radius:12px;
+    padding:10px 0;cursor:pointer;font-family:inherit;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .15s}
+  .ag-day:hover{border-color:#c9a6ff}
+  .ag-day .dw{font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px}
+  .ag-day .dn{font-family:'Lato',sans-serif;font-weight:700;font-size:22px;line-height:1}
+  .ag-day .dm{font-size:11px;color:var(--gray)}
+  .ag-day.on{border-color:var(--orange);background:var(--orange-softer)}
+  .ag-day.on .dn{color:var(--orange)}
+  .ag-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px}
+  .ag-slot{border:1px solid var(--line);background:#fff;border-radius:10px;padding:13px 0;cursor:pointer;
+    font-family:'Lato',sans-serif;font-weight:600;font-size:16px;color:var(--ink);transition:all .15s}
+  .ag-slot:hover{border-color:#c9a6ff;background:#faf7ff}
+  .ag-slot.on{border-color:var(--orange);background:var(--orange);color:#fff}
+  .ag-confirm{width:100%;margin-top:22px;padding:17px 20px;font-size:16px;font-weight:700;border-radius:10px}
+  .ag-confirm:disabled{background:#d9cff2;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -133,14 +156,23 @@ fbq('init','288150133971064');fbq('track','PageView');
    CONFIG — edite só aqui
    ======================================================================= */
 var CONFIG = {
-  CALENDLY_URL: 'https://calendly.com/audenscompany/diagnosticoestrategico',
   YOUTUBE_URL:  'https://www.youtube.com/@LucasRamong',
   LP_VIVENDO_URL: 'https://assessoriaaudens.com.br/vivendo-de-delivery/',
   CRM_ENDPOINT: 'https://receberlead-471063273836.us-central1.run.app',
   CRM_SECRET:   'audens2025xk',
+  FIREBASE_URL: 'https://audens-crm-default-rtdb.firebaseio.com',
   /* faixas que qualificam para reunião: R$15 mil+ (mapeadas p/ o padrão do CRM) */
   FAIXAS_QUALIFICA: ['15-30','30-50','50-100','100-300'],
-  CAPTURAR_NAO_QUALIFICADO: true
+  CAPTURAR_NAO_QUALIFICADO: true,
+  /* Agendador nativo — horário de atendimento (fuso de Brasília, UTC-3) */
+  AGENDA: {
+    tzOffsetH: -3,
+    duracaoMin: 50,
+    antecedenciaH: 2,      /* não permite marcar nas próximas 2h */
+    horizonteDias: 14,     /* mostra até 14 dias com vaga */
+    horasSemana: [9,10,11,13,14,15,16,17],  /* seg–sex (sem 12h) */
+    horasSabado: [9,10,11,13,14,15,16]      /* sáb 9–17 (sem 12h) */
+  }
 };
 
 /* faturamento (label do formulário) -> código de faixa usado pelo CRM/closer */
@@ -358,7 +390,7 @@ function renderFinal(wrap){
     stage.className='stage wide cal';
     stage.appendChild(wrap);
     pushEvent('schedule_view',{faixa:faixaCod()});
-    initCalendly();
+    initAgendador(closerPorFaixa(faixaCod()));
   } else {
     var fBaixo=faixaCod();
     if(['15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso + arquiva */
@@ -374,20 +406,20 @@ function renderFinal(wrap){
       stage.className='stage wide cal';
       stage.appendChild(wrap);
       pushEvent('schedule_view',{faixa:fBaixo});
-      initCalendly();
+      initAgendador(closerPorFaixa(fBaixo));
     }
   }
 }
 
 function tplCalendar(){
   fill.style.width='95%';
-  return `<h1>Quase lá! Agende seu diagnóstico ↓</h1>
+  return `<h1>Quase lá! Escolha o melhor horário ↓</h1>
     <div class="meet-card">
       <div class="meet-ico">📅</div>
       <div><div class="t">Diagnóstico Estratégico de Tráfego</div>
-      <div class="d">⏱ 60 minutos · 🌐 Horário de Brasília</div></div>
+      <div class="d">🎥 Chamada de vídeo · ⏱ 50 minutos · 🌐 Horário de Brasília</div></div>
     </div>
-    <div class="cal-inline" id="calInline"></div>`;
+    <div class="agenda" id="agendaBox"></div>`;
 }
 
 function _escFV2(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
@@ -416,8 +448,8 @@ function tplConscientizacao(){
     '<p class="subtitle">A gente entende o receio de investir em tráfego. Veja no vídeo o que donos como você conseguiram — e, se fizer sentido, marque um diagnóstico gratuito e sem compromisso.</p>'+
     provas+
     '<p class="subtitle" style="margin-top:14px">Você sai do diagnóstico com o que mudar primeiro — e investe só se quiser.</p>'+
-    '<div class="meet-card"><div class="meet-ico">📅</div><div><div class="t">Diagnóstico Estratégico de Tráfego</div><div class="d">⏱ 60 minutos · 🌐 Horário de Brasília · 100% gratuito</div></div></div>'+
-    '<div class="cal-inline" id="calInline"></div>';
+    '<div class="meet-card"><div class="meet-ico">📅</div><div><div class="t">Diagnóstico Estratégico de Tráfego</div><div class="d">🎥 Chamada de vídeo · ⏱ 50 minutos · 🌐 Horário de Brasília · 100% gratuito</div></div></div>'+
+    '<div class="agenda" id="agendaBox"></div>';
 }
 function tplCurso(){
   fill.style.width='100%';
@@ -491,60 +523,147 @@ function attemptNext(s){
 }
 
 /* =======================================================================
-   CALENDLY
+   AGENDADOR NATIVO — lê disponibilidade no CRM (Firebase), gera horários
+   livres do closer, grava a reunião e dispara a confirmação por WhatsApp.
    ======================================================================= */
-function loadCalendlyScript(cb){
-  if(window.Calendly){ cb(); return; }
-  var css=document.createElement('link'); css.rel='stylesheet'; css.href='https://assets.calendly.com/assets/external/widget.css'; document.head.appendChild(css);
-  var s=document.createElement('script'); s.src='https://assets.calendly.com/assets/external/widget.js'; s.async=true; s.onload=cb; document.body.appendChild(s);
-}
-function buildCalUrl(){
-  var url=CONFIG.CALENDLY_URL, sep=url.indexOf('?')>=0?'&':'?', params=['hide_gdpr_banner=1','background_color=ffffff','text_color=1a1a1a','primary_color=7c34f0'];
-  var u=utmv('utm_source')||'meta'; if(u)params.push('utm_source='+encodeURIComponent(u));
-  var camp=utmv('utm_campaign','campaign'); if(camp)params.push('utm_campaign='+encodeURIComponent(camp));
-  var cont=utmv('utm_content','ad'); if(cont)params.push('utm_content='+encodeURIComponent(cont));
-  return url+sep+params.join('&');
-}
-function initCalendly(){
-  if(!CONFIG.CALENDLY_URL) return;
-  var el=document.getElementById('calInline'); if(!el) return;
-  loadCalendlyScript(function(){
-    try{ window.Calendly.initInlineWidget({ url:buildCalUrl(), parentElement:el, prefill:{ name:answers.nome||'', email:answers.email||'', customAnswers:{ a1:answers.whatsapp||'' } } }); }catch(e){}
+function closerPorFaixa(f){ return (f==='50-100'||f==='100-300'||f==='300+') ? 'Lucas' : 'Gustavo'; }
+var _p2=function(n){ return (n<10?'0':'')+n; };
+var _MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+var _DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+var AG={ closer:'Gustavo', dias:[], sel:null, busy:[], saving:false };
+
+/* horários já ocupados do closer (meetings + kanban do CRM) → lista de instantes UTC (ms) */
+function _getJSON(url,ms){
+  return new Promise(function(res){
+    var done=false, to=setTimeout(function(){ if(!done){done=true;res({});} }, ms||6000);
+    fetch(url,{cache:'no-store'}).then(function(x){return x.json();})
+      .then(function(j){ if(!done){done=true;clearTimeout(to);res(j||{});} })
+      .catch(function(){ if(!done){done=true;clearTimeout(to);res({});} });
   });
 }
-var meetingDone=false;
-window.addEventListener('message',function(e){
-  if(!e.data || typeof e.data!=='object') return;
-  if(e.origin && e.origin.indexOf('calendly.com')<0) return;
-  if(e.data.event==='calendly.event_scheduled' && !meetingDone){
-    meetingDone=true;
-    /* Meta Pixel — evento PADRÃO "Schedule": dispara EXCLUSIVAMENTE aqui, quando o
-       Calendly confirma o agendamento (nunca no load, clique ou link de saída). */
-    try{ if(typeof fbq==='function') fbq('track','Schedule'); }catch(e){}
-    pushEvent('meeting_booked',{faixa:faixaCod()});
-    dispararReuniaoAgendada();
-    showConfirmacao();
-  }
-});
-/* Avisa o CRM que o lead marcou no Calendly (rota /quiz-agendou):
-   move o card p/ "Reunião Agendada", atribui o closer pela faixa e dispara o WhatsApp. */
-function dispararReuniaoAgendada(){
+async function fetchBusy(closer){
+  var base=CONFIG.FIREBASE_URL, out=[];
+  function add(iso){ if(!iso) return; var t=Date.parse(iso); if(!isNaN(t)) out.push(t); }
   try{
-    fetch(CONFIG.CRM_ENDPOINT+'/quiz-agendou',{method:'POST',mode:'cors',keepalive:true,
-      headers:{'Content-Type':'application/json','X-Webhook-Secret':CONFIG.CRM_SECRET},
-      body:JSON.stringify({ telefone:(answers.whatsapp||''), nome:(answers.nome||''), faixa:faixaCod() })
-    }).catch(function(){});
+    var r=await Promise.all([
+      _getJSON(base+'/meetings.json',6000),
+      _getJSON(base+'/kanban.json',6000)
+    ]);
+    var M=r[0]||{}, K=r[1]||{};
+    Object.keys(M).forEach(function(k){ var m=M[k]; if(!m||typeof m!=='object') return; if((m.responsavel||'')!==closer) return;
+      var s=String(m.status||'').toLowerCase(); if(['cancelado','noshow','reagendado','descartado','perdido'].indexOf(s)>=0) return;
+      add(m.dtISO||m.meetingISO); });
+    Object.keys(K).forEach(function(k){ var c=K[k]; if(!c||typeof c!=='object') return; if((c.responsavel||'')!==closer) return; if(!c.meetingISO) return;
+      var s=String(c.status||'').toLowerCase(); if(['arquivado','descartado','perdido','cancelado'].indexOf(s)>=0) return;
+      add(c.meetingISO); });
   }catch(e){}
+  return out;
 }
-function showConfirmacao(){
+function _slotLivre(startUTC){ var dur=CONFIG.AGENDA.duracaoMin*60000; for(var i=0;i<AG.busy.length;i++){ if(Math.abs(AG.busy[i]-startUTC)<dur) return false; } return true; }
+
+function gerarDias(){
+  var A=CONFIG.AGENDA, off=(-A.tzOffsetH)*3600000; /* BRT->UTC add 3h */
+  var now=Date.now(), minMs=now + A.antecedenciaH*3600000;
+  var brt=new Date(now - off); /* campos UTC deste Date = relógio de Brasília */
+  var y=brt.getUTCFullYear(), mo=brt.getUTCMonth(), d0=brt.getUTCDate();
+  var dias=[];
+  for(var i=0;i<28 && dias.length<A.horizonteDias;i++){
+    var day=new Date(Date.UTC(y,mo,d0+i));
+    var dow=day.getUTCDay(); if(dow===0) continue; /* sem domingo */
+    var horas=(dow===6)?A.horasSabado:A.horasSemana;
+    var yy=day.getUTCFullYear(), mm=day.getUTCMonth(), dd=day.getUTCDate(), slots=[];
+    horas.forEach(function(H){
+      var startUTC=Date.UTC(yy,mm,dd,H+off/3600000,0,0);
+      if(startUTC<minMs) return;
+      if(!_slotLivre(startUTC)) return;
+      slots.push({y:yy,m:mm,d:dd,H:H,startUTC:startUTC});
+    });
+    if(slots.length) dias.push({dow:dow,y:yy,m:mm,d:dd,slots:slots});
+  }
+  return dias;
+}
+
+async function initAgendador(closer){
+  AG.closer=closer||'Gustavo'; AG.sel=null; AG.saving=false;
+  var box=document.getElementById('agendaBox'); if(!box) return;
+  box.innerHTML='<div class="ag-load">Carregando horários disponíveis…</div>';
+  AG.busy=await fetchBusy(AG.closer);
+  AG.dias=gerarDias();
+  renderAgenda();
+}
+function renderAgenda(){
+  var box=document.getElementById('agendaBox'); if(!box) return;
+  if(!AG.dias.length){ box.innerHTML='<div class="ag-empty">Estamos com a agenda cheia nos próximos dias. Nossa equipe vai te chamar no WhatsApp pra encaixar um horário. 🤝</div>'; return; }
+  if(AG.sel==null) AG.sel={di:0,si:null};
+  var dia=AG.dias[AG.sel.di];
+  var chips=AG.dias.map(function(d,i){
+    return '<button class="ag-day'+(i===AG.sel.di?' on':'')+'" data-di="'+i+'">'+
+      '<span class="dw">'+_DIAS[d.dow]+'</span><span class="dn">'+d.d+'</span><span class="dm">'+_MESES[d.m]+'</span></button>';
+  }).join('');
+  var slots=dia.slots.map(function(s,i){
+    return '<button class="ag-slot'+(AG.sel.si===i?' on':'')+'" data-si="'+i+'">'+_p2(s.H)+':00</button>';
+  }).join('');
+  var podeConfirmar=AG.sel.si!=null;
+  box.innerHTML=
+    '<div class="ag-label">1. Escolha o dia</div>'+
+    '<div class="ag-days">'+chips+'</div>'+
+    '<div class="ag-label">2. Escolha o horário <span class="ag-tz">(Brasília)</span></div>'+
+    '<div class="ag-slots">'+slots+'</div>'+
+    '<button class="btn ag-confirm" id="agConfirm"'+(podeConfirmar?'':' disabled')+'>'+
+      (AG.saving?'Reservando…':(podeConfirmar?('Confirmar '+_DIAS[dia.dow]+' '+dia.d+'/'+_p2(dia.m+1)+' às '+_p2(dia.slots[AG.sel.si].H)+':00'):'Selecione um horário'))+'</button>';
+  [].forEach.call(box.querySelectorAll('.ag-day'),function(b){ b.onclick=function(){ AG.sel={di:+b.dataset.di,si:null}; renderAgenda(); }; });
+  [].forEach.call(box.querySelectorAll('.ag-slot'),function(b){ b.onclick=function(){ AG.sel.si=+b.dataset.si; renderAgenda(); }; });
+  var cf=document.getElementById('agConfirm'); if(cf) cf.onclick=confirmarAgendamento;
+}
+async function confirmarAgendamento(){
+  if(AG.saving || AG.sel==null || AG.sel.si==null) return;
+  AG.saving=true; renderAgenda();
+  var dia=AG.dias[AG.sel.di], slot=dia.slots[AG.sel.si];
+  /* revalida: horário pode ter sido tomado enquanto o lead escolhia */
+  AG.busy=await fetchBusy(AG.closer);
+  if(!_slotLivre(slot.startUTC)){ AG.saving=false; AG.sel.si=null; AG.dias=gerarDias(); renderAgenda();
+    var bx=document.getElementById('agendaBox'); if(bx){ var w=document.createElement('div'); w.className='ag-warn'; w.textContent='Ops, esse horário acabou de ser preenchido. Escolha outro, por favor.'; bx.insertBefore(w,bx.firstChild); } return; }
+  var disp=await gravarReuniao(slot, AG.closer);
+  try{ if(typeof fbq==='function') fbq('track','Schedule'); }catch(e){}
+  pushEvent('meeting_booked',{faixa:faixaCod(),responsavel:AG.closer});
+  showConfirmacao(disp, AG.closer);
+}
+async function gravarReuniao(slot, closer){
+  var tel=(answers.whatsapp||'').replace(/\D/g,''); var key=tel||('lp_'+Date.now());
+  var mid='km_'+key+'_'+Date.now();
+  var iso=new Date(slot.startUTC).toISOString();
+  var disp=_p2(slot.d)+'/'+_p2(slot.m+1)+'/'+slot.y+' '+_p2(slot.H)+':00';
+  var base=CONFIG.FIREBASE_URL;
+  var kb={ status:'reuniao', statusAt:Date.now(), responsavel:closer,
+    meetingISO:iso, meetingDisplay:disp, meetingId:mid, lembretes:{h1:false,h2:false,m10:false},
+    faixa:faixaCod(), nome:(answers.nome||''), telefone:tel, email:(answers.email||'').trim(),
+    instagram:(answers.instagram||'').trim(), faturamento:(answers.faturamento||''),
+    investimento:dispostoSim()?'sim':'nao', ja_investiu:(answers.investiu||''),
+    origem:'lp-audens-quiz-fv2', ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'),
+    conjunto:utmv('utm_medium','adset'), _viaLP:true, _createdAt:Date.now() };
+  var mrec={ id:mid, tel:tel, nome:(answers.nome||''), dtISO:iso, dtDisplay:disp, status:'pending',
+    responsavel:closer, kanbanKey:key, sdrName:'LP', origem:'trafego pago', scheduledAt:Date.now(), _viaLP:true };
+  try{ await Promise.all([
+    fetch(base+'/kanban/'+encodeURIComponent(key)+'.json',{method:'PATCH',body:JSON.stringify(kb)}),
+    fetch(base+'/meetings/'+encodeURIComponent(mid)+'.json',{method:'PUT',body:JSON.stringify(mrec)})
+  ]); }catch(e){}
+  /* WhatsApp de confirmação COM o horário (endpoint já existente) + atribuição do closer */
+  try{ fetch(CONFIG.CRM_ENDPOINT+'/agendar?secret='+encodeURIComponent(CONFIG.CRM_SECRET),
+    {method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({telefone:tel,nome:(answers.nome||''),meetingDisplay:disp,responsavel:closer})}).catch(function(){}); }catch(e){}
+  return disp;
+}
+function showConfirmacao(disp, closer){
   finalReached=true; fill.style.width='100%'; back.style.display='none';
   stage.className='stage';
   var pnome=(answers.nome||'').split(' ')[0];
+  var quando = disp ? ('<div class="meet-card" style="margin-top:20px;text-align:left"><div class="meet-ico">🗓️</div><div><div class="t">'+_escFV2(disp)+(closer?(' · com '+_escFV2(closer)):'')+'</div><div class="d">Horário de Brasília · chamada de vídeo de 50 min</div></div></div>') : '';
   stage.innerHTML=`<div class="step active" id="done">
     <div class="check">✓</div>
     <h1>Horário reservado${pnome? ', '+_escFV2(pnome):''}!</h1>
     <p class="subtitle">Seu <b>Diagnóstico Estratégico</b> é uma <b>chamada de vídeo de 50 minutos</b>, olhando o seu negócio de perto. Enviamos os detalhes pro seu WhatsApp e e-mail.</p>
-    <div class="meet-card" style="margin-top:20px;text-align:left">
+    ${quando}
+    <div class="meet-card" style="margin-top:14px;text-align:left">
       <div class="meet-ico">📞</div>
       <div><div class="t">Vamos te ligar pra confirmar</div>
       <div class="d">Precisamos dessa confirmação pra reservar esse horário <b>exclusivamente pra você</b> — é só uma vaga por horário.</div></div>
