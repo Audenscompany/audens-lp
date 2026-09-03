@@ -1284,6 +1284,105 @@ function enviarCRM(lead){
 function isPhone(v){ return (v.replace(/\D/g,'').length >= 10); }
 function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 
+/* ===== AGENDADOR NATIVO (mesmo motor da FV2) — grava reunião no CRM, closer por faixa, avisa equipe ===== */
+var FIREBASE_URL='https://audens-crm-default-rtdb.firebaseio.com';
+var AGENDA={tzOffsetH:-3,duracaoMin:50,antecedenciaH:2,horizonteDias:14,horasSemana:[9,10,11,13,14,15,16,17],horasSabado:[9,10,11,13,14,15,16]};
+var LP_AG={closer:'Gustavo',dias:[],sel:null,busy:[],saving:false};
+function closerPorFaixa(f){ return (f==='50-100'||f==='100-300'||f==='300+') ? 'Lucas' : 'Gustavo'; }
+var _p2=function(n){ return (n<10?'0':'')+n; };
+var _MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+var _DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+function _escLP(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
+function _getJSON(url,ms){
+  return new Promise(function(res){
+    var done=false, to=setTimeout(function(){ if(!done){done=true;res({});} }, ms||6000);
+    fetch(url,{cache:'no-store'}).then(function(x){return x.json();})
+      .then(function(j){ if(!done){done=true;clearTimeout(to);res(j||{});} })
+      .catch(function(){ if(!done){done=true;clearTimeout(to);res({});} });
+  });
+}
+async function fetchBusy(closer){
+  var out=[]; function add(iso){ if(!iso) return; var t=Date.parse(iso); if(!isNaN(t)) out.push(t); }
+  try{
+    var r=await Promise.all([_getJSON(FIREBASE_URL+'/meetings.json',6000),_getJSON(FIREBASE_URL+'/kanban.json',6000)]);
+    var M=r[0]||{}, K=r[1]||{};
+    Object.keys(M).forEach(function(k){ var m=M[k]; if(!m||typeof m!=='object') return; if((m.responsavel||'')!==closer) return; var s=String(m.status||'').toLowerCase(); if(['cancelado','noshow','reagendado','descartado','perdido'].indexOf(s)>=0) return; add(m.dtISO||m.meetingISO); });
+    Object.keys(K).forEach(function(k){ var c=K[k]; if(!c||typeof c!=='object') return; if((c.responsavel||'')!==closer) return; if(!c.meetingISO) return; var s=String(c.status||'').toLowerCase(); if(['arquivado','descartado','perdido','cancelado'].indexOf(s)>=0) return; add(c.meetingISO); });
+  }catch(e){}
+  return out;
+}
+function _slotLivre(startUTC){ var dur=AGENDA.duracaoMin*60000; for(var i=0;i<LP_AG.busy.length;i++){ if(Math.abs(LP_AG.busy[i]-startUTC)<dur) return false; } return true; }
+function gerarDias(){
+  var off=(-AGENDA.tzOffsetH)*3600000, now=Date.now(), minMs=now+AGENDA.antecedenciaH*3600000;
+  var brt=new Date(now-off), y=brt.getUTCFullYear(), mo=brt.getUTCMonth(), d0=brt.getUTCDate(), dias=[];
+  for(var i=0;i<28 && dias.length<AGENDA.horizonteDias;i++){
+    var day=new Date(Date.UTC(y,mo,d0+i)), dow=day.getUTCDay(); if(dow===0) continue;
+    var horas=(dow===6)?AGENDA.horasSabado:AGENDA.horasSemana, yy=day.getUTCFullYear(), mm=day.getUTCMonth(), dd=day.getUTCDate(), slots=[];
+    horas.forEach(function(H){ var startUTC=Date.UTC(yy,mm,dd,H+off/3600000,0,0); if(startUTC<minMs) return; if(!_slotLivre(startUTC)) return; slots.push({y:yy,m:mm,d:dd,H:H,startUTC:startUTC}); });
+    if(slots.length) dias.push({dow:dow,y:yy,m:mm,d:dd,slots:slots});
+  }
+  return dias;
+}
+async function abrirAgendadorLP(faixa, lead){
+  window.__lpLead=lead||{}; window.__lpFaixa=faixa;
+  LP_AG.closer=closerPorFaixa(faixa); LP_AG.sel=null; LP_AG.saving=false;
+  ['lead','leadM'].forEach(function(id){ var f=document.getElementById(id); if(f){ f.style.display='none'; var pr=f.previousElementSibling; if(pr&&pr.classList&&pr.classList.contains('prog')) pr.style.display='none'; } });
+  var sec=document.getElementById('ag-lp'); if(!sec) return; sec.style.display='block';
+  pushEvent('schedule_view',{faixa:faixa});
+  var box=document.getElementById('agLpBox'); box.innerHTML='<div class="ag-load">Carregando horários disponíveis…</div>';
+  try{ sec.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){}
+  LP_AG.busy=await fetchBusy(LP_AG.closer);
+  LP_AG.dias=gerarDias();
+  renderAgendaLP();
+}
+function renderAgendaLP(){
+  var box=document.getElementById('agLpBox'); if(!box) return;
+  if(!LP_AG.dias.length){ box.innerHTML='<div class="ag-empty">Estamos com a agenda cheia nos próximos dias. Nossa equipe vai te chamar no WhatsApp pra encaixar um horário. 🤝</div>'; return; }
+  if(LP_AG.sel==null) LP_AG.sel={di:0,si:null};
+  var dia=LP_AG.dias[LP_AG.sel.di];
+  var chips=LP_AG.dias.map(function(d,i){ return '<button class="ag-day'+(i===LP_AG.sel.di?' on':'')+'" data-di="'+i+'"><span class="dw">'+_DIAS[d.dow]+'</span><span class="dn">'+d.d+'</span><span class="dm">'+_MESES[d.m]+'</span></button>'; }).join('');
+  var slots=dia.slots.map(function(s,i){ return '<button class="ag-slot'+(LP_AG.sel.si===i?' on':'')+'" data-si="'+i+'">'+_p2(s.H)+':00</button>'; }).join('');
+  var pode=LP_AG.sel.si!=null;
+  box.innerHTML='<div class="ag-label">1. Escolha o dia</div><div class="ag-days">'+chips+'</div>'+
+    '<div class="ag-label">2. Escolha o horário <span class="ag-tz">(Brasília)</span></div><div class="ag-slots">'+slots+'</div>'+
+    '<button class="ag-confirm" id="agLpConfirm"'+(pode?'':' disabled')+'>'+(LP_AG.saving?'Reservando…':(pode?('Confirmar '+_DIAS[dia.dow]+' '+dia.d+'/'+_p2(dia.m+1)+' às '+_p2(dia.slots[LP_AG.sel.si].H)+':00'):'Selecione um horário'))+'</button>';
+  [].forEach.call(box.querySelectorAll('.ag-day'),function(b){ b.onclick=function(){ LP_AG.sel={di:+b.dataset.di,si:null}; renderAgendaLP(); }; });
+  [].forEach.call(box.querySelectorAll('.ag-slot'),function(b){ b.onclick=function(){ LP_AG.sel.si=+b.dataset.si; renderAgendaLP(); }; });
+  var cf=document.getElementById('agLpConfirm'); if(cf) cf.onclick=confirmarAgendamentoLP;
+}
+async function confirmarAgendamentoLP(){
+  if(LP_AG.saving || LP_AG.sel==null || LP_AG.sel.si==null) return;
+  LP_AG.saving=true; renderAgendaLP();
+  var dia=LP_AG.dias[LP_AG.sel.di], slot=dia.slots[LP_AG.sel.si];
+  LP_AG.busy=await fetchBusy(LP_AG.closer);
+  if(!_slotLivre(slot.startUTC)){ LP_AG.saving=false; LP_AG.sel.si=null; LP_AG.dias=gerarDias(); renderAgendaLP(); var bx=document.getElementById('agLpBox'); if(bx){ var w=document.createElement('div'); w.className='ag-warn'; w.textContent='Ops, esse horário acabou de ser preenchido. Escolha outro, por favor.'; bx.insertBefore(w,bx.firstChild); } return; }
+  var disp=await gravarReuniaoLP(slot, LP_AG.closer);
+  try{ if(typeof fbq==='function') fbq('track','Schedule'); }catch(e){}
+  pushEvent('meeting_booked',{faixa:window.__lpFaixa,responsavel:LP_AG.closer});
+  showConfLP(disp, LP_AG.closer);
+}
+async function gravarReuniaoLP(slot, closer){
+  var L=window.__lpLead||{}; var tel=(L.telefone||'').replace(/\D/g,''); var key=tel||('lp_'+Date.now());
+  var mid='km_'+key+'_'+Date.now(), iso=new Date(slot.startUTC).toISOString(), disp=_p2(slot.d)+'/'+_p2(slot.m+1)+'/'+slot.y+' '+_p2(slot.H)+':00';
+  var kb={ status:'reuniao', statusAt:Date.now(), responsavel:closer, sdrName:'LP', sdr:'LP', meetingISO:iso, meetingDisplay:disp, meetingId:mid, lembretes:{h1:false,h2:false,m10:false}, faixa:(window.__lpFaixa||''), nome:(L.nome||''), telefone:tel, email:(L.email||''), instagram:(L.instagram||''), faturamento:(L.faturamento||''), segmento:(L.segmento||''), origem:'lp-audens', ad:utm('utm_content','ad'), campanha:utm('utm_campaign','campaign'), conjunto:utm('utm_medium','adset'), _viaLP:true, _createdAt:Date.now() };
+  var mrec={ id:mid, tel:tel, nome:(L.nome||''), dtISO:iso, dtDisplay:disp, status:'pending', responsavel:closer, kanbanKey:key, sdrName:'LP', origem:'trafego pago', scheduledAt:Date.now(), _viaLP:true };
+  try{ await Promise.all([ fetch(FIREBASE_URL+'/kanban/'+encodeURIComponent(key)+'.json',{method:'PATCH',body:JSON.stringify(kb)}), fetch(FIREBASE_URL+'/meetings/'+encodeURIComponent(mid)+'.json',{method:'PUT',body:JSON.stringify(mrec)}) ]); }catch(e){}
+  try{ fetch(CRM_ENDPOINT+'/agendar?secret='+encodeURIComponent(CRM_SECRET),{method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify({telefone:tel,nome:(L.nome||''),meetingDisplay:disp,responsavel:closer,avisarEquipe:true})}).catch(function(){}); }catch(e){}
+  return disp;
+}
+function showConfLP(disp, closer){
+  var sec=document.getElementById('ag-lp'); if(!sec) return;
+  var L=window.__lpLead||{}; var pnome=(L.nome||'').split(' ')[0];
+  sec.innerHTML='<div class="agwrap" style="text-align:center">'+
+    '<div class="ag-check">✓</div>'+
+    '<h2 class="ag-h">Horário reservado'+(pnome?', '+_escLP(pnome):'')+'!</h2>'+
+    '<p class="ag-p">Seu <b>Diagnóstico Estratégico</b> é uma <b>chamada de vídeo de 50 minutos</b>, olhando o seu negócio de perto. Enviamos os detalhes pro seu WhatsApp e e-mail.</p>'+
+    (disp?'<div class="ag-when">🗓️ '+_escLP(disp)+(closer?' · com '+_escLP(closer):'')+' <span>· Horário de Brasília</span></div>':'')+
+    '<div class="ag-call"><b>Vamos te ligar pra confirmar</b> — é só uma vaga por horário, reservamos exclusivamente pra você.</div>'+
+    '<p class="ag-p">Na reunião, <b>chame quem decide com você</b>: sócio(s), esposo(a) ou o time. 🤝</p>'+
+    '</div>';
+}
+
 function setup(formId, fillId, lblId, statusId, doneId, isModal){
   var form=document.getElementById(formId); if(!form) return;
   var fill=document.getElementById(fillId), lbl=document.getElementById(lblId), status=document.getElementById(statusId), done=document.getElementById(doneId);
@@ -1346,12 +1445,60 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       fbc:          (document.cookie.match(/_fbc=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbc || ''
     });
     if(faixaBaixa){ pushEvent('lp_vivendo_redirect',{faixa:'ate-20'}); window.location.href='https://assessoriaaudens.com.br/vivendo-de-delivery/'; return; }
-    form.style.display='none'; var prog=form.previousElementSibling; if(prog&&prog.classList.contains('prog'))prog.style.display='none';
-    if(done)done.style.display='block';
+    /* Qualificado → abre o agendador nativo (mesmo motor da FV2) no lugar da tela de "obrigado" */
+    abrirAgendadorLP(faixaLP, {
+      nome:(nome&&nome.value||'').trim(), telefone:(tel&&tel.value||''), email:(email&&email.value||'').trim(),
+      instagram:(form.querySelector('[name="insta"]')||{}).value||'', segmento:(form.querySelector('[name="segmento"]')||{}).value||'', faturamento:fat
+    });
   });
 }
 setup('lead','pfill','plbl','status','done',false);
 setup('leadM','pfillM','plblM','statusM','doneM',true);
 </script>
+
+<style>
+#ag-lp{display:none;padding:56px var(--gutter) 72px;background:var(--bg-2);border-top:1px solid var(--line)}
+#ag-lp .agwrap{max-width:620px;margin:0 auto}
+#ag-lp .aghead{margin-bottom:22px}
+#ag-lp .aghead h2{font-family:var(--ff-h,inherit);font-size:26px;line-height:1.15;color:var(--white);margin:0 0 6px}
+#ag-lp .aghead p{color:var(--muted);font-size:15px;margin:0}
+#ag-lp .ag-load,#ag-lp .ag-empty{padding:36px 8px;text-align:center;color:var(--muted);font-size:15px}
+#ag-lp .ag-warn{background:rgba(245,128,152,.12);border:1px solid rgba(245,128,152,.4);color:#F58098;border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:12px}
+#ag-lp .ag-label{font-weight:700;font-size:14px;color:var(--white);margin:18px 0 10px}
+#ag-lp .ag-tz{font-weight:400;color:var(--muted);font-size:12px}
+#ag-lp .ag-days{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 6px;-webkit-overflow-scrolling:touch}
+#ag-lp .ag-day{flex:0 0 auto;width:66px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 0;cursor:pointer;color:var(--white);display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .15s;font-family:inherit}
+#ag-lp .ag-day:hover{border-color:var(--purple-2)}
+#ag-lp .ag-day .dw{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+#ag-lp .ag-day .dn{font-weight:800;font-size:22px;line-height:1}
+#ag-lp .ag-day .dm{font-size:11px;color:var(--muted)}
+#ag-lp .ag-day.on{border-color:var(--purple);background:rgba(124,52,240,.18)}
+#ag-lp .ag-day.on .dn{color:var(--purple-2)}
+#ag-lp .ag-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px}
+#ag-lp .ag-slot{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:13px 0;cursor:pointer;font-weight:700;font-size:16px;color:var(--white);transition:all .15s;font-family:inherit}
+#ag-lp .ag-slot:hover{border-color:var(--purple-2)}
+#ag-lp .ag-slot.on{border-color:var(--purple);background:var(--purple);color:#fff}
+#ag-lp .ag-confirm{width:100%;margin-top:22px;padding:16px 20px;font-size:16px;font-weight:700;border-radius:12px;border:none;cursor:pointer;background:var(--purple);color:#fff;font-family:inherit}
+#ag-lp .ag-confirm:hover{background:#8a44ff}
+#ag-lp .ag-confirm:disabled{background:#2a2338;color:var(--muted);cursor:not-allowed}
+#ag-lp .ag-check{width:64px;height:64px;border-radius:50%;background:var(--purple);color:#fff;font-size:32px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+#ag-lp .ag-h{font-size:26px;color:var(--white);margin:0 0 10px}
+#ag-lp .ag-p{color:var(--muted);font-size:15px;max-width:52ch;margin:0 auto 14px}
+#ag-lp .ag-p b{color:var(--white)}
+#ag-lp .ag-when{display:inline-block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 18px;color:var(--white);font-weight:700;margin:6px 0 14px}
+#ag-lp .ag-when span{color:var(--muted);font-weight:400}
+#ag-lp .ag-call{background:rgba(124,52,240,.12);border:1px solid rgba(124,52,240,.35);border-radius:12px;padding:14px 16px;color:var(--white);font-size:14px;max-width:48ch;margin:0 auto 16px}
+#ag-lp .ag-call b{color:var(--purple-2)}
+</style>
+
+<section id="ag-lp" aria-live="polite">
+  <div class="agwrap">
+    <div class="aghead">
+      <h2>Quase lá! Escolha o melhor horário</h2>
+      <p>🎥 Diagnóstico por chamada de vídeo · ⏱ 50 minutos · 🌐 Horário de Brasília</p>
+    </div>
+    <div id="agLpBox"></div>
+  </div>
+</section>
 </body>
 </html>
