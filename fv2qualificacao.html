@@ -63,6 +63,10 @@ fbq('init','288150133971064');fbq('track','PageView');
   .req{color:#ef4444}
   .subtitle{color:var(--gray);font-size:16px;margin:8px 0 4px;line-height:1.4}
   .subtitle b{color:#374151;font-weight:600}
+  /* intro prova social */
+  .intro-prova{margin:16px 0 4px;padding:12px 16px;background:#f4ecff;border:1px solid #e3d6f7;
+    border-radius:12px;font-size:14px;line-height:1.7;color:#4b2a8a;font-weight:500}
+  .intro-prova b{color:#7C34F0;font-weight:700}
   /* intro list */
   .intro-list{list-style:none;margin:22px 0 4px;font-size:17px;line-height:2}
   .intro-note{color:var(--gray);font-style:italic;font-size:15px;margin-top:20px;line-height:1.6}
@@ -231,6 +235,15 @@ function utmv(){ var A=window.__audensAttrib||{}; for(var i=0;i<arguments.length
 function faixaCod(){ return FAT_FAIXA[answers.faturamento||''] || ''; }
 function dispostoSim(){ return !!(answers.disposto && answers.disposto.indexOf('Sim')>=0); }
 function isQualified(){ return CONFIG.FAIXAS_QUALIFICA.indexOf(faixaCod())>=0 && dispostoSim(); }
+/* quem precisa deixar contato = quem chega ao agendamento (qualificado OU 50k+ na conscientização).
+   <15k e 15-50k que não quer investir vão pro Vivendo sem preencher contato. */
+function precisaContato(){
+  var f=faixaCod();
+  if(f==='0-15') return false;
+  if(isQualified()) return true;
+  if(['50-100','100-300','300+'].indexOf(f)>=0) return true;
+  return false;
+}
 
 var leadSent=false;
 function enviarCRM(extra){
@@ -258,24 +271,16 @@ function enviarCRM(extra){
    ======================================================================= */
 const steps = [
   { type:'intro',
-    h:'Uma análise completa do seu delivery, feita por quem vive disso todo dia.',
-    list:['🎥 50 minutos numa chamada de vídeo, olhando o SEU negócio de perto',
-          '📈 A gente aponta onde está o gargalo: no funil, na oferta ou no cardápio',
-          '🍔 Feita por quem opera uma hamburgueria e uma pizzaria que vendem +R$500 mil/mês (Burguer FC + Pizza FC)',
-          '✅ 100% gratuita e sem compromisso'],
+    h:'Donos de hamburgueria e pizzaria estão saindo de R$30 mil pra R$100 mil+ por mês. Descubra em 1 minuto o que trava o SEU faturamento hoje.',
+    prova:'⭐ +200 marcas atendidas &nbsp;·&nbsp; Perto do Fogo R$27k → <b>R$224k</b> &nbsp;·&nbsp; Gerrá R$37k → <b>R$120k</b> &nbsp;·&nbsp; Burguer FC + Pizza FC <b>+R$500 mil/mês</b>',
+    list:['🔍 Em 50 min a gente mostra onde está travando: funil, oferta ou cardápio',
+          '🍔 Feita por quem opera a Burguer FC e a Pizza FC de verdade — não por "guru"',
+          '🎯 Você sai sabendo o que mudar primeiro — e investe só se quiser',
+          '✅ 100% gratuita, em menos de 1 minuto pra ver se tem perfil'],
     note:'Responda em menos de 1 minuto pra ver se o seu negócio tem perfil.',
     cta:'QUERO MINHA ANÁLISE GRATUITA' },
 
-  { type:'text', key:'nome', h:'Qual seu nome e sobrenome?', required:true },
-
-  { type:'phone', key:'whatsapp', h:'Qual seu número do WhatsApp?', required:true,
-    placeholder:'(00) 00000-0000' },
-
-  { type:'text', key:'instagram', h:'Qual @ do Instagram da sua empresa?', required:true,
-    subtitle:'Digite somente o user, <b>sem o @ e sem espaços</b>, por favor.' },
-
-  { type:'email', key:'email', h:'Qual é o seu melhor e-mail?', required:true },
-
+  /* --- Qualificação/engajamento primeiro (só pede contato de quem qualifica) --- */
   { type:'choice', key:'investiu', h:'Já investiu em tráfego pago antes?', required:true,
     options:['Sim, eu mesmo faço','Sim, contratei uma pessoa/time','Nunca investi'] },
 
@@ -288,6 +293,15 @@ const steps = [
     h:'Está disposto a investir pelo menos <b>R$1.500/mês</b> em anúncios, sem contar o valor da nossa mão de obra?',
     required:true,
     options:['✅ Sim! Quero tráfego profissional pra crescer.','❌ Não pretendo investir no meu negócio agora.'] },
+
+  /* --- Contato (só quem chega ao agendamento) --- */
+  { type:'text', key:'nome', h:'Qual seu nome e sobrenome?', required:true },
+
+  { type:'phone', key:'whatsapp', h:'Qual seu número do WhatsApp?', required:true,
+    placeholder:'(00) 00000-0000' },
+
+  { type:'text', key:'instagram', h:'Qual @ do Instagram da sua empresa?', required:true,
+    subtitle:'Digite somente o user, <b>sem o @ e sem espaços</b>, por favor.' },
 
   { type:'final' }
 ];
@@ -327,6 +341,7 @@ function render(){
 /* ---------- templates ---------- */
 function tplIntro(s){
   return `<h1>${s.h}</h1>
+    ${s.prova?`<div class="intro-prova">${s.prova}</div>`:''}
     <ul class="intro-list">${s.list.map(i=>`<li>${i}</li>`).join('')}</ul>
     <p class="intro-note">${s.note}</p>
     <button class="btn btn-continue" data-next>${s.cta}&nbsp;&nbsp;→</button>`;
@@ -519,6 +534,8 @@ function attemptNext(s){
   }
   /* Faixa baixa (<15k) pula a pergunta de investir e vai direto pra tela do curso */
   if(s.key==='faturamento' && answers.faturamento==='Menos de R$15.000'){ go(steps.length-1); return; }
+  /* Pós-qualificação: quem não chega ao agendamento vai direto pro final (sem pedir contato) */
+  if(s.key==='disposto' && !precisaContato()){ go(steps.length-1); return; }
   go(idx+1);
 }
 
