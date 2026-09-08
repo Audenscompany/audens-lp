@@ -187,7 +187,9 @@ var CONFIG = {
 var TICKET_SEG = { 'Hamburgueria':45, 'Pizzaria':70, 'Outro':55 };
 var PEDIDOS_REP = {
   'Até 200 pedidos/mês':150,
-  'De 200 a 500 pedidos/mês':350,
+  'De 200 a 300 pedidos/mês':250,
+  'De 300 a 400 pedidos/mês':350,
+  'De 400 a 500 pedidos/mês':450,
   'De 500 a 1.000 pedidos/mês':750,
   'De 1.000 a 2.000 pedidos/mês':1500,
   'Mais de 2.000 pedidos/mês':2500
@@ -308,8 +310,9 @@ const steps = [
 
   { type:'choice', key:'pedidos', h:'Quantos <b>pedidos por mês</b> o seu negócio faz, em média?', required:true,
     subtitle:'Some todos os canais (iFood, WhatsApp, balcão…). Pode ser uma estimativa.',
-    options:['Até 200 pedidos/mês','De 200 a 500 pedidos/mês','De 500 a 1.000 pedidos/mês',
-             'De 1.000 a 2.000 pedidos/mês','Mais de 2.000 pedidos/mês'] },
+    options:['Até 200 pedidos/mês','De 200 a 300 pedidos/mês','De 300 a 400 pedidos/mês',
+             'De 400 a 500 pedidos/mês','De 500 a 1.000 pedidos/mês','De 1.000 a 2.000 pedidos/mês',
+             'Mais de 2.000 pedidos/mês'] },
 
   { type:'choice', key:'disposto',
     h:'Está disposto a investir pelo menos <b>R$1.500/mês</b> em anúncios, sem contar o valor da nossa mão de obra?',
