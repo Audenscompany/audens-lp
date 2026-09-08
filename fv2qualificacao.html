@@ -420,8 +420,10 @@ function renderFinal(wrap){
   }
   var qualified=isQualified();
   if(qualified){
+    /* fallback: se por algum caminho não disparou na qualificação, garante 1x aqui */
+    if(!qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',{faixa:faixaCod()}); }
+    /* lead_submit = contato REAL preenchido (nome+WhatsApp já foram coletados antes deste passo) */
     pushEvent('lead_submit',{qualificado:true});
-    pushEvent('qualified_lead',{faixa:faixaCod()});
     if(!leadSent){ leadSent=true; enviarCRM({status:'qualificado',reuniao_agendada:'nao'}); }
     wrap.innerHTML = tplCalendar();
     stage.className='stage wide cal';
@@ -558,6 +560,7 @@ function bind(s){
 }
 
 var started=false;
+var qualifiedTracked=false;
 function attemptNext(s){
   if(s.type==='intro' && !started){ started=true; pushEvent('quiz_start'); }
   if(['text','email','phone'].includes(s.type)){
@@ -576,6 +579,9 @@ function attemptNext(s){
   if(s.key==='pedidos' && faixaCod()==='0-15'){ go(steps.length-1); return; }
   /* Pós-qualificação: quem não chega ao agendamento vai direto pro final (sem pedir contato) */
   if(s.key==='disposto' && !precisaContato()){ go(steps.length-1); return; }
+  /* Qualificou: conta no funil AGORA (mesmo que abandone antes de deixar o contato).
+     lead_submit/enviarCRM continuam SÓ no final, quando o contato foi realmente preenchido. */
+  if(s.key==='disposto' && isQualified() && !qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',{faixa:faixaCod()}); }
   go(idx+1);
 }
 
