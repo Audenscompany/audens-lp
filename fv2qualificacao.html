@@ -173,9 +173,12 @@ var CONFIG = {
     tzOffsetH: -3,
     duracaoMin: 50,
     antecedenciaH: 2,      /* não permite marcar nas próximas 2h */
-    horizonteDias: 14,     /* mostra até 14 dias com vaga */
-    horasSemana: [9,10,11,13,14,15,16,17],  /* seg–sex (sem 12h) */
-    horasSabado: [9,10,11,13,14,15,16]      /* sáb 9–17 (sem 12h) */
+    horizonteDias: 2,      /* mostra só os 2 próximos dias úteis com vaga */
+    horasSemana: [9,10,11,13,14,15,16,17],  /* seg–sex (sem 12h) — sábado/domingo desativados */
+    feriados: [
+      '2026-01-01','2026-02-16','2026-02-17','2026-04-03','2026-04-21','2026-05-01','2026-06-04','2026-09-07','2026-10-12','2026-11-02','2026-11-15','2026-11-20','2026-12-25',
+      '2027-01-01','2027-02-08','2027-02-09','2027-03-26','2027-04-21','2027-05-01','2027-05-27','2027-09-07','2027-10-12','2027-11-02','2027-11-15','2027-11-20','2027-12-25'
+    ]  /* feriados nacionais — sem agendamento */
   }
 };
 
@@ -582,11 +585,14 @@ function gerarDias(){
   var brt=new Date(now - off); /* campos UTC deste Date = relógio de Brasília */
   var y=brt.getUTCFullYear(), mo=brt.getUTCMonth(), d0=brt.getUTCDate();
   var dias=[];
+  var _fer=A.feriados||[];
   for(var i=0;i<28 && dias.length<A.horizonteDias;i++){
     var day=new Date(Date.UTC(y,mo,d0+i));
-    var dow=day.getUTCDay(); if(dow===0) continue; /* sem domingo */
-    var horas=(dow===6)?A.horasSabado:A.horasSemana;
-    var yy=day.getUTCFullYear(), mm=day.getUTCMonth(), dd=day.getUTCDate(), slots=[];
+    var dow=day.getUTCDay(); if(dow===0||dow===6) continue; /* sem sábado nem domingo */
+    var yy=day.getUTCFullYear(), mm=day.getUTCMonth(), dd=day.getUTCDate();
+    var iso=yy+'-'+('0'+(mm+1)).slice(-2)+'-'+('0'+dd).slice(-2);
+    if(_fer.indexOf(iso)>=0) continue; /* sem feriado nacional */
+    var horas=A.horasSemana, slots=[];
     horas.forEach(function(H){
       var startUTC=Date.UTC(yy,mm,dd,H+off/3600000,0,0);
       if(startUTC<minMs) return;
