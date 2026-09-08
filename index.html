@@ -1286,7 +1286,7 @@ function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 
 /* ===== AGENDADOR NATIVO (mesmo motor da FV2) — grava reunião no CRM, closer por faixa, avisa equipe ===== */
 var FIREBASE_URL='https://audens-crm-default-rtdb.firebaseio.com';
-var AGENDA={tzOffsetH:-3,duracaoMin:50,antecedenciaH:2,horizonteDias:14,horasSemana:[9,10,11,13,14,15,16,17],horasSabado:[9,10,11,13,14,15,16]};
+var AGENDA={tzOffsetH:-3,duracaoMin:50,antecedenciaH:2,horizonteDias:2,horasSemana:[9,10,11,13,14,15,16,17],feriados:['2026-01-01','2026-02-16','2026-02-17','2026-04-03','2026-04-21','2026-05-01','2026-06-04','2026-09-07','2026-10-12','2026-11-02','2026-11-15','2026-11-20','2026-12-25','2027-01-01','2027-02-08','2027-02-09','2027-03-26','2027-04-21','2027-05-01','2027-05-27','2027-09-07','2027-10-12','2027-11-02','2027-11-15','2027-11-20','2027-12-25']};
 var LP_AG={closer:'Gustavo',dias:[],sel:null,busy:[],saving:false};
 function closerPorFaixa(f){ return (f==='50-100'||f==='100-300'||f==='300+') ? 'Lucas' : 'Gustavo'; }
 var _p2=function(n){ return (n<10?'0':'')+n; };
@@ -1316,8 +1316,10 @@ function gerarDias(){
   var off=(-AGENDA.tzOffsetH)*3600000, now=Date.now(), minMs=now+AGENDA.antecedenciaH*3600000;
   var brt=new Date(now-off), y=brt.getUTCFullYear(), mo=brt.getUTCMonth(), d0=brt.getUTCDate(), dias=[];
   for(var i=0;i<28 && dias.length<AGENDA.horizonteDias;i++){
-    var day=new Date(Date.UTC(y,mo,d0+i)), dow=day.getUTCDay(); if(dow===0) continue;
-    var horas=(dow===6)?AGENDA.horasSabado:AGENDA.horasSemana, yy=day.getUTCFullYear(), mm=day.getUTCMonth(), dd=day.getUTCDate(), slots=[];
+    var day=new Date(Date.UTC(y,mo,d0+i)), dow=day.getUTCDay(); if(dow===0||dow===6) continue;
+    var yy=day.getUTCFullYear(), mm=day.getUTCMonth(), dd=day.getUTCDate();
+    var iso=yy+'-'+('0'+(mm+1)).slice(-2)+'-'+('0'+dd).slice(-2); if((AGENDA.feriados||[]).indexOf(iso)>=0) continue;
+    var horas=AGENDA.horasSemana, slots=[];
     horas.forEach(function(H){ var startUTC=Date.UTC(yy,mm,dd,H+off/3600000,0,0); if(startUTC<minMs) return; if(!_slotLivre(startUTC)) return; slots.push({y:yy,m:mm,d:dd,H:H,startUTC:startUTC}); });
     if(slots.length) dias.push({dow:dow,y:yy,m:mm,d:dd,slots:slots});
   }
