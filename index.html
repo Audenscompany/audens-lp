@@ -1042,8 +1042,8 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
           <div class="fld"><label for="segmento">Qual o seu segmento?</label>
             <select id="segmento" name="segmento" required aria-describedby="e-seg"><option value="" disabled selected>Selecione…</option><option>Hamburgueria</option><option>Pizzaria</option><option>Restaurante</option><option>Cafeteria / Confeitaria</option><option>Dark kitchen</option><option>Outro</option></select>
             <span class="err" id="e-seg">Selecione um segmento.</span></div>
-          <div class="fld"><label for="faturamento">Faturamento mensal hoje</label>
-            <select id="faturamento" name="faturamento" required aria-describedby="e-fat"><option value="" disabled selected>Selecione…</option><option>Até R$ 20 mil</option><option>R$ 20 mil a R$ 50 mil</option><option>R$ 50 mil a R$ 100 mil</option><option>R$ 100 mil a R$ 300 mil</option><option>Acima de R$ 300 mil</option></select>
+          <div class="fld"><label for="pedidos">Quantos pedidos por mês, em média?</label>
+            <select id="pedidos" name="pedidos" required aria-describedby="e-fat"><option value="" disabled selected>Selecione…</option><option>Até 200 pedidos/mês</option><option>De 200 a 300 pedidos/mês</option><option>De 300 a 500 pedidos/mês</option><option>De 500 a 1.000 pedidos/mês</option><option>De 1.000 a 2.000 pedidos/mês</option><option>Mais de 2.000 pedidos/mês</option></select>
             <span class="err" id="e-fat">Selecione uma faixa.</span></div>
           <div class="fld"><label for="canal">Como você vende hoje?</label>
             <select id="canal" name="canal" required aria-describedby="e-can"><option value="" disabled selected>Selecione…</option><option>Só iFood / marketplace</option><option>iFood + canal próprio</option><option>Só canal próprio (WhatsApp/app)</option><option>Ainda não vendo por delivery</option></select>
@@ -1097,7 +1097,7 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
     <form id="leadM" novalidate>
       <div class="pane on" data-step="1">
         <div class="fld"><label>Segmento</label><select name="segmento" required><option value="" disabled selected>Selecione…</option><option>Hamburgueria</option><option>Pizzaria</option><option>Restaurante</option><option>Cafeteria / Confeitaria</option><option>Dark kitchen</option><option>Outro</option></select></div>
-        <div class="fld"><label>Faturamento mensal</label><select name="faturamento" required><option value="" disabled selected>Selecione…</option><option>Até R$ 20 mil</option><option>R$ 20 mil a R$ 50 mil</option><option>R$ 50 mil a R$ 100 mil</option><option>R$ 100 mil a R$ 300 mil</option><option>Acima de R$ 300 mil</option></select></div>
+        <div class="fld"><label>Quantos pedidos por mês?</label><select name="pedidos" required><option value="" disabled selected>Selecione…</option><option>Até 200 pedidos/mês</option><option>De 200 a 300 pedidos/mês</option><option>De 300 a 500 pedidos/mês</option><option>De 500 a 1.000 pedidos/mês</option><option>De 1.000 a 2.000 pedidos/mês</option><option>Mais de 2.000 pedidos/mês</option></select></div>
         <div class="fld"><label>Como vende hoje?</label><select name="canal" required><option value="" disabled selected>Selecione…</option><option>Só iFood / marketplace</option><option>iFood + canal próprio</option><option>Só canal próprio</option><option>Ainda não vendo por delivery</option></select></div>
         <button type="button" class="btn btn-primary btn-block mnext">Continuar <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button>
       </div>
@@ -1416,11 +1416,18 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
     if(!ok){ if(status){status.textContent='Confira o nome e o WhatsApp para continuar.'; status.style.color='#F58098';} return; }
     if(status)status.textContent='';
     var data={}; form.querySelectorAll('input,select').forEach(function(el,i){ if(el.type!=='checkbox') data[(el.name||el.id||'campo'+i)]=el.value; });
-    var fat=(form.querySelector('select[name="faturamento"]')||{}).value||'';
-    var LP_FAIXA={'Até R$ 20 mil':'ate-20','R$ 20 mil a R$ 50 mil':'20-50','R$ 50 mil a R$ 100 mil':'50-100','R$ 100 mil a R$ 300 mil':'100-300','Acima de R$ 300 mil':'300+'};
-    var faixaLP=LP_FAIXA[(fat||'').trim()]||'';
+    /* Lead responde PEDIDOS + SEGMENTO; faturamento é estimado por ticket de segmento (embutido) */
+    var seg=(form.querySelector('select[name="segmento"]')||{}).value||'';
+    var ped=(form.querySelector('select[name="pedidos"]')||{}).value||'';
+    var TICKET_SEG={'Hamburgueria':55,'Pizzaria':70,'Restaurante':60,'Cafeteria / Confeitaria':35,'Dark kitchen':50,'Outro':55};
+    var PEDIDOS_REP={'Até 200 pedidos/mês':150,'De 200 a 300 pedidos/mês':250,'De 300 a 500 pedidos/mês':400,'De 500 a 1.000 pedidos/mês':750,'De 1.000 a 2.000 pedidos/mês':1500,'Mais de 2.000 pedidos/mês':2500};
+    var _ticket=(TICKET_SEG[seg]||55);
+    var fatEst= ped ? (PEDIDOS_REP[ped]||0)*_ticket : 0;
+    var faixaLP = !ped ? '' : (fatEst<20000?'ate-20':fatEst<50000?'20-50':fatEst<100000?'50-100':fatEst<300000?'100-300':'300+');
+    var FAIXA_FAT={'ate-20':'Até R$ 20 mil','20-50':'R$ 20 mil a R$ 50 mil','50-100':'R$ 50 mil a R$ 100 mil','100-300':'R$ 100 mil a R$ 300 mil','300+':'Acima de R$ 300 mil'};
+    var fat=FAIXA_FAT[faixaLP]||'';   /* faturamento estimado (rótulo) pro CRM */
     var faixaBaixa=(faixaLP==='ate-20');   /* < R$20 mil -> LP Vivendo de Delivery + arquiva no CRM */
-    var qualified = /100 mil|300 mil|Acima/.test(fat);
+    var qualified = (faixaLP==='100-300'||faixaLP==='300+');
     pushEvent('lead_submit', {form:formId});
     if(qualified) pushEvent('qualified_lead', {faixa:fat});
     /* Envia o lead ao CRM com atribuição de campanha/anúncio (UTMs da URL do anúncio) */
@@ -1429,6 +1436,9 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       telefone:    (tel && tel.value || ''),
       email:       (email && email.value || '').trim(),
       faturamento: fat,
+      faturamento_estimado: 'sim',
+      pedidos_mes: ped,
+      ticket_medio_usado: _ticket,
       faixa:       faixaLP,
       status:      faixaBaixa?'arquivado':'',
       destino:     faixaBaixa?'lp-vivendo':'',
