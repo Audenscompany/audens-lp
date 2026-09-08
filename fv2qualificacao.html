@@ -386,10 +386,8 @@ function tplChoice(s){
 /* ---------- passo final: envia CRM e ramifica ---------- */
 function renderFinal(wrap){
   finalReached=true; updateProgress();
-  /* Faixa baixa (< R$15 mil): arquiva no CRM (sem mensagem) e mostra a tela do curso Vivendo de Delivery */
+  /* Faixa baixa (< R$15 mil): NÃO coleta contato (2A) -> só mostra o curso Vivendo. Não é lead, não grava no CRM. */
   if(faixaCod()==='0-15'){
-    pushEvent('lead_submit',{qualificado:false});
-    if(!leadSent){ leadSent=true; enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'}); }
     pushEvent('lp_vivendo_view',{faixa:'0-15'});
     wrap.innerHTML = tplCurso();
     stage.appendChild(wrap);
@@ -397,8 +395,8 @@ function renderFinal(wrap){
     return;
   }
   var qualified=isQualified();
-  pushEvent('lead_submit',{qualificado:qualified});
   if(qualified){
+    pushEvent('lead_submit',{qualificado:true});
     pushEvent('qualified_lead',{faixa:faixaCod()});
     if(!leadSent){ leadSent=true; enviarCRM({status:'qualificado',reuniao_agendada:'nao'}); }
     wrap.innerHTML = tplCalendar();
@@ -408,13 +406,13 @@ function renderFinal(wrap){
     initAgendador(closerPorFaixa(faixaCod()));
   } else {
     var fBaixo=faixaCod();
-    if(['15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso + arquiva */
-      if(!leadSent){ leadSent=true; enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'}); }
+    if(['15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso Vivendo, SEM contato (não é lead) */
       pushEvent('lp_vivendo_view',{faixa:fBaixo});
       wrap.innerHTML = tplCurso();
       stage.appendChild(wrap);
       var cb2=document.getElementById('cursoBtn'); if(cb2) cb2.addEventListener('click',function(){ pushEvent('lp_vivendo_click'); });
-    } else { /* >=50k não quer -> conscientização (cases + Calendly), mantém como lead ativo */
+    } else { /* >=50k não quer -> conscientização (tem contato) -> lead ativo */
+      pushEvent('lead_submit',{qualificado:false});
       if(!leadSent){ leadSent=true; enviarCRM({status:'nao-qualificado',prioridade:'media',destino:'conscientizacao'}); }
       pushEvent('conscientizacao_view',{faixa:fBaixo});
       wrap.innerHTML = tplConscientizacao();
