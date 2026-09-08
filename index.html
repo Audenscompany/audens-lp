@@ -1286,7 +1286,7 @@ function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 
 /* ===== AGENDADOR NATIVO (mesmo motor da FV2) — grava reunião no CRM, closer por faixa, avisa equipe ===== */
 var FIREBASE_URL='https://audens-crm-default-rtdb.firebaseio.com';
-var AGENDA={tzOffsetH:-3,duracaoMin:50,antecedenciaH:2,horizonteDias:2,horasSemana:[9,10,11,13,14,15,16,17],feriados:['2026-01-01','2026-02-16','2026-02-17','2026-04-03','2026-04-21','2026-05-01','2026-06-04','2026-09-07','2026-10-12','2026-11-02','2026-11-15','2026-11-20','2026-12-25','2027-01-01','2027-02-08','2027-02-09','2027-03-26','2027-04-21','2027-05-01','2027-05-27','2027-09-07','2027-10-12','2027-11-02','2027-11-15','2027-11-20','2027-12-25']};
+var AGENDA={tzOffsetH:-3,duracaoMin:50,antecedenciaH:2,horizonteDias:2,waDuvidas:'5531986187980',horasSemana:[9,10,11,12,13,14,15,16,17,18],feriados:['2026-01-01','2026-02-16','2026-02-17','2026-04-03','2026-04-21','2026-05-01','2026-06-04','2026-09-07','2026-10-12','2026-11-02','2026-11-15','2026-11-20','2026-12-25','2027-01-01','2027-02-08','2027-02-09','2027-03-26','2027-04-21','2027-05-01','2027-05-27','2027-09-07','2027-10-12','2027-11-02','2027-11-15','2027-11-20','2027-12-25']};
 var LP_AG={closer:'Gustavo',dias:[],sel:null,busy:[],saving:false};
 function closerPorFaixa(f){ return (f==='50-100'||f==='100-300'||f==='300+') ? 'Lucas' : 'Gustavo'; }
 var _p2=function(n){ return (n<10?'0':'')+n; };
@@ -1325,6 +1325,18 @@ function gerarDias(){
   }
   return dias;
 }
+function _waLpBtn(){
+  var n=AGENDA.waDuvidas||'5531986187980';
+  var msg=encodeURIComponent('Olá! Vim pela análise de tráfego da Audens e queria tirar uma dúvida antes de agendar.');
+  return '<a id="waLpDuvidas" href="https://wa.me/'+n+'?text='+msg+'" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;padding:13px 16px;border-radius:12px;background:#25D366;color:#fff;font-weight:700;text-decoration:none;font-size:15px">💬 Ficou com dúvida? Fale no WhatsApp</a>';
+}
+function _refreshWaLp(){
+  try{ _getJSON(FIREBASE_URL+'/config/contatos_equipe.json',4000).then(function(c){
+    if(!c||!c.lucas) return; var n=(''+c.lucas).replace(/\D/g,''); if(!n) return;
+    var full=n.length<=11?('55'+n):n; var a=document.getElementById('waLpDuvidas');
+    if(a){ var msg=encodeURIComponent('Olá! Vim pela análise de tráfego da Audens e queria tirar uma dúvida antes de agendar.'); a.href='https://wa.me/'+full+'?text='+msg; }
+  }); }catch(e){}
+}
 async function abrirAgendadorLP(faixa, lead){
   window.__lpLead=lead||{}; window.__lpFaixa=faixa;
   LP_AG.closer=closerPorFaixa(faixa); LP_AG.sel=null; LP_AG.saving=false;
@@ -1347,7 +1359,9 @@ function renderAgendaLP(){
   var pode=LP_AG.sel.si!=null;
   box.innerHTML='<div class="ag-label">1. Escolha o dia</div><div class="ag-days">'+chips+'</div>'+
     '<div class="ag-label">2. Escolha o horário <span class="ag-tz">(Brasília)</span></div><div class="ag-slots">'+slots+'</div>'+
-    '<button class="ag-confirm" id="agLpConfirm"'+(pode?'':' disabled')+'>'+(LP_AG.saving?'Reservando…':(pode?('Confirmar '+_DIAS[dia.dow]+' '+dia.d+'/'+_p2(dia.m+1)+' às '+_p2(dia.slots[LP_AG.sel.si].H)+':00'):'Selecione um horário'))+'</button>';
+    '<button class="ag-confirm" id="agLpConfirm"'+(pode?'':' disabled')+'>'+(LP_AG.saving?'Reservando…':(pode?('Confirmar '+_DIAS[dia.dow]+' '+dia.d+'/'+_p2(dia.m+1)+' às '+_p2(dia.slots[LP_AG.sel.si].H)+':00'):'Selecione um horário'))+'</button>'+
+    _waLpBtn();
+  _refreshWaLp();
   [].forEach.call(box.querySelectorAll('.ag-day'),function(b){ b.onclick=function(){ LP_AG.sel={di:+b.dataset.di,si:null}; renderAgendaLP(); }; });
   [].forEach.call(box.querySelectorAll('.ag-slot'),function(b){ b.onclick=function(){ LP_AG.sel.si=+b.dataset.si; renderAgendaLP(); }; });
   var cf=document.getElementById('agLpConfirm'); if(cf) cf.onclick=confirmarAgendamentoLP;
