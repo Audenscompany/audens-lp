@@ -1433,7 +1433,7 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
     /* Lead responde PEDIDOS + SEGMENTO; faturamento é estimado por ticket de segmento (embutido) */
     var seg=(form.querySelector('select[name="segmento"]')||{}).value||'';
     var ped=(form.querySelector('select[name="pedidos"]')||{}).value||'';
-    var TICKET_SEG={'Hamburgueria':55,'Pizzaria':70,'Restaurante':60,'Cafeteria / Confeitaria':35,'Dark kitchen':50,'Outro':55};
+    var TICKET_SEG={'Hamburgueria':60,'Pizzaria':70,'Restaurante':60,'Cafeteria / Confeitaria':35,'Dark kitchen':50,'Outro':55};
     var PEDIDOS_REP={'Até 200 pedidos/mês':150,'De 200 a 300 pedidos/mês':250,'De 300 a 500 pedidos/mês':400,'De 500 a 1.000 pedidos/mês':750,'De 1.000 a 2.000 pedidos/mês':1500,'Mais de 2.000 pedidos/mês':2500};
     var _ticket=(TICKET_SEG[seg]||55);
     var fatEst= ped ? (PEDIDOS_REP[ped]||0)*_ticket : 0;
