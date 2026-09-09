@@ -411,9 +411,10 @@ function tplChoice(s){
 /* ---------- passo final: envia CRM e ramifica ---------- */
 function renderFinal(wrap){
   finalReached=true; updateProgress();
-  /* Faixa baixa (< R$15 mil): NÃO coleta contato (2A) -> só mostra o curso Vivendo. Não é lead, não grava no CRM. */
+  /* Faixa baixa (< R$15 mil): agora COLETA contato antes do Vivendo -> vira lead Vivendo no CRM (status:'vivendo') e entra na cadência. */
   if(faixaCod()==='0-15'){
     pushEvent('lp_vivendo_view',pedEv({faixa:'0-15'}));
+    if(!leadSent){ leadSent=true; enviarCRM({status:'vivendo',destino:'vivendo'}); }
     wrap.innerHTML = tplCurso();
     stage.appendChild(wrap);
     var cb=document.getElementById('cursoBtn'); if(cb) cb.addEventListener('click',function(){ pushEvent('lp_vivendo_click'); });
@@ -433,8 +434,9 @@ function renderFinal(wrap){
     initAgendador(closerPorFaixa(faixaCod()));
   } else {
     var fBaixo=faixaCod();
-    if(['15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso Vivendo, SEM contato (não é lead) */
+    if(['15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso Vivendo COM contato -> lead Vivendo no CRM (status:'vivendo') + cadência */
       pushEvent('lp_vivendo_view',pedEv({faixa:fBaixo}));
+      if(!leadSent){ leadSent=true; enviarCRM({status:'vivendo',destino:'vivendo'}); }
       wrap.innerHTML = tplCurso();
       stage.appendChild(wrap);
       var cb2=document.getElementById('cursoBtn'); if(cb2) cb2.addEventListener('click',function(){ pushEvent('lp_vivendo_click'); });
@@ -562,6 +564,8 @@ function bind(s){
 
 var started=false;
 var qualifiedTracked=false;
+var vivendoBound=false;
+function idxKey(k){ for(var i=0;i<steps.length;i++){ if(steps[i].key===k) return i; } return steps.length-1; }
 function attemptNext(s){
   if(s.type==='intro' && !started){ started=true; pushEvent('quiz_start'); }
   if(['text','email','phone'].includes(s.type)){
@@ -576,10 +580,13 @@ function attemptNext(s){
   if(s.type==='choice'){
     if(s.required && !answers[s.key]){ document.getElementById('err').classList.add('show'); return; }
   }
-  /* Faixa baixa (<15k) pula a pergunta de investir e vai direto pra tela do curso */
-  if(s.key==='pedidos' && faixaCod()==='0-15'){ go(steps.length-1); return; }
-  /* Pós-qualificação: quem não chega ao agendamento vai direto pro final (sem pedir contato) */
-  if(s.key==='disposto' && !precisaContato()){ go(steps.length-1); return; }
+  /* Faixa baixa (<15k) pula a pergunta de investir e vai direto pedir CONTATO (nome+WhatsApp) antes do Vivendo */
+  if(s.key==='pedidos' && faixaCod()==='0-15'){ vivendoBound=true; go(idxKey('nome')); return; }
+  /* Pós-qualificação: quem não chega ao agendamento (15-50k que não quer investir) vai pro Vivendo,
+     mas AGORA deixando contato antes -> pede nome+WhatsApp e depois mostra o curso */
+  if(s.key==='disposto' && !precisaContato()){ vivendoBound=true; go(idxKey('nome')); return; }
+  /* Vivendo não precisa de Instagram: depois do WhatsApp vai direto pro final (tela do curso) */
+  if(s.key==='whatsapp' && vivendoBound){ go(steps.length-1); return; }
   /* Qualificou: conta no funil AGORA (mesmo que abandone antes de deixar o contato).
      lead_submit/enviarCRM continuam SÓ no final, quando o contato foi realmente preenchido. */
   if(s.key==='disposto' && isQualified() && !qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:faixaCod()})); }
