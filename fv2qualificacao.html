@@ -302,7 +302,13 @@ const steps = [
     note:'Responda em menos de 1 minuto pra ver se o seu negócio tem perfil.',
     cta:'QUERO MINHA ANÁLISE GRATUITA' },
 
-  /* --- Qualificação/engajamento primeiro (só pede contato de quem qualifica) --- */
+  /* --- Contato PRIMEIRO: nome + WhatsApp logo no início --- */
+  { type:'text', key:'nome', h:'Qual seu nome e sobrenome?', required:true },
+
+  { type:'phone', key:'whatsapp', h:'Qual seu número do WhatsApp?', required:true,
+    placeholder:'(00) 00000-0000' },
+
+  /* --- Qualificação --- */
   { type:'choice', key:'investiu', h:'Já investiu em tráfego pago antes?', required:true,
     options:['Sim, eu mesmo faço','Sim, contratei uma pessoa/time','Nunca investi'] },
 
@@ -318,12 +324,6 @@ const steps = [
     h:'Está disposto a investir pelo menos <b>R$1.500/mês</b> em anúncios, sem contar o valor da nossa mão de obra?',
     required:true,
     options:['✅ Sim! Quero tráfego profissional pra crescer.','❌ Não pretendo investir no meu negócio agora.'] },
-
-  /* --- Contato (só quem chega ao agendamento) --- */
-  { type:'text', key:'nome', h:'Qual seu nome e sobrenome?', required:true },
-
-  { type:'phone', key:'whatsapp', h:'Qual seu número do WhatsApp?', required:true,
-    placeholder:'(00) 00000-0000' },
 
   { type:'text', key:'instagram', h:'Qual @ do Instagram da sua empresa?', required:true,
     subtitle:'Digite somente o user, <b>sem o @ e sem espaços</b>, por favor.' },
@@ -564,8 +564,6 @@ function bind(s){
 
 var started=false;
 var qualifiedTracked=false;
-var vivendoBound=false;
-function idxKey(k){ for(var i=0;i<steps.length;i++){ if(steps[i].key===k) return i; } return steps.length-1; }
 function attemptNext(s){
   if(s.type==='intro' && !started){ started=true; pushEvent('quiz_start'); }
   if(['text','email','phone'].includes(s.type)){
@@ -580,16 +578,15 @@ function attemptNext(s){
   if(s.type==='choice'){
     if(s.required && !answers[s.key]){ document.getElementById('err').classList.add('show'); return; }
   }
-  /* Faixa baixa (<15k) pula a pergunta de investir e vai direto pedir CONTATO (nome+WhatsApp) antes do Vivendo */
-  if(s.key==='pedidos' && faixaCod()==='0-15'){ vivendoBound=true; go(idxKey('nome')); return; }
-  /* Pós-qualificação: quem não chega ao agendamento (15-50k que não quer investir) vai pro Vivendo,
-     mas AGORA deixando contato antes -> pede nome+WhatsApp e depois mostra o curso */
-  if(s.key==='disposto' && !precisaContato()){ vivendoBound=true; go(idxKey('nome')); return; }
-  /* Vivendo não precisa de Instagram: depois do WhatsApp vai direto pro final (tela do curso) */
-  if(s.key==='whatsapp' && vivendoBound){ go(steps.length-1); return; }
-  /* Qualificou: conta no funil AGORA (mesmo que abandone antes de deixar o contato).
-     lead_submit/enviarCRM continuam SÓ no final, quando o contato foi realmente preenchido. */
-  if(s.key==='disposto' && isQualified() && !qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:faixaCod()})); }
+  /* Contato (nome+WhatsApp) já foi coletado no início — aqui só roteia a qualificação. */
+  /* Faixa baixa (<15k): não precisa da pergunta de investir nem do Instagram -> vai direto pro final (curso Vivendo) */
+  if(s.key==='pedidos' && faixaCod()==='0-15'){ go(steps.length-1); return; }
+  /* Ao terminar a qualificação (disposto): marca o qualificado e decide se ainda pede Instagram */
+  if(s.key==='disposto'){
+    if(isQualified() && !qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:faixaCod()})); }
+    /* quem vai pro curso Vivendo (15-50k que não quer investir) pula o Instagram e vai direto pro final */
+    if(!precisaContato()){ go(steps.length-1); return; }
+  }
   go(idx+1);
 }
 
