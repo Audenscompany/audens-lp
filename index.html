@@ -1443,7 +1443,7 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
     var faixaBaixa=(faixaLP==='ate-20');   /* < R$20 mil -> LP Vivendo de Delivery + arquiva no CRM */
     var qualified = (faixaLP==='100-300'||faixaLP==='300+');
     pushEvent('lead_submit', {form:formId});
-    if(qualified) pushEvent('qualified_lead', {faixa:fat});
+    if(qualified) pushEvent('qualified_lead', {faixa:fat, pedidos:ped, segmento:seg});
     /* Envia o lead ao CRM com atribuição de campanha/anúncio (UTMs da URL do anúncio) */
     enviarCRM({
       nome:        (nome && nome.value || '').trim(),
@@ -1470,7 +1470,7 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       fbp:          (document.cookie.match(/_fbp=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbp || '',
       fbc:          (document.cookie.match(/_fbc=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbc || ''
     });
-    if(faixaBaixa){ pushEvent('lp_vivendo_redirect',{faixa:'ate-20'}); window.location.href='https://assessoriaaudens.com.br/vivendo-de-delivery/'; return; }
+    if(faixaBaixa){ pushEvent('lp_vivendo_redirect',{faixa:'ate-20', pedidos:ped, segmento:seg}); window.location.href='https://assessoriaaudens.com.br/vivendo-de-delivery/'; return; }
     /* Qualificado → abre o agendador nativo (mesmo motor da FV2) no lugar da tela de "obrigado" */
     abrirAgendadorLP(faixaLP, {
       nome:(nome&&nome.value||'').trim(), telefone:(tel&&tel.value||''), email:(email&&email.value||'').trim(),
