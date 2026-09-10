@@ -196,15 +196,15 @@ var PEDIDOS_REP = {
 };
 /* faixa -> rótulo de faturamento (o que aparece no CRM) */
 var FAIXA_FAT = {
-  '0-15':'Menos de R$15.000',
-  '15-30':'De R$15.000 a R$30.000',
-  '30-50':'De R$30.000 a R$50.000',
-  '50-100':'De R$50.000 a R$100.000',
-  '100-300':'Acima de R$100.000'
+  '0-15':'Até R$20 mil',
+  '15-30':'De R$20 mil a R$30 mil',
+  '30-50':'De R$30 mil a R$50 mil',
+  '50-100':'De R$50 mil a R$100 mil',
+  '100-300':'Acima de R$100 mil'
 };
 function ticketSeg(){ return TICKET_SEG[answers.segmento] || 50; }
 function fatEstimado(){ return (PEDIDOS_REP[answers.pedidos]||0) * ticketSeg(); }
-function pedEv(o){ o=o||{}; o.pedidos=(answers.pedidos||''); o.segmento=(answers.segmento||''); return o; }
+function pedEv(o){ o=o||{}; o.segmento=(answers.segmento||''); return o; }
 
 /* =======================================================================
    TRACKING
@@ -250,7 +250,15 @@ function pushEvent(name,params){
 var URLQ; try{ URLQ=new URLSearchParams(location.search); }catch(e){ URLQ={get:function(){return '';}}; }
 function utmv(){ var A=window.__audensAttrib||{}; for(var i=0;i<arguments.length;i++){ var k=arguments[i]; if(A[k]) return A[k]; var v=URLQ.get(k); if(v) return v; } return ''; }
 
-function faixaCod(){ var f=fatEstimado(); if(!f) return ''; if(f<15000) return '0-15'; if(f<30000) return '15-30'; if(f<50000) return '30-50'; if(f<100000) return '50-100'; return '100-300'; }
+/* Faturamento perguntado DIRETO. Mapeia a resposta -> código de faixa interno (mantido). */
+var FAT_COD = {
+  'Até R$20 mil':'0-15',
+  'De R$20 mil a R$30 mil':'15-30',
+  'De R$30 mil a R$50 mil':'30-50',
+  'De R$50 mil a R$100 mil':'50-100',
+  'Acima de R$100 mil':'100-300'
+};
+function faixaCod(){ return FAT_COD[answers.faturamento]||''; }
 function dispostoSim(){ return !!(answers.disposto && answers.disposto.indexOf('Sim')>=0); }
 function isQualified(){ return CONFIG.FAIXAS_QUALIFICA.indexOf(faixaCod())>=0 && dispostoSim(); }
 /* quem precisa deixar contato = quem chega ao agendamento (qualificado OU 50k+ na conscientização).
@@ -271,11 +279,9 @@ function enviarCRM(extra){
     telefone:(answers.whatsapp||''),
     email:(answers.email||'').trim(),
     instagram:(answers.instagram||'').trim(),
-    faturamento:(FAIXA_FAT[faixaCod()]||''),
-    faturamento_estimado:'sim',
+    faturamento:(answers.faturamento||FAIXA_FAT[faixaCod()]||''),
+    faturamento_estimado:'nao',
     segmento:(answers.segmento||''),
-    pedidos_mes:(answers.pedidos||''),
-    ticket_medio_usado:ticketSeg(),
     faixa:faixaCod(),
     investimento:dispostoSim()?'sim':'nao',
     ja_investiu:(answers.investiu||''),
@@ -315,10 +321,8 @@ const steps = [
   { type:'choice', key:'segmento', h:'Qual o <b>segmento</b> do seu negócio?', required:true,
     options:['Hamburgueria','Pizzaria','Outro'] },
 
-  { type:'choice', key:'pedidos', h:'Quantos <b>pedidos por mês</b> o seu negócio faz, em média?', required:true,
-    subtitle:'Some todos os canais (iFood, WhatsApp, balcão…). Pode ser uma estimativa.',
-    options:['Até 200 pedidos/mês','De 200 a 300 pedidos/mês','De 300 a 500 pedidos/mês',
-             'De 500 a 1.000 pedidos/mês','De 1.000 a 2.000 pedidos/mês','Mais de 2.000 pedidos/mês'] },
+  { type:'choice', key:'faturamento', h:'Qual o <b>faturamento médio mensal</b> do seu negócio?', required:true,
+    options:['Até R$20 mil','De R$20 mil a R$30 mil','De R$30 mil a R$50 mil','De R$50 mil a R$100 mil','Acima de R$100 mil'] },
 
   { type:'choice', key:'disposto',
     h:'Está disposto a investir pelo menos <b>R$1.500/mês</b> em anúncios, sem contar o valor da nossa mão de obra?',
@@ -580,7 +584,7 @@ function attemptNext(s){
   }
   /* Contato (nome+WhatsApp) já foi coletado no início — aqui só roteia a qualificação. */
   /* Faixa baixa (<15k): não precisa da pergunta de investir nem do Instagram -> vai direto pro final (curso Vivendo) */
-  if(s.key==='pedidos' && faixaCod()==='0-15'){ go(steps.length-1); return; }
+  if(s.key==='faturamento' && faixaCod()==='0-15'){ go(steps.length-1); return; }
   /* Ao terminar a qualificação (disposto): marca o qualificado e decide se ainda pede Instagram */
   if(s.key==='disposto'){
     if(isQualified() && !qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:faixaCod()})); }
@@ -709,7 +713,7 @@ async function gravarReuniao(slot, closer){
   var kb={ status:'reuniao', statusAt:Date.now(), responsavel:closer, sdrName:'LP', sdr:'LP',
     meetingISO:iso, meetingDisplay:disp, meetingId:mid, lembretes:{h1:false,h2:false,m10:false},
     faixa:faixaCod(), nome:(answers.nome||''), telefone:tel, email:(answers.email||'').trim(),
-    instagram:(answers.instagram||'').trim(), faturamento:(FAIXA_FAT[faixaCod()]||''), faturamento_estimado:'sim', segmento:(answers.segmento||''), pedidos_mes:(answers.pedidos||''), ticket_medio_usado:ticketSeg(),
+    instagram:(answers.instagram||'').trim(), faturamento:(answers.faturamento||FAIXA_FAT[faixaCod()]||''), faturamento_estimado:'nao', segmento:(answers.segmento||''),
     investimento:dispostoSim()?'sim':'nao', ja_investiu:(answers.investiu||''),
     origem:'lp-audens-quiz-fv2', ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'),
     conjunto:utmv('utm_medium','adset'), _viaLP:true, _createdAt:Date.now() };
