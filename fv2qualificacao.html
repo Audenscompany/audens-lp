@@ -614,22 +614,11 @@ function _getJSON(url,ms){
   });
 }
 async function fetchBusy(closer){
-  var base=CONFIG.FIREBASE_URL, out=[];
-  function add(iso){ if(!iso) return; var t=Date.parse(iso); if(!isNaN(t)) out.push(t); }
+  /* Firebase trancado (login + allowlist): horários ocupados agora vêm do servidor (admin). */
   try{
-    var r=await Promise.all([
-      _getJSON(base+'/meetings.json',6000),
-      _getJSON(base+'/kanban.json',6000)
-    ]);
-    var M=r[0]||{}, K=r[1]||{};
-    Object.keys(M).forEach(function(k){ var m=M[k]; if(!m||typeof m!=='object') return; if((m.responsavel||'')!==closer) return;
-      var s=String(m.status||'').toLowerCase(); if(['cancelado','noshow','reagendado','descartado','perdido'].indexOf(s)>=0) return;
-      add(m.dtISO||m.meetingISO); });
-    Object.keys(K).forEach(function(k){ var c=K[k]; if(!c||typeof c!=='object') return; if((c.responsavel||'')!==closer) return; if(!c.meetingISO) return;
-      var s=String(c.status||'').toLowerCase(); if(['arquivado','descartado','perdido','cancelado'].indexOf(s)>=0) return;
-      add(c.meetingISO); });
-  }catch(e){}
-  return out;
+    var j = await _getJSON(CONFIG.CRM_ENDPOINT+'/busy?closer='+encodeURIComponent(closer)+'&secret='+encodeURIComponent(CONFIG.CRM_SECRET), 6000);
+    return (j && Array.isArray(j.busy)) ? j.busy : [];
+  }catch(e){ return []; }
 }
 function _slotLivre(startUTC){ var dur=CONFIG.AGENDA.duracaoMin*60000; for(var i=0;i<AG.busy.length;i++){ if(Math.abs(AG.busy[i]-startUTC)<dur) return false; } return true; }
 
@@ -705,28 +694,28 @@ async function confirmarAgendamento(){
   showConfirmacao(disp, AG.closer);
 }
 async function gravarReuniao(slot, closer){
+  /* Firebase trancado: a reunião agora é gravada pelo servidor (admin) via /lp-agendou,
+     que também dispara o WhatsApp de confirmação. Sem escrita direta no Firebase e sem /agendar (evita msg duplicada). */
   var tel=(answers.whatsapp||'').replace(/\D/g,''); var key=tel||('lp_'+Date.now());
   var mid='km_'+key+'_'+Date.now();
   var iso=new Date(slot.startUTC).toISOString();
   var disp=_p2(slot.d)+'/'+_p2(slot.m+1)+'/'+slot.y+' '+_p2(slot.H)+':00';
-  var base=CONFIG.FIREBASE_URL;
-  var kb={ status:'reuniao', statusAt:Date.now(), responsavel:closer, sdrName:'LP', sdr:'LP',
-    meetingISO:iso, meetingDisplay:disp, meetingId:mid, lembretes:{h1:false,h2:false,m10:false},
-    faixa:faixaCod(), nome:(answers.nome||''), telefone:tel, email:(answers.email||'').trim(),
-    instagram:(answers.instagram||'').trim(), faturamento:(answers.faturamento||FAIXA_FAT[faixaCod()]||''), faturamento_estimado:'nao', segmento:(answers.segmento||''),
+  var payload={
+    telefone:tel, nome:(answers.nome||''), faixa:faixaCod(), responsavel:closer,
+    meetingISO:iso, meetingDisplay:disp, meetingId:mid,
+    email:(answers.email||'').trim(), instagram:(answers.instagram||'').trim(),
+    faturamento:(answers.faturamento||FAIXA_FAT[faixaCod()]||''), segmento:(answers.segmento||''),
     investimento:dispostoSim()?'sim':'nao', ja_investiu:(answers.investiu||''),
-    origem:'lp-audens-quiz-fv2', ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'),
-    conjunto:utmv('utm_medium','adset'), _viaLP:true, _createdAt:Date.now() };
-  var mrec={ id:mid, tel:tel, nome:(answers.nome||''), dtISO:iso, dtDisplay:disp, status:'pending',
-    responsavel:closer, kanbanKey:key, sdrName:'LP', origem:'trafego pago', scheduledAt:Date.now(), _viaLP:true };
-  try{ await Promise.all([
-    fetch(base+'/kanban/'+encodeURIComponent(key)+'.json',{method:'PATCH',body:JSON.stringify(kb)}),
-    fetch(base+'/meetings/'+encodeURIComponent(mid)+'.json',{method:'PUT',body:JSON.stringify(mrec)})
-  ]); }catch(e){}
-  /* WhatsApp de confirmação COM o horário (endpoint já existente) + atribuição do closer */
-  try{ fetch(CONFIG.CRM_ENDPOINT+'/agendar?secret='+encodeURIComponent(CONFIG.CRM_SECRET),
-    {method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json'},
-     body:JSON.stringify({telefone:tel,nome:(answers.nome||''),meetingDisplay:disp,responsavel:closer,avisarEquipe:true})}).catch(function(){}); }catch(e){}
+    ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'), conjunto:utmv('utm_medium','adset'),
+    origem:'lp-audens-quiz-fv2'
+  };
+  try{
+    await fetch(CONFIG.CRM_ENDPOINT+'/lp-agendou?secret='+encodeURIComponent(CONFIG.CRM_SECRET),{
+      method:'POST', mode:'cors', keepalive:true,
+      headers:{'Content-Type':'application/json','X-Webhook-Secret':CONFIG.CRM_SECRET},
+      body:JSON.stringify(payload)
+    });
+  }catch(e){}
   return disp;
 }
 function showConfirmacao(disp, closer){
