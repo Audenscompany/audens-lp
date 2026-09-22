@@ -1352,6 +1352,8 @@ function _refreshWaLp(){
 async function abrirAgendadorLP(faixa, lead){
   window.__lpLead=lead||{}; window.__lpFaixa=faixa;
   LP_AG.closer=closerPorFaixa(faixa); LP_AG.sel=null; LP_AG.saving=false;
+  /* fecha o modal (se veio do form do modal) pra não cobrir o agendador */
+  try{ if(typeof closeModal==='function') closeModal(); else { var _mo=document.getElementById('modal'); if(_mo){ _mo.classList.remove('open'); document.body.style.overflow=''; } } }catch(e){}
   ['lead','leadM'].forEach(function(id){ var f=document.getElementById(id); if(f){ f.style.display='none'; var pr=f.previousElementSibling; if(pr&&pr.classList&&pr.classList.contains('prog')) pr.style.display='none'; } });
   var sec=document.getElementById('ag-lp'); if(!sec) return; sec.style.display='block';
   pushEvent('schedule_view',{faixa:faixa});
