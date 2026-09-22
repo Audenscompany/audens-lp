@@ -1241,7 +1241,22 @@ moreBtn.addEventListener('click', function(){
 
 /* Modal + focus trap */
 var modal = document.getElementById('modal'), lastFocus=null;
-function openModal(){ lastFocus=document.activeElement; modal.classList.add('open'); document.body.style.overflow='hidden'; pushEvent('offer_view',{via:'modal'}); var f=modal.querySelector('select,input,button'); if(f)f.focus(); }
+function openModal(){ lastFocus=document.activeElement;
+  /* RESET: garante o formulário visível no passo 1 mesmo se um fluxo anterior (agendador) tiver escondido. */
+  try{
+    var lm=document.getElementById('leadM');
+    if(lm){
+      lm.style.display='';
+      var pr=lm.previousElementSibling; if(pr&&pr.classList&&pr.classList.contains('prog')) pr.style.display='';
+      lm.querySelectorAll('.pane').forEach(function(p){ p.classList.toggle('on', p.dataset.step==='1'); });
+      var dn=document.getElementById('doneM'); if(dn) dn.style.display='none';
+    }
+    var ag=document.getElementById('ag-lp'); if(ag) ag.style.display='none';
+    var sm=document.getElementById('statusM'); if(sm) sm.textContent='';
+    var pf=document.getElementById('pfillM'); if(pf) pf.style.width='50%';
+    var pl=document.getElementById('plblM'); if(pl) pl.textContent='Etapa 1 de 2';
+  }catch(e){}
+  modal.classList.add('open'); document.body.style.overflow='hidden'; pushEvent('offer_view',{via:'modal'}); var f=modal.querySelector('select,input,button'); if(f)f.focus(); }
 function closeModal(){ modal.classList.remove('open'); document.body.style.overflow=''; if(lastFocus)lastFocus.focus(); }
 document.querySelectorAll('[data-open]').forEach(function(b){ b.addEventListener('click', openModal); });
 document.querySelectorAll('[data-close]').forEach(function(b){ b.addEventListener('click', closeModal); });
