@@ -1163,7 +1163,7 @@ function pushEvent(name, params){
   window.dataLayer.push(payload);
   try{
     if(window.fbq){
-      if(FBQ_STANDARD[name]) fbq('track', FBQ_STANDARD[name], params||{});
+      if(FBQ_STANDARD[name]){ var _o=(name==='lead_submit'&&window.__leadEventId)?{eventID:window.__leadEventId}:undefined; fbq('track', FBQ_STANDARD[name], params||{}, _o); }
       else fbq('trackCustom', name, params||{});
     }
   }catch(e){}
@@ -1302,14 +1302,11 @@ function _getJSON(url,ms){
   });
 }
 async function fetchBusy(closer){
-  var out=[]; function add(iso){ if(!iso) return; var t=Date.parse(iso); if(!isNaN(t)) out.push(t); }
+  /* Firebase trancado (login+allowlist): horários ocupados vêm do servidor (admin), via /busy. */
   try{
-    var r=await Promise.all([_getJSON(FIREBASE_URL+'/meetings.json',6000),_getJSON(FIREBASE_URL+'/kanban.json',6000)]);
-    var M=r[0]||{}, K=r[1]||{};
-    Object.keys(M).forEach(function(k){ var m=M[k]; if(!m||typeof m!=='object') return; if((m.responsavel||'')!==closer) return; var s=String(m.status||'').toLowerCase(); if(['cancelado','noshow','reagendado','descartado','perdido'].indexOf(s)>=0) return; add(m.dtISO||m.meetingISO); });
-    Object.keys(K).forEach(function(k){ var c=K[k]; if(!c||typeof c!=='object') return; if((c.responsavel||'')!==closer) return; if(!c.meetingISO) return; var s=String(c.status||'').toLowerCase(); if(['arquivado','descartado','perdido','cancelado'].indexOf(s)>=0) return; add(c.meetingISO); });
-  }catch(e){}
-  return out;
+    var j = await _getJSON(CRM_ENDPOINT+'/busy?closer='+encodeURIComponent(closer)+'&secret='+encodeURIComponent(CRM_SECRET), 6000);
+    return (j && Array.isArray(j.busy)) ? j.busy : [];
+  }catch(e){ return []; }
 }
 function _slotLivre(startUTC){ var dur=AGENDA.duracaoMin*60000; for(var i=0;i<LP_AG.busy.length;i++){ if(Math.abs(LP_AG.busy[i]-startUTC)<dur) return false; } return true; }
 function gerarDias(){
@@ -1378,12 +1375,26 @@ async function confirmarAgendamentoLP(){
   showConfLP(disp, LP_AG.closer);
 }
 async function gravarReuniaoLP(slot, closer){
+  /* Firebase trancado: a reunião é gravada pelo servidor (admin) via /lp-agendou, que também
+     dispara o WhatsApp de confirmação. Sem escrita direta no Firebase e sem /agendar (evita msg duplicada). */
   var L=window.__lpLead||{}; var tel=(L.telefone||'').replace(/\D/g,''); var key=tel||('lp_'+Date.now());
   var mid='km_'+key+'_'+Date.now(), iso=new Date(slot.startUTC).toISOString(), disp=_p2(slot.d)+'/'+_p2(slot.m+1)+'/'+slot.y+' '+_p2(slot.H)+':00';
-  var kb={ status:'reuniao', statusAt:Date.now(), responsavel:closer, sdrName:'LP', sdr:'LP', meetingISO:iso, meetingDisplay:disp, meetingId:mid, lembretes:{h1:false,h2:false,m10:false}, faixa:(window.__lpFaixa||''), nome:(L.nome||''), telefone:tel, email:(L.email||''), instagram:(L.instagram||''), faturamento:(L.faturamento||''), segmento:(L.segmento||''), origem:'lp-audens', ad:utm('utm_content','ad'), campanha:utm('utm_campaign','campaign'), conjunto:utm('utm_medium','adset'), _viaLP:true, _createdAt:Date.now() };
-  var mrec={ id:mid, tel:tel, nome:(L.nome||''), dtISO:iso, dtDisplay:disp, status:'pending', responsavel:closer, kanbanKey:key, sdrName:'LP', origem:'trafego pago', scheduledAt:Date.now(), _viaLP:true };
-  try{ await Promise.all([ fetch(FIREBASE_URL+'/kanban/'+encodeURIComponent(key)+'.json',{method:'PATCH',body:JSON.stringify(kb)}), fetch(FIREBASE_URL+'/meetings/'+encodeURIComponent(mid)+'.json',{method:'PUT',body:JSON.stringify(mrec)}) ]); }catch(e){}
-  try{ fetch(CRM_ENDPOINT+'/agendar?secret='+encodeURIComponent(CRM_SECRET),{method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify({telefone:tel,nome:(L.nome||''),meetingDisplay:disp,responsavel:closer,avisarEquipe:true})}).catch(function(){}); }catch(e){}
+  var payload={
+    telefone:tel, nome:(L.nome||''), faixa:(window.__lpFaixa||''), responsavel:closer,
+    meetingISO:iso, meetingDisplay:disp, meetingId:mid,
+    email:(L.email||''), instagram:(L.instagram||''),
+    faturamento:(L.faturamento||''), segmento:(L.segmento||''),
+    ad:utm('utm_content','ad'), campanha:utm('utm_campaign','campaign'), conjunto:utm('utm_medium','adset'),
+    fonte:(window.__audensAttrib||{}).fonte||'',
+    origem:'lp-audens'
+  };
+  try{
+    await fetch(CRM_ENDPOINT+'/lp-agendou?secret='+encodeURIComponent(CRM_SECRET),{
+      method:'POST', mode:'cors', keepalive:true,
+      headers:{'Content-Type':'application/json','X-Webhook-Secret':CRM_SECRET},
+      body:JSON.stringify(payload)
+    });
+  }catch(e){}
   return disp;
 }
 function showConfLP(disp, closer){
@@ -1438,6 +1449,7 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
     var fat = fatSel;   /* faturamento informado (rótulo) pro CRM */
     var faixaBaixa=(faixaLP==='ate-20');   /* < R$20 mil -> LP Vivendo de Delivery + arquiva no CRM */
     var qualified = (faixaLP==='100-300'||faixaLP==='300+');
+    window.__leadEventId = 'lp_'+Date.now()+'_'+Math.random().toString(36).slice(2,10);   /* dedup Pixel navegador × CAPI servidor */
     pushEvent('lead_submit', {form:formId});
     if(qualified) pushEvent('qualified_lead', {faixa:fat, segmento:seg});
     /* Envia o lead ao CRM com atribuição de campanha/anúncio (UTMs da URL do anúncio) */
@@ -1462,7 +1474,8 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       campanha:     utm('utm_campaign','campaign'),
       conjunto:     utm('utm_medium','adset'),
       fbp:          (document.cookie.match(/_fbp=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbp || '',
-      fbc:          (document.cookie.match(/_fbc=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbc || ''
+      fbc:          (document.cookie.match(/_fbc=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbc || '',
+      event_id:     window.__leadEventId || ''
     });
     if(faixaBaixa){ pushEvent('lp_vivendo_redirect',{faixa:'ate-20', segmento:seg}); window.location.href='https://assessoriaaudens.com.br/vivendo-de-delivery/'; return; }
     /* Qualificado → abre o agendador nativo (mesmo motor da FV2) no lugar da tela de "obrigado" */
