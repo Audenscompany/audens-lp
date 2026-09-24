@@ -165,8 +165,8 @@ var CONFIG = {
   CRM_ENDPOINT: 'https://receberlead-471063273836.us-central1.run.app',
   CRM_SECRET:   'audens2025xk',
   FIREBASE_URL: 'https://audens-crm-default-rtdb.firebaseio.com',
-  /* faixas que qualificam para reunião: R$15 mil+ (mapeadas p/ o padrão do CRM) */
-  FAIXAS_QUALIFICA: ['15-30','30-50','50-100','100-300'],
+  /* faixas que qualificam para reunião: R$50 mil+ (régua subida — abaixo disso vai pro YouTube e arquiva) */
+  FAIXAS_QUALIFICA: ['50-100','100-300'],
   CAPTURAR_NAO_QUALIFICADO: true,
   /* Agendador nativo — horário de atendimento (fuso de Brasília, UTC-3) */
   AGENDA: {
@@ -415,45 +415,37 @@ function tplChoice(s){
 /* ---------- passo final: envia CRM e ramifica ---------- */
 function renderFinal(wrap){
   finalReached=true; updateProgress();
-  /* Faixa baixa (< R$15 mil): agora COLETA contato antes do Vivendo -> vira lead Vivendo no CRM (status:'vivendo') e entra na cadência. */
-  if(faixaCod()==='0-15'){
-    pushEvent('lp_vivendo_view',pedEv({faixa:'0-15'}));
-    if(!leadSent){ leadSent=true; enviarCRM({status:'vivendo',destino:'vivendo'}); }
-    wrap.innerHTML = tplCurso();
+  var fc=faixaCod();
+  /* ABAIXO DO CORTE (< R$50 mil): arquiva direto (salvo na base, SEM mensagem/cadência) + tela honesta com o canal do YouTube. */
+  if(['0-15','15-30','30-50'].indexOf(fc)>=0){
+    pushEvent('lp_youtube_view',pedEv({faixa:fc}));
+    if(!leadSent){ leadSent=true; enviarCRM({status:'arquivado',destino:'arquivado'}); }
+    wrap.innerHTML = tplYoutube();
     stage.appendChild(wrap);
-    var cb=document.getElementById('cursoBtn'); if(cb) cb.addEventListener('click',function(){ pushEvent('lp_vivendo_click'); });
+    var yb=document.getElementById('ytBtn'); if(yb) yb.addEventListener('click',function(){ pushEvent('lp_youtube_click'); });
     return;
   }
   var qualified=isQualified();
   if(qualified){
     /* fallback: se por algum caminho não disparou na qualificação, garante 1x aqui */
-    if(!qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:faixaCod()})); }
+    if(!qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:fc})); }
     /* lead_submit = contato REAL preenchido (nome+WhatsApp já foram coletados antes deste passo) */
     pushEvent('lead_submit',{qualificado:true});
     if(!leadSent){ leadSent=true; enviarCRM({status:'qualificado',reuniao_agendada:'nao'}); }
     wrap.innerHTML = tplCalendar();
     stage.className='stage wide cal';
     stage.appendChild(wrap);
-    pushEvent('schedule_view',{faixa:faixaCod()});
-    initAgendador(closerPorFaixa(faixaCod()));
-  } else {
-    var fBaixo=faixaCod();
-    if(['15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso Vivendo COM contato -> lead Vivendo no CRM (status:'vivendo') + cadência */
-      pushEvent('lp_vivendo_view',pedEv({faixa:fBaixo}));
-      if(!leadSent){ leadSent=true; enviarCRM({status:'vivendo',destino:'vivendo'}); }
-      wrap.innerHTML = tplCurso();
-      stage.appendChild(wrap);
-      var cb2=document.getElementById('cursoBtn'); if(cb2) cb2.addEventListener('click',function(){ pushEvent('lp_vivendo_click'); });
-    } else { /* >=50k não quer -> conscientização (tem contato) -> lead ativo */
-      pushEvent('lead_submit',{qualificado:false});
-      if(!leadSent){ leadSent=true; enviarCRM({status:'nao-qualificado',prioridade:'media',destino:'conscientizacao'}); }
-      pushEvent('conscientizacao_view',{faixa:fBaixo});
-      wrap.innerHTML = tplConscientizacao();
-      stage.className='stage wide cal';
-      stage.appendChild(wrap);
-      pushEvent('schedule_view',{faixa:fBaixo});
-      initAgendador(closerPorFaixa(fBaixo));
-    }
+    pushEvent('schedule_view',{faixa:fc});
+    initAgendador(closerPorFaixa(fc));
+  } else { /* >=50k não quer investir -> conscientização (tem contato) -> lead ativo */
+    pushEvent('lead_submit',{qualificado:false});
+    if(!leadSent){ leadSent=true; enviarCRM({status:'nao-qualificado',prioridade:'media',destino:'conscientizacao'}); }
+    pushEvent('conscientizacao_view',{faixa:fc});
+    wrap.innerHTML = tplConscientizacao();
+    stage.className='stage wide cal';
+    stage.appendChild(wrap);
+    pushEvent('schedule_view',{faixa:fc});
+    initAgendador(closerPorFaixa(fc));
   }
 }
 
@@ -530,12 +522,13 @@ function tplCurso(){
 function tplYoutube(){
   fill.style.width='100%';
   return `<div class="yt-wrap">
-    <div class="yt-ico">▶</div>
-    <h1>Recebemos suas respostas!</h1>
-    <p class="subtitle">Pelo momento do seu negócio, o melhor primeiro passo é aprender com o nosso conteúdo gratuito — é lá que a gente ensina como estruturar o marketing pra crescer de forma consistente.</p>
+    <div class="yt-ico">🤝</div>
+    <h1>Vamos ser sinceros com você</h1>
+    <p class="subtitle">Pelo que você respondeu, o faturamento da sua operação ainda está <b>abaixo do ponto</b> onde uma assessoria de marketing faz sentido financeiro agora.</p>
+    <p class="subtitle">E a gente fala isso <b>de dono pra dono</b> — também tocamos hamburgueria. Trazer um time pra cuidar do seu marketing é um investimento, e a gente se preocupa demais com a <b>saúde financeira</b> do seu negócio pra te empurrar algo na hora errada.</p>
     <div class="yt-card">
-      <p class="subtitle" style="margin-top:0"><b>Acompanhe o canal e comece a aplicar hoje:</b></p>
-      <a class="btn cta" id="ytBtn" href="${CONFIG.YOUTUBE_URL}" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;margin-top:18px">▶&nbsp; Ver o canal no YouTube</a>
+      <p class="subtitle" style="margin-top:0">A boa notícia: no nosso <b>canal do YouTube</b> tem um monte de conteúdo gratuito pra te ajudar a vender mais e chegar no ponto certo. Quando o momento chegar, a gente vai estar aqui. 🚀</p>
+      <a class="btn cta" id="ytBtn" href="${CONFIG.YOUTUBE_URL}" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;margin-top:18px">▶&nbsp; Assistir no nosso canal do YouTube</a>
     </div>
   </div>`;
 }
@@ -583,8 +576,8 @@ function attemptNext(s){
     if(s.required && !answers[s.key]){ document.getElementById('err').classList.add('show'); return; }
   }
   /* Contato (nome+WhatsApp) já foi coletado no início — aqui só roteia a qualificação. */
-  /* Faixa baixa (<15k): não precisa da pergunta de investir nem do Instagram -> vai direto pro final (curso Vivendo) */
-  if(s.key==='faturamento' && faixaCod()==='0-15'){ go(steps.length-1); return; }
+  /* Abaixo do corte (< R$50 mil): não precisa de disposto/Instagram -> vai direto pro final (tela YouTube + arquiva) */
+  if(s.key==='faturamento' && ['0-15','15-30','30-50'].indexOf(faixaCod())>=0){ go(steps.length-1); return; }
   /* Ao terminar a qualificação (disposto): marca o qualificado e decide se ainda pede Instagram */
   if(s.key==='disposto'){
     if(isQualified() && !qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:faixaCod()})); }
