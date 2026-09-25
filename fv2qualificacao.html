@@ -166,7 +166,7 @@ var CONFIG = {
   CRM_SECRET:   'audens2025xk',
   FIREBASE_URL: 'https://audens-crm-default-rtdb.firebaseio.com',
   /* faixas que qualificam para reunião: R$50 mil+ (régua subida — abaixo disso vai pro YouTube e arquiva) */
-  FAIXAS_QUALIFICA: ['50-100','100-300'],
+  FAIXAS_QUALIFICA: ['30-50','50-100','100-300'],
   CAPTURAR_NAO_QUALIFICADO: true,
   /* Agendador nativo — horário de atendimento (fuso de Brasília, UTC-3) */
   AGENDA: {
@@ -261,13 +261,13 @@ var FAT_COD = {
 function faixaCod(){ return FAT_COD[answers.faturamento]||''; }
 function dispostoSim(){ return !!(answers.disposto && answers.disposto.indexOf('Sim')>=0); }
 function isQualified(){ return CONFIG.FAIXAS_QUALIFICA.indexOf(faixaCod())>=0 && dispostoSim(); }
-/* quem precisa deixar contato = quem chega ao agendamento (qualificado OU 50k+ na conscientização).
-   <15k e 15-50k que não quer investir vão pro Vivendo sem preencher contato. */
+/* quem precisa deixar contato = quem chega ao agendamento (qualificado OU 30 mil+ na conscientização).
+   Abaixo de R$30 mil (0-15 e 15-30) vai pro YouTube/arquivo sem preencher contato extra. */
 function precisaContato(){
   var f=faixaCod();
-  if(f==='0-15') return false;
+  if(f==='0-15'||f==='15-30') return false;
   if(isQualified()) return true;
-  if(['50-100','100-300','300+'].indexOf(f)>=0) return true;
+  if(['30-50','50-100','100-300','300+'].indexOf(f)>=0) return true;
   return false;
 }
 
@@ -417,7 +417,7 @@ function renderFinal(wrap){
   finalReached=true; updateProgress();
   var fc=faixaCod();
   /* ABAIXO DO CORTE (< R$50 mil): arquiva direto (salvo na base, SEM mensagem/cadência) + tela honesta com o canal do YouTube. */
-  if(['0-15','15-30','30-50'].indexOf(fc)>=0){
+  if(['0-15','15-30'].indexOf(fc)>=0){
     pushEvent('lp_youtube_view',pedEv({faixa:fc}));
     if(!leadSent){ leadSent=true; enviarCRM({status:'arquivado',destino:'arquivado'}); }
     wrap.innerHTML = tplYoutube();
@@ -577,7 +577,7 @@ function attemptNext(s){
   }
   /* Contato (nome+WhatsApp) já foi coletado no início — aqui só roteia a qualificação. */
   /* Abaixo do corte (< R$50 mil): não precisa de disposto/Instagram -> vai direto pro final (tela YouTube + arquiva) */
-  if(s.key==='faturamento' && ['0-15','15-30','30-50'].indexOf(faixaCod())>=0){ go(steps.length-1); return; }
+  if(s.key==='faturamento' && ['0-15','15-30'].indexOf(faixaCod())>=0){ go(steps.length-1); return; }
   /* Ao terminar a qualificação (disposto): marca o qualificado e decide se ainda pede Instagram */
   if(s.key==='disposto'){
     if(isQualified() && !qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:faixaCod()})); }
