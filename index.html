@@ -1402,6 +1402,9 @@ async function gravarReuniaoLP(slot, closer){
     email:(L.email||''), instagram:(L.instagram||''),
     faturamento:(L.faturamento||''), segmento:(L.segmento||''),
     ad:utm('utm_content','ad'), campanha:utm('utm_campaign','campaign'), conjunto:utm('utm_medium','adset'),
+    campaign_id:utm('campaign_id'), adset_id:utm('adset_id'), ad_id:utm('ad_id'),
+    campaign_name:utm('campaign_name','utm_campaign'), adset_name:utm('adset_name','utm_medium'), ad_name:utm('ad_name','utm_content'),
+    variante_lp:'lp-completa', first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
     fonte:(window.__audensAttrib||{}).fonte||'',
     origem:'lp-audens'
   };
@@ -1490,6 +1493,17 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       ad:           utm('utm_content','ad'),
       campanha:     utm('utm_campaign','campaign'),
       conjunto:     utm('utm_medium','adset'),
+      campaign_id:  utm('campaign_id'),
+      adset_id:     utm('adset_id'),
+      ad_id:        utm('ad_id'),
+      campaign_name:utm('campaign_name','utm_campaign'),
+      adset_name:   utm('adset_name','utm_medium'),
+      ad_name:      utm('ad_name','utm_content'),
+      variante_lp:  'lp-completa',
+      fonte:        (window.__audensAttrib||{}).fonte||'',
+      ref:          (window.__audensAttrib||{}).ref||document.referrer||'',
+      first_touch:  (window.__audensAttrib||{}).first_touch||null,
+      last_touch:   (window.__audensAttrib||{}).last_touch||null,
       fbp:          (document.cookie.match(/_fbp=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbp || '',
       fbc:          (document.cookie.match(/_fbc=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbc || '',
       event_id:     window.__leadEventId || ''
