@@ -3,7 +3,7 @@
 <head>
 <script>
 /* Atribuição (UTMs do anúncio + fbp/fbc) — captura na 1ª visita e persiste p/ não perder na navegação */
-(function(){var KEYS=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid'];var qs;try{qs=new URLSearchParams(window.location.search);}catch(e){qs={get:function(){return null;}};}var salvo={};try{salvo=JSON.parse(localStorage.getItem('audens_attrib')||'{}');}catch(e){}KEYS.forEach(function(k){var v=qs.get(k);if(v)salvo[k]=v;});var m;m=document.cookie.match(/_fbp=([^;]+)/);if(m)salvo.fbp=m[1];m=document.cookie.match(/_fbc=([^;]+)/);if(m)salvo.fbc=m[1];if(!salvo.fbc&&salvo.fbclid)salvo.fbc='fb.1.'+Date.now()+'.'+salvo.fbclid;try{localStorage.setItem('audens_attrib',JSON.stringify(salvo));}catch(e){}window.__audensAttrib=salvo;})();
+(function(){var KEYS=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','campaign_id','adset_id','ad_id','campaign_name','adset_name','ad_name'];var qs;try{qs=new URLSearchParams(window.location.search);}catch(e){qs={get:function(){return null;}};}var salvo={};try{salvo=JSON.parse(localStorage.getItem('audens_attrib')||'{}');}catch(e){}var cur={};KEYS.forEach(function(k){var v=qs.get(k);if(v){cur[k]=v;salvo[k]=v;}});try{var r=document.referrer;if(r)cur.ref=r;}catch(e){}cur.ts=Date.now();var m;m=document.cookie.match(/_fbp=([^;]+)/);if(m)salvo.fbp=m[1];m=document.cookie.match(/_fbc=([^;]+)/);if(m)salvo.fbc=m[1];if(!salvo.fbc&&salvo.fbclid)salvo.fbc='fb.1.'+Date.now()+'.'+salvo.fbclid;var sig=false;for(var kk in cur){if(kk!=='ts'&&kk!=='ref'){sig=true;break;}}if(cur.ref)sig=true;if(sig&&!salvo.first_touch)salvo.first_touch=cur;if(sig)salvo.last_touch=cur;try{localStorage.setItem('audens_attrib',JSON.stringify(salvo));}catch(e){}window.__audensAttrib=salvo;})();
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -288,6 +288,9 @@ function enviarCRM(extra){
     origem:'lp-audens-quiz-fv2',
     utm_campaign:utmv('utm_campaign','campaign'), utm_content:utmv('utm_content','ad'), utm_medium:utmv('utm_medium','adset'), utm_source:utmv('utm_source')||'meta',
     ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'), conjunto:utmv('utm_medium','adset'),
+    campaign_id:utmv('campaign_id'), adset_id:utmv('adset_id'), ad_id:utmv('ad_id'),
+    campaign_name:utmv('campaign_name','utm_campaign'), adset_name:utmv('adset_name','utm_medium'), ad_name:utmv('ad_name','utm_content'),
+    variante_lp:'quiz-fv2', first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
     fbp:(document.cookie.match(/_fbp=([^;]+)/)||[])[1]||(window.__audensAttrib||{}).fbp||'', fbc:(document.cookie.match(/_fbc=([^;]+)/)||[])[1]||(window.__audensAttrib||{}).fbc||''
   };
   if(extra) for(var k in extra) base[k]=extra[k];
@@ -700,6 +703,9 @@ async function gravarReuniao(slot, closer){
     faturamento:(answers.faturamento||FAIXA_FAT[faixaCod()]||''), segmento:(answers.segmento||''),
     investimento:dispostoSim()?'sim':'nao', ja_investiu:(answers.investiu||''),
     ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'), conjunto:utmv('utm_medium','adset'),
+    campaign_id:utmv('campaign_id'), adset_id:utmv('adset_id'), ad_id:utmv('ad_id'),
+    campaign_name:utmv('campaign_name','utm_campaign'), adset_name:utmv('adset_name','utm_medium'), ad_name:utmv('ad_name','utm_content'),
+    variante_lp:'quiz-fv2', first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
     origem:'lp-audens-quiz-fv2'
   };
   try{
