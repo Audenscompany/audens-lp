@@ -1043,7 +1043,7 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
             <select id="segmento" name="segmento" required aria-describedby="e-seg"><option value="" disabled selected>Selecione…</option><option>Hamburgueria</option><option>Pizzaria</option><option>Restaurante</option><option>Cafeteria / Confeitaria</option><option>Dark kitchen</option><option>Outro</option></select>
             <span class="err" id="e-seg">Selecione um segmento.</span></div>
           <div class="fld"><label for="faturamento">Faturamento médio mensal</label>
-            <select id="faturamento" name="faturamento" required aria-describedby="e-fat"><option value="" disabled selected>Selecione…</option><option>Até R$20 mil</option><option>De R$20 mil a R$30 mil</option><option>De R$30 mil a R$50 mil</option><option>De R$50 mil a R$100 mil</option><option>Acima de R$100 mil</option></select>
+            <select id="faturamento" name="faturamento" required aria-describedby="e-fat"><option value="" disabled selected>Selecione…</option><option>Até R$40 mil</option><option>De R$40 mil a R$60 mil</option><option>De R$60 mil a R$100 mil</option><option>Acima de R$100 mil</option></select>
             <span class="err" id="e-fat">Selecione uma faixa.</span></div>
           <div class="fld"><label for="canal">Como você vende hoje?</label>
             <select id="canal" name="canal" required aria-describedby="e-can"><option value="" disabled selected>Selecione…</option><option>Só iFood / marketplace</option><option>iFood + canal próprio</option><option>Só canal próprio (WhatsApp/app)</option><option>Ainda não vendo por delivery</option></select>
@@ -1097,7 +1097,7 @@ footer{position:relative;z-index:2;padding-top:var(--sp-24);overflow:hidden}
     <form id="leadM" novalidate>
       <div class="pane on" data-step="1">
         <div class="fld"><label>Segmento</label><select name="segmento" required><option value="" disabled selected>Selecione…</option><option>Hamburgueria</option><option>Pizzaria</option><option>Restaurante</option><option>Cafeteria / Confeitaria</option><option>Dark kitchen</option><option>Outro</option></select></div>
-        <div class="fld"><label>Faturamento médio mensal</label><select name="faturamento" required><option value="" disabled selected>Selecione…</option><option>Até R$20 mil</option><option>De R$20 mil a R$30 mil</option><option>De R$30 mil a R$50 mil</option><option>De R$50 mil a R$100 mil</option><option>Acima de R$100 mil</option></select></div>
+        <div class="fld"><label>Faturamento médio mensal</label><select name="faturamento" required><option value="" disabled selected>Selecione…</option><option>Até R$40 mil</option><option>De R$40 mil a R$60 mil</option><option>De R$60 mil a R$100 mil</option><option>Acima de R$100 mil</option></select></div>
         <div class="fld"><label>Como vende hoje?</label><select name="canal" required><option value="" disabled selected>Selecione…</option><option>Só iFood / marketplace</option><option>iFood + canal próprio</option><option>Só canal próprio</option><option>Ainda não vendo por delivery</option></select></div>
         <button type="button" class="btn btn-primary btn-block mnext">Continuar <svg class="ar" aria-hidden="true"><use href="#arrow"/></svg></button>
       </div>
@@ -1304,8 +1304,8 @@ function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
 /* ===== AGENDADOR NATIVO (mesmo motor da FV2) — grava reunião no CRM, closer por faixa, avisa equipe ===== */
 var FIREBASE_URL='https://audens-crm-default-rtdb.firebaseio.com';
 var AGENDA={tzOffsetH:-3,duracaoMin:50,antecedenciaH:2,horizonteDias:2,waDuvidas:'5531986187980',horasSemana:[9,10,11,12,13,14,15,16,17,18],feriados:['2026-01-01','2026-02-16','2026-02-17','2026-04-03','2026-04-21','2026-05-01','2026-06-04','2026-09-07','2026-10-12','2026-11-02','2026-11-15','2026-11-20','2026-12-25','2027-01-01','2027-02-08','2027-02-09','2027-03-26','2027-04-21','2027-05-01','2027-05-27','2027-09-07','2027-10-12','2027-11-02','2027-11-15','2027-11-20','2027-12-25']};
-var LP_AG={closer:'Gustavo',dias:[],sel:null,busy:[],saving:false};
-function closerPorFaixa(f){ return (f==='50-100'||f==='100-300'||f==='300+') ? 'Lucas' : 'Gustavo'; }
+var LP_AG={closer:'João',dias:[],sel:null,busy:[],saving:false};
+function closerPorFaixa(f){ return (f==='60-100'||f==='100+') ? 'Lucas' : 'João'; }
 var _p2=function(n){ return (n<10?'0':'')+n; };
 var _MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 var _DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -1466,11 +1466,11 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
     /* Lead responde FATURAMENTO direto (sem estimar por pedidos) */
     var seg=(form.querySelector('select[name="segmento"]')||{}).value||'';
     var fatSel=(form.querySelector('select[name="faturamento"]')||{}).value||'';
-    var FAT_MAP={'Até R$20 mil':'ate-20','De R$20 mil a R$30 mil':'20-50','De R$30 mil a R$50 mil':'20-50','De R$50 mil a R$100 mil':'50-100','Acima de R$100 mil':'100-300'};
+    var FAT_MAP={'Até R$40 mil':'0-40','De R$40 mil a R$60 mil':'40-60','De R$60 mil a R$100 mil':'60-100','Acima de R$100 mil':'100+'};
     var faixaLP = FAT_MAP[fatSel] || '';
     var fat = fatSel;   /* faturamento informado (rótulo) pro CRM */
-    var faixaBaixa=(faixaLP==='ate-20');   /* < R$20 mil -> LP Vivendo de Delivery + arquiva no CRM */
-    var qualified = (faixaLP==='100-300'||faixaLP==='300+');
+    var faixaBaixa=(faixaLP==='0-40');   /* < R$40 mil -> LP Vivendo de Delivery + arquiva no CRM */
+    var qualified = (faixaLP==='40-60'||faixaLP==='60-100'||faixaLP==='100+');
     window.__leadEventId = 'lp_'+Date.now()+'_'+Math.random().toString(36).slice(2,10);   /* dedup Pixel navegador × CAPI servidor */
     pushEvent('lead_submit', {form:formId});
     if(qualified) pushEvent('qualified_lead', {faixa:fat, segmento:seg});
@@ -1511,7 +1511,7 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       fbc:          (document.cookie.match(/_fbc=([^;]+)/)||[])[1] || (window.__audensAttrib||{}).fbc || '',
       event_id:     window.__leadEventId || ''
     });
-    if(faixaBaixa){ pushEvent('lp_vivendo_redirect',{faixa:'ate-20', segmento:seg}); window.location.href='https://assessoriaaudens.com.br/vivendo-de-delivery/'; return; }
+    if(faixaBaixa){ pushEvent('lp_vivendo_redirect',{faixa:'0-40', segmento:seg}); window.location.href='https://assessoriaaudens.com.br/vivendo-de-delivery/'; return; }
     /* Qualificado → abre o agendador nativo (mesmo motor da FV2) no lugar da tela de "obrigado" */
     abrirAgendadorLP(faixaLP, {
       nome:(nome&&nome.value||'').trim(), telefone:(tel&&tel.value||''), email:(email&&email.value||'').trim(),

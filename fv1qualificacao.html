@@ -330,7 +330,7 @@ var CONFIG = {
   /* De onde a LP puxa os cases (mesmo arquivo que o painel publica). */
   CLIENTES_URL: 'https://assessoriaaudens.com.br/clientes-data.js',
   IMG_BASE:     'https://assessoriaaudens.com.br/',
-  FAIXAS_QUALIFICA: ['15-20','20-50','50-100','100-300','300+'],
+  FAIXAS_QUALIFICA: ['40-60','60-100','100+'],
   CAPTURAR_NAO_QUALIFICADO: true
 };
 
@@ -444,12 +444,10 @@ var QUESTIONS = {
     ]},
   faturamento:{ kind:'choice', cols:1, qualifier:true, eyebrow:'Tamanho da operação', title:'Qual o faturamento mensal hoje?', sub:'É a informação que mais muda o tipo de plano que faz sentido pra você.',
     options:[
-      {value:'ate-15',label:'Até R$ 15 mil / mês',icon:'seed'},
-      {value:'15-20',label:'De R$ 15 mil a R$ 20 mil / mês',icon:'seed'},
-      {value:'20-50',label:'R$ 20 mil a R$ 50 mil / mês',icon:'bars1'},
-      {value:'50-100',label:'R$ 50 mil a R$ 100 mil / mês',icon:'bars2'},
-      {value:'100-300',label:'R$ 100 mil a R$ 300 mil / mês',icon:'bars3'},
-      {value:'300+',label:'Acima de R$ 300 mil / mês',icon:'crown'}
+      {value:'0-40',label:'Até R$ 40 mil / mês',icon:'seed'},
+      {value:'40-60',label:'De R$ 40 mil a R$ 60 mil / mês',icon:'bars1'},
+      {value:'60-100',label:'De R$ 60 mil a R$ 100 mil / mês',icon:'bars2'},
+      {value:'100+',label:'Acima de R$ 100 mil / mês',icon:'crown'}
     ]},
   canal:{ kind:'choice', cols:1, eyebrow:'Como você vende', title:'Por onde saem os seus pedidos hoje?', sub:'Onde está o seu faturamento é onde está o seu risco.',
     options:[
@@ -556,7 +554,7 @@ function viewQuestion(qid){
 
 function viewInsightFat(){
   var v=valOf('faturamento'), head, body;
-  if(v==='ate-20'){
+  if(v==='0-40'){
     head='O começo é onde a base se constrói.';
     body='Nessa faixa, cada real de mídia precisa virar pedido rápido — e dá pra montar um canal próprio do jeito certo antes de crescer.';
   } else {
@@ -613,9 +611,8 @@ function buildDiagnostico(){
 
 function viewFinal(){
   var f=valOf('faturamento');
-  var cursoNaoQuer = !isQualified() && ['15-20','20-50','15-30','30-50'].indexOf(f)>=0; /* 15-50k não quer investir -> curso */
-  if(f==='ate-15' || cursoNaoQuer) return viewCurso();
-  var consc = !isQualified() && ['50-100','100-300','300+'].indexOf(f)>=0; /* >=50k não quer -> conscientização (vídeos + agenda) */
+  if(f==='0-40') return viewCurso(); /* <40k -> Vivendo */
+  var consc = !isQualified() && ['40-60','60-100','100+'].indexOf(f)>=0; /* >=40k não quer -> conscientização (vídeos + agenda) */
   if(consc) return viewConsc();
   return isQualified()?viewAgenda():viewYoutube();
 }
@@ -791,7 +788,7 @@ function bind(step){
       statusEl.textContent='';
       STATE.nome=nome.value.trim(); STATE.whats=tel.value.trim(); STATE.email=email.value.trim(); STATE.insta=(document.getElementById('insta').value||'').trim();
       /* Faixa baixa (< R$15 mil): arquiva no CRM (sem mensagem) e vai pra tela do curso Vivendo de Delivery */
-      if(valOf('faturamento')==='ate-15'){
+      if(valOf('faturamento')==='0-40'){
         pushEvent('lead_submit',{qualificado:false});
         if(!leadSent){leadSent=true;enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'});}
         goNext(); return;
@@ -799,13 +796,8 @@ function bind(step){
       var qualified=isQualified();
       pushEvent('lead_submit',{qualificado:qualified});
       if(qualified){ pushEvent('qualified_lead',{faixa:valOf('faturamento')}); if(!leadSent){leadSent=true;enviarCRM({status:'qualificado',reuniao_agendada:'nao'});} }
-      else {
-        var fBaixo=valOf('faturamento');
-        if(['15-20','20-50','15-30','30-50'].indexOf(fBaixo)>=0){ /* 15-50k não quer investir -> curso + arquiva */
-          if(!leadSent){leadSent=true;enviarCRM({status:'arquivado',prioridade:'baixa',destino:'lp-vivendo'});}
-        } else { /* >=50k não quer -> conscientização (cases + agenda), mantém como lead ativo */
-          if(!leadSent){leadSent=true;enviarCRM({status:'nao-qualificado',prioridade:'media',destino:'conscientizacao'});}
-        }
+      else { /* >=40k não quer investir -> conscientização (cases + agenda), mantém como lead ativo */
+        if(!leadSent){leadSent=true;enviarCRM({status:'nao-qualificado',prioridade:'media',destino:'conscientizacao'});}
       }
       goNext();
     });
@@ -814,12 +806,12 @@ function bind(step){
 
   if(step.type==='final'){
     var fFim=valOf('faturamento');
-    if(fFim==='ate-15' || (!isQualified() && ['15-20','20-50','15-30','30-50'].indexOf(fFim)>=0)){
+    if(fFim==='0-40'){
       pushEvent('lp_vivendo_view',{faixa:fFim});
       var cbtn=document.getElementById('cursoBtn'); if(cbtn)cbtn.addEventListener('click',function(){pushEvent('lp_vivendo_click');});
       return;
     }
-    var consc=!isQualified() && ['50-100','100-300','300+'].indexOf(fFim)>=0;
+    var consc=!isQualified() && ['40-60','60-100','100+'].indexOf(fFim)>=0;
     if(isQualified() || consc){
       pushEvent(consc?'conscientizacao_view':'prova_view',{faixa:valOf('faturamento')});
       if(!consc) renderCases();
@@ -835,7 +827,7 @@ function bind(step){
 function goNext(){
   var ni=idx+1;
   /* Faixa baixa (<15k) não passa pela pergunta de investir */
-  if(valOf('faturamento')==='ate-15' && FLOW[ni] && FLOW[ni].id==='investimento') ni++;
+  if(valOf('faturamento')==='0-40' && FLOW[ni] && FLOW[ni].id==='investimento') ni++;
   if(ni<FLOW.length) render(ni);
 }
 function goPrev(){ if(idx>0) render(idx-1); }

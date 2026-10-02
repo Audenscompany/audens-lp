@@ -168,7 +168,7 @@ var CONFIG = {
   COMPROMISSO_V: 'v1',
   FIREBASE_URL: 'https://audens-crm-default-rtdb.firebaseio.com',
   /* faixas que qualificam para reunião: R$50 mil+ (régua subida — abaixo disso vai pro YouTube e arquiva) */
-  FAIXAS_QUALIFICA: ['30-50','50-100','100-300'],
+  FAIXAS_QUALIFICA: ['40-60','60-100','100+'],
   CAPTURAR_NAO_QUALIFICADO: true,
   /* Agendador nativo — horário de atendimento (fuso de Brasília, UTC-3) */
   AGENDA: {
@@ -198,11 +198,10 @@ var PEDIDOS_REP = {
 };
 /* faixa -> rótulo de faturamento (o que aparece no CRM) */
 var FAIXA_FAT = {
-  '0-15':'Até R$20 mil',
-  '15-30':'De R$20 mil a R$30 mil',
-  '30-50':'De R$30 mil a R$50 mil',
-  '50-100':'De R$50 mil a R$100 mil',
-  '100-300':'Acima de R$100 mil'
+  '0-40':'Até R$40 mil',
+  '40-60':'De R$40 mil a R$60 mil',
+  '60-100':'De R$60 mil a R$100 mil',
+  '100+':'Acima de R$100 mil'
 };
 function ticketSeg(){ return TICKET_SEG[answers.segmento] || 50; }
 function fatEstimado(){ return (PEDIDOS_REP[answers.pedidos]||0) * ticketSeg(); }
@@ -255,11 +254,10 @@ function utmv(){ var A=window.__audensAttrib||{}; for(var i=0;i<arguments.length
 
 /* Faturamento perguntado DIRETO. Mapeia a resposta -> código de faixa interno (mantido). */
 var FAT_COD = {
-  'Até R$20 mil':'0-15',
-  'De R$20 mil a R$30 mil':'15-30',
-  'De R$30 mil a R$50 mil':'30-50',
-  'De R$50 mil a R$100 mil':'50-100',
-  'Acima de R$100 mil':'100-300'
+  'Até R$40 mil':'0-40',
+  'De R$40 mil a R$60 mil':'40-60',
+  'De R$60 mil a R$100 mil':'60-100',
+  'Acima de R$100 mil':'100+'
 };
 function faixaCod(){ return FAT_COD[answers.faturamento]||''; }
 function dispostoSim(){ return !!(answers.disposto && answers.disposto.indexOf('Sim')>=0); }
@@ -268,9 +266,9 @@ function isQualified(){ return CONFIG.FAIXAS_QUALIFICA.indexOf(faixaCod())>=0 &&
    Abaixo de R$30 mil (0-15 e 15-30) vai pro YouTube/arquivo sem preencher contato extra. */
 function precisaContato(){
   var f=faixaCod();
-  if(f==='0-15'||f==='15-30') return false;
+  if(f==='0-40') return false;
   if(isQualified()) return true;
-  if(['30-50','50-100','100-300','300+'].indexOf(f)>=0) return true;
+  if(['40-60','60-100','100+'].indexOf(f)>=0) return true;
   return false;
 }
 
@@ -328,7 +326,7 @@ const steps = [
     options:['Hamburgueria','Pizzaria','Outro'] },
 
   { type:'choice', key:'faturamento', h:'Qual o <b>faturamento médio mensal</b> do seu negócio?', required:true,
-    options:['Até R$20 mil','De R$20 mil a R$30 mil','De R$30 mil a R$50 mil','De R$50 mil a R$100 mil','Acima de R$100 mil'] },
+    options:['Até R$40 mil','De R$40 mil a R$60 mil','De R$60 mil a R$100 mil','Acima de R$100 mil'] },
 
   { type:'choice', key:'disposto',
     h:'Está disposto a investir pelo menos <b>R$1.500/mês</b> em anúncios, sem contar o valor da nossa mão de obra?',
@@ -423,12 +421,12 @@ function renderFinal(wrap){
   finalReached=true; updateProgress();
   var fc=faixaCod();
   /* ABAIXO DO CORTE (< R$50 mil): arquiva direto (salvo na base, SEM mensagem/cadência) + tela honesta com o canal do YouTube. */
-  if(['0-15','15-30'].indexOf(fc)>=0){
-    pushEvent('lp_youtube_view',pedEv({faixa:fc}));
-    if(!leadSent){ leadSent=true; enviarCRM({status:'arquivado',destino:'arquivado'}); }
-    wrap.innerHTML = tplYoutube();
+  if(fc==='0-40'){
+    pushEvent('lp_vivendo_view',pedEv({faixa:fc}));
+    if(!leadSent){ leadSent=true; enviarCRM({status:'arquivado',destino:'vivendo'}); }
+    wrap.innerHTML = tplCurso();
     stage.appendChild(wrap);
-    var yb=document.getElementById('ytBtn'); if(yb) yb.addEventListener('click',function(){ pushEvent('lp_youtube_click'); });
+    var cb=document.getElementById('cursoBtn'); if(cb) cb.addEventListener('click',function(){ pushEvent('lp_vivendo_click'); });
     return;
   }
   var qualified=isQualified();
@@ -610,7 +608,7 @@ function attemptNext(s){
   }
   /* Contato (nome+WhatsApp) já foi coletado no início — aqui só roteia a qualificação. */
   /* Abaixo do corte (< R$50 mil): não precisa de disposto/Instagram -> vai direto pro final (tela YouTube + arquiva) */
-  if(s.key==='faturamento' && ['0-15','15-30'].indexOf(faixaCod())>=0){ go(steps.length-1); return; }
+  if(s.key==='faturamento' && faixaCod()==='0-40'){ go(steps.length-1); return; }
   /* Ao terminar a qualificação (disposto): marca o qualificado e decide se ainda pede Instagram */
   if(s.key==='disposto'){
     if(isQualified() && !qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:faixaCod()})); }
@@ -624,7 +622,7 @@ function attemptNext(s){
    AGENDADOR NATIVO — lê disponibilidade no CRM (Firebase), gera horários
    livres do closer, grava a reunião e dispara a confirmação por WhatsApp.
    ======================================================================= */
-function closerPorFaixa(f){ return (f==='50-100'||f==='100-300'||f==='300+') ? 'Lucas' : 'Gustavo'; }
+function closerPorFaixa(f){ return (f==='60-100'||f==='100+') ? 'Lucas' : 'João'; }
 var _p2=function(n){ return (n<10?'0':'')+n; };
 var _MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 var _DIAS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
