@@ -1283,6 +1283,7 @@ document.querySelectorAll('.qa button').forEach(function(btn){
 /* ===== Integração com o CRM (Cloud Function → Firebase + WhatsApp automático) ===== */
 var CRM_ENDPOINT = 'https://receberlead-471063273836.us-central1.run.app';
 var CRM_SECRET   = 'audens2025xk';   /* WEBHOOK_SECRET do Cloud Run */
+var EXPERIMENT_ID = 'out2026-lp';
 var URLQ = new URLSearchParams(location.search);
 function utm(){ var A=window.__audensAttrib||{}; for(var i=0;i<arguments.length;i++){ var k=arguments[i]; if(A[k]) return A[k]; var v=URLQ.get(k); if(v) return v; } return ''; }
 function enviarCRM(lead){
@@ -1404,7 +1405,7 @@ async function gravarReuniaoLP(slot, closer){
     ad:utm('utm_content','ad'), campanha:utm('utm_campaign','campaign'), conjunto:utm('utm_medium','adset'),
     campaign_id:utm('campaign_id'), adset_id:utm('adset_id'), ad_id:utm('ad_id'),
     campaign_name:utm('campaign_name','utm_campaign'), adset_name:utm('adset_name','utm_medium'), ad_name:utm('ad_name','utm_content'),
-    variante_lp:'lp-completa', first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
+    variante_lp:'lp-completa', experiment_id:EXPERIMENT_ID, first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
     fonte:(window.__audensAttrib||{}).fonte||'',
     origem:'lp-audens'
   };
@@ -1500,6 +1501,7 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       adset_name:   utm('adset_name','utm_medium'),
       ad_name:      utm('ad_name','utm_content'),
       variante_lp:  'lp-completa',
+      experiment_id:EXPERIMENT_ID,
       fonte:        (window.__audensAttrib||{}).fonte||'',
       ref:          (window.__audensAttrib||{}).ref||document.referrer||'',
       first_touch:  (window.__audensAttrib||{}).first_touch||null,

@@ -164,6 +164,8 @@ var CONFIG = {
   LP_VIVENDO_URL: 'https://assessoriaaudens.com.br/vivendo-de-delivery/',
   CRM_ENDPOINT: 'https://receberlead-471063273836.us-central1.run.app',
   CRM_SECRET:   'audens2025xk',
+  EXPERIMENT_ID: 'out2026-lp',
+  COMPROMISSO_V: 'v1',
   FIREBASE_URL: 'https://audens-crm-default-rtdb.firebaseio.com',
   /* faixas que qualificam para reunião: R$50 mil+ (régua subida — abaixo disso vai pro YouTube e arquiva) */
   FAIXAS_QUALIFICA: ['30-50','50-100','100-300'],
@@ -290,7 +292,7 @@ function enviarCRM(extra){
     ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'), conjunto:utmv('utm_medium','adset'),
     campaign_id:utmv('campaign_id'), adset_id:utmv('adset_id'), ad_id:utmv('ad_id'),
     campaign_name:utmv('campaign_name','utm_campaign'), adset_name:utmv('adset_name','utm_medium'), ad_name:utmv('ad_name','utm_content'),
-    variante_lp:'quiz-fv2', first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
+    variante_lp:'quiz-fv2', experiment_id:CONFIG.EXPERIMENT_ID, compromisso_v:CONFIG.COMPROMISSO_V, first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
     fbp:(document.cookie.match(/_fbp=([^;]+)/)||[])[1]||(window.__audensAttrib||{}).fbp||'', fbc:(document.cookie.match(/_fbc=([^;]+)/)||[])[1]||(window.__audensAttrib||{}).fbc||''
   };
   if(extra) for(var k in extra) base[k]=extra[k];
@@ -430,16 +432,27 @@ function renderFinal(wrap){
   }
   var qualified=isQualified();
   if(qualified){
-    /* fallback: se por algum caminho não disparou na qualificação, garante 1x aqui */
     if(!qualifiedTracked){ qualifiedTracked=true; pushEvent('qualified_lead',pedEv({faixa:fc})); }
-    /* lead_submit = contato REAL preenchido (nome+WhatsApp já foram coletados antes deste passo) */
     pushEvent('lead_submit',{qualificado:true});
     if(!leadSent){ leadSent=true; enviarCRM({status:'qualificado',reuniao_agendada:'nao'}); }
-    wrap.innerHTML = tplCalendar();
+    /* P1: etapa de COMPROMISSO antes do calendário (reduz no-show) */
+    pushEvent('qualificado_apto_agenda',{faixa:fc});
+    wrap.innerHTML = tplCompromisso();
     stage.className='stage wide cal';
     stage.appendChild(wrap);
-    pushEvent('schedule_view',{faixa:fc});
-    initAgendador(closerPorFaixa(fc));
+    pushEvent('viu_compromisso',{faixa:fc});
+    (function(){
+      var ck=document.getElementById('cpCheck'), bt=document.getElementById('cpBtn');
+      if(ck&&bt){ ck.addEventListener('change',function(){ bt.disabled=!ck.checked; bt.style.opacity=ck.checked?'1':'.45'; bt.style.cursor=ck.checked?'pointer':'default'; }); }
+      if(bt){ bt.addEventListener('click',function(){
+        if(bt.disabled) return;
+        pushEvent('abriu_calendario',{faixa:fc});
+        wrap.innerHTML = tplCalendar();
+        pushEvent('schedule_view',{faixa:fc});
+        initAgendador(closerPorFaixa(fc));
+        try{ wrap.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){}
+      }); }
+    })();
   } else { /* >=50k não quer investir -> conscientização (tem contato) -> lead ativo */
     pushEvent('lead_submit',{qualificado:false});
     if(!leadSent){ leadSent=true; enviarCRM({status:'nao-qualificado',prioridade:'media',destino:'conscientizacao'}); }
@@ -468,6 +481,22 @@ function _refreshWaDuvidas(){
       if(a){ var msg=encodeURIComponent('Olá! Vim pela análise de tráfego da Audens e queria tirar uma dúvida antes de agendar.'); a.href='https://wa.me/'+full+'?text='+msg; }
     });
   }catch(e){}
+}
+function tplCompromisso(){
+  fill.style.width='90%';
+  return `<h1>Você tem perfil. Antes de marcar, um combinado 🤝</h1>
+    <div class="meet-card">
+      <div class="meet-ico">🎯</div>
+      <div><div class="t">Diagnóstico Estratégico de Tráfego</div>
+      <div class="d">🎥 Chamada de vídeo · ⏱ 50 minutos · 🌐 Horário de Brasília</div></div>
+    </div>
+    <p style="font-size:15px;line-height:1.55;color:#333;margin:16px 2px 0">Não é uma call genérica. É uma <b>análise estratégica da sua operação</b> — a gente abre o seu funil, cardápio e números pra mostrar onde está travando o seu crescimento. Por ser aprofundada, é feita só pra <b>operações selecionadas</b> e leva ~50 minutos de verdade.</p>
+    <p style="font-size:15px;line-height:1.55;color:#333;margin:12px 2px 0">Escolha um horário em que <b>você (e seu sócio, se tiver)</b> possam participar com calma — sem estar no meio do pico, dirigindo ou na correria. É esse tempo com atenção total que faz a análise valer.</p>
+    <label for="cpCheck" style="display:flex;gap:10px;align-items:flex-start;margin:18px 2px 0;font-size:14.5px;color:#222;cursor:pointer;background:#f5f3ff;border:1px solid #e3dcff;border-radius:12px;padding:14px">
+      <input type="checkbox" id="cpCheck" style="margin-top:3px;width:18px;height:18px;flex:0 0 auto;accent-color:#7c3aed">
+      <span>Me comprometo a estar presente no horário que eu escolher — e a avisar antes se precisar remarcar.</span>
+    </label>
+    <button id="cpBtn" disabled style="width:100%;margin-top:16px;padding:16px;border:0;border-radius:12px;background:#7c3aed;color:#fff;font-weight:800;font-size:16px;cursor:default;opacity:.45;transition:opacity .2s">ESCOLHER MEU HORÁRIO →</button>`;
 }
 function tplCalendar(){
   fill.style.width='95%';
@@ -705,7 +734,7 @@ async function gravarReuniao(slot, closer){
     ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'), conjunto:utmv('utm_medium','adset'),
     campaign_id:utmv('campaign_id'), adset_id:utmv('adset_id'), ad_id:utmv('ad_id'),
     campaign_name:utmv('campaign_name','utm_campaign'), adset_name:utmv('adset_name','utm_medium'), ad_name:utmv('ad_name','utm_content'),
-    variante_lp:'quiz-fv2', first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
+    variante_lp:'quiz-fv2', experiment_id:CONFIG.EXPERIMENT_ID, compromisso_v:CONFIG.COMPROMISSO_V, first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
     origem:'lp-audens-quiz-fv2'
   };
   try{

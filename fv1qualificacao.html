@@ -326,6 +326,7 @@ var CONFIG = {
   LP_VIVENDO_URL: 'https://assessoriaaudens.com.br/vivendo-de-delivery/',
   CRM_ENDPOINT: 'https://receberlead-471063273836.us-central1.run.app',
   CRM_SECRET:   'audens2025xk',
+  EXPERIMENT_ID: 'out2026-lp',
   /* De onde a LP puxa os cases (mesmo arquivo que o painel publica). */
   CLIENTES_URL: 'https://assessoriaaudens.com.br/clientes-data.js',
   IMG_BASE:     'https://assessoriaaudens.com.br/',
@@ -386,7 +387,7 @@ function enviarCRM(extra){
     ad:utmv('utm_content','ad'), campanha:utmv('utm_campaign','campaign'), conjunto:utmv('utm_medium','adset'),
     campaign_id:utmv('campaign_id'), adset_id:utmv('adset_id'), ad_id:utmv('ad_id'),
     campaign_name:utmv('campaign_name','utm_campaign'), adset_name:utmv('adset_name','utm_medium'), ad_name:utmv('ad_name','utm_content'),
-    variante_lp:'quiz-fv1', first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
+    variante_lp:'quiz-fv1', experiment_id:CONFIG.EXPERIMENT_ID, first_touch:(window.__audensAttrib||{}).first_touch||null, last_touch:(window.__audensAttrib||{}).last_touch||null,
     fbp:(document.cookie.match(/_fbp=([^;]+)/)||[])[1]||(window.__audensAttrib||{}).fbp||'', fbc:(document.cookie.match(/_fbc=([^;]+)/)||[])[1]||(window.__audensAttrib||{}).fbc||''
   };
   if(extra) for(var k in extra) base[k]=extra[k];
@@ -983,7 +984,7 @@ function dispararReuniaoAgendada(){
   try{
     fetch(CONFIG.CRM_ENDPOINT+'/quiz-agendou',{method:'POST',mode:'cors',keepalive:true,
       headers:{'Content-Type':'application/json','X-Webhook-Secret':CONFIG.CRM_SECRET},
-      body:JSON.stringify({ telefone:(STATE.whats||''), nome:(STATE.nome||''), faixa:valOf('faturamento') })
+      body:JSON.stringify({ telefone:(STATE.whats||''), nome:(STATE.nome||''), faixa:valOf('faturamento'), variante_lp:'quiz-fv1', experiment_id:CONFIG.EXPERIMENT_ID, campaign_id:utmv('campaign_id'), adset_id:utmv('adset_id'), ad_id:utmv('ad_id'), campaign_name:utmv('campaign_name','utm_campaign'), adset_name:utmv('adset_name','utm_medium'), ad_name:utmv('ad_name','utm_content'), fonte:(window.__audensAttrib||{}).fonte||'' })
     }).catch(function(){});
   }catch(e){}
 }
