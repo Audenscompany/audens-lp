@@ -367,6 +367,7 @@ var FBQ_STANDARD = { lead_submit:'Lead', schedule_view:'ViewContent' };
   window.__ownTrack=enqueue;
 })();
 function pushEvent(name,params){
+  params=Object.assign({lp_variant:'quiz-fv1', experiment_id:CONFIG.EXPERIMENT_ID}, params||{});
   try{ if(typeof fbq==='function'){ var std=FBQ_STANDARD[name]; if(std) fbq('track',std,params||{}); else fbq('trackCustom',name,params||{}); } }catch(e){}
   try{ if(window.__ownTrack) window.__ownTrack(name,params); }catch(e){}
   try{ (window.dataLayer=window.dataLayer||[]).push(Object.assign({event:name},params||{})); }catch(e){}
@@ -509,6 +510,8 @@ function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(m){retu
 function render(pos){
   idx=pos; statusEl.textContent=''; updateProg(pos);
   var step=FLOW[pos], html='';
+  if(typeof window._fv1MaxStep!=='number')window._fv1MaxStep=-1;
+  if(pos>window._fv1MaxStep){ window._fv1MaxStep=pos; pushEvent('quiz_step_view',{etapa:step.type,pergunta:(step.id||step.type),idx:pos}); }
   if(step.type==='intro') html=viewIntro();
   else if(step.type==='question') html=viewQuestion(step.id);
   else if(step.type==='insight-fat') html=viewInsightFat();
