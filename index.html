@@ -1351,6 +1351,21 @@ function _refreshWaLp(){
     if(a){ var msg=encodeURIComponent('Olá! Vim pela análise de tráfego da Audens e queria tirar uma dúvida antes de agendar.'); a.href='https://wa.me/'+full+'?text='+msg; }
   }); }catch(e){}
 }
+function mostrarAguardandoLP(faixa, lead){
+  var nome=(((lead&&lead.nome)||'').split(' ')[0])||'';
+  try{ if(typeof closeModal==='function') closeModal(); else { var _mo=document.getElementById('modal'); if(_mo){ _mo.classList.remove('open'); document.body.style.overflow=''; } } }catch(e){}
+  ['lead','leadM'].forEach(function(id){ var f=document.getElementById(id); if(f){ f.style.display='none'; var pr=f.previousElementSibling; if(pr&&pr.classList&&pr.classList.contains('prog')) pr.style.display='none'; } });
+  var sec=document.getElementById('ag-lp'); if(!sec) return; sec.style.display='block';
+  pushEvent('lead_qualificado_capturado',{faixa:faixa});
+  var box=document.getElementById('agLpBox');
+  if(box) box.innerHTML='<div style="text-align:center;padding:24px 8px;">'+
+    '<div style="font-size:44px;margin-bottom:10px;">✅</div>'+
+    '<h2 style="color:var(--white);font-size:24px;margin:0 0 10px;">'+(nome?nome+', ':'')+'recebemos seu cadastro! 🙌</h2>'+
+    '<p style="color:var(--muted);font-size:15px;max-width:460px;margin:0 auto 16px;">Você tem perfil pra nossa <b style="color:var(--white)">análise estratégica de tráfego</b>. O <b style="color:#25D366">João</b>, do nosso time, vai te chamar no <b>WhatsApp</b> em instantes pra marcar o melhor horário.</p>'+
+    '<p style="color:var(--muted);font-size:14px;">📲 Fica de olho — quando ele chamar, responde rapidinho que a gente já encaixa.</p>'+
+    '</div>';
+  try{ sec.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){}
+}
 async function abrirAgendadorLP(faixa, lead){
   window.__lpLead=lead||{}; window.__lpFaixa=faixa;
   LP_AG.closer=closerPorFaixa(faixa); LP_AG.sel=null; LP_AG.saving=false;
@@ -1482,7 +1497,8 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
       faturamento: fat,
       faturamento_estimado: 'nao',
       faixa:       faixaLP,
-      status:      faixaBaixa?'vivendo':'',
+      status:      faixaBaixa?'vivendo':'qualificado',
+      aguardando_agendamento: faixaBaixa?'':'sim',
       destino:     faixaBaixa?'vivendo':'',
       instagram:   (form.querySelector('[name="insta"]')||{}).value || '',
       segmento:    (form.querySelector('[name="segmento"]')||{}).value || '',
@@ -1513,7 +1529,7 @@ function setup(formId, fillId, lblId, statusId, doneId, isModal){
     });
     if(faixaBaixa){ pushEvent('lp_vivendo_redirect',{faixa:'0-40', segmento:seg}); window.location.href='https://assessoriaaudens.com.br/vivendo-de-delivery/'; return; }
     /* Qualificado → abre o agendador nativo (mesmo motor da FV2) no lugar da tela de "obrigado" */
-    abrirAgendadorLP(faixaLP, {
+    mostrarAguardandoLP(faixaLP, {
       nome:(nome&&nome.value||'').trim(), telefone:(tel&&tel.value||''), email:(email&&email.value||'').trim(),
       instagram:(form.querySelector('[name="insta"]')||{}).value||'', segmento:(form.querySelector('[name="segmento"]')||{}).value||'', faturamento:fat
     });
