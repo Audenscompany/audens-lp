@@ -41,7 +41,7 @@ header .wrap{display:flex;align-items:center;justify-content:space-between;paddi
 /* results */
 .gal{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
 .rcard{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--card)}
-.rcard img{width:100%;aspect-ratio:9/13;object-fit:cover}
+.rcard img{width:100%;aspect-ratio:9/13;object-fit:cover;object-position:center 72%}
 .rcard figcaption{padding:12px 14px;display:flex;flex-direction:column;gap:3px;text-align:left}
 .rcard .rn{font-weight:700;font-size:14.5px}.rcard .rr{color:var(--yellow2);font-size:13px;font-weight:600}
 /* videos */
@@ -66,6 +66,28 @@ footer{background:#070309;border-top:1px solid var(--line);padding:40px 0;text-a
 </style></head>
 <body>
 <script>(function(){try{var K=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','campaign_id','adset_id','ad_id'];var q=new URLSearchParams(location.search);var a=JSON.parse(localStorage.getItem('audens_attrib')||'{}');var ch=false;K.forEach(function(k){var v=q.get(k);if(v){a[k]=v;ch=true;}});if(ch)localStorage.setItem('audens_attrib',JSON.stringify(a));window.__audensAttrib=a;}catch(e){}})();</script>
+<script>
+/* Analytics próprio Audens — funil visita->form->lead (variante lp-v3) */
+(function(){
+  var TRACK_URL='https://receberlead-471063273836.us-central1.run.app/track';
+  function rid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,10);}
+  var sid;try{sid=sessionStorage.getItem('audens_sid');if(!sid){sid=rid();sessionStorage.setItem('audens_sid',sid);}}catch(e){sid=rid();}
+  var Q;try{Q=new URLSearchParams(location.search);}catch(e){Q={get:function(){return '';}};}
+  function utm(k){try{var A=window.__audensAttrib||{};return A[k]||Q.get(k)||'';}catch(e){return '';}}
+  var UTMS={source:utm('utm_source'),medium:utm('utm_medium'),campaign:utm('utm_campaign'),content:utm('utm_content'),term:utm('utm_term')};
+  function device(){return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'mobile':'desktop';}
+  var queue=[],timer=null;
+  function flush(beacon){if(timer){clearTimeout(timer);timer=null;}if(!queue.length)return;var batch=queue.splice(0,queue.length);var payload=JSON.stringify({sid:sid,page:location.pathname,device:device(),ref:(document.referrer||''),utms:UTMS,events:batch});try{if(beacon&&navigator.sendBeacon){navigator.sendBeacon(TRACK_URL,new Blob([payload],{type:'text/plain'}));}else{fetch(TRACK_URL,{method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json'},body:payload}).catch(function(){});}}catch(e){}}
+  function enqueue(name,params){queue.push({e:name,p:params||{},t:Date.now()});if(name==='lead_submit'||name==='qualified_lead'){flush();return;}if(!timer)timer=setTimeout(flush,4000);}
+  addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')flush(true);});
+  addEventListener('pagehide',function(){flush(true);});
+  window.__ownTrack=enqueue;
+})();
+window.dataLayer=window.dataLayer||[];
+function pushEvent(name,params){params=Object.assign({lp_variant:'lp-v3',experiment_id:'out2026-lp'},params||{});try{window.dataLayer.push(Object.assign({event:name},params));}catch(e){}try{if(window.fbq){if(name==='lead_submit')fbq('track','Lead',params);else fbq('trackCustom',name,params);}}catch(e){}try{if(window.__ownTrack)window.__ownTrack(name,params);}catch(e){}}
+window.addEventListener('load',function(){pushEvent('lp_view',{path:location.pathname});});
+</script>
+
 <header><div class="wrap"><a class="brand" href="#top"><img src="https://audenscompany.com.br/wp-content/uploads/2025/03/AUDENS-7.png" alt="Audens">AUDENS COMPANY</a><a class="btn" href="#form" style="padding:11px 22px;font-size:14px">Fale com a gente</a></div></header>
 <main id="top">
 <section class="hero sec"><div class="hero-bg"></div><div class="wrap hero-inner">
@@ -138,12 +160,13 @@ function utm(){var A=window.__audensAttrib||{};for(var i=0;i<arguments.length;i+
 function enviarCRM(l){try{fetch(CRM_ENDPOINT,{method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json','X-Webhook-Secret':CRM_SECRET},body:JSON.stringify(l)}).catch(function(){});}catch(e){}}
 function isEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
 (function(){var f=document.getElementById('lead'),done=document.getElementById('done'),err=document.getElementById('err');
+ var _fs=false;f.addEventListener('focusin',function(){if(!_fs){_fs=true;pushEvent('form_start',{form:'lp-v3'});}});
  f.addEventListener('submit',function(e){e.preventDefault();var g=function(n){return (f.querySelector('[name="'+n+'"]')||{}).value||'';};
  var nome=g('nome').trim(),email=g('email').trim(),tel=g('whats'),fat=g('faturamento');
  if(!(nome&&isEmail(email)&&tel.replace(/\D/g,'').length>=10&&fat)){err.classList.add('on');return;}err.classList.remove('on');
  var LOW=['até 10 mil','10 mil até 20 mil','20 mil até 40 mil'];var faixaBaixa=LOW.indexOf(fat)>-1;
  enviarCRM({nome:nome,email:email,telefone:tel,faturamento:fat,empresa:(f.querySelector('[name="empresa"]')||{}).value||'',status:faixaBaixa?'vivendo':'',destino:faixaBaixa?'vivendo':'',origem:'lp-v3',utm_source:utm('utm_source')||'meta',utm_campaign:utm('utm_campaign','campaign'),utm_medium:utm('utm_medium','adset'),utm_content:utm('utm_content','ad'),campaign_id:utm('campaign_id'),adset_id:utm('adset_id'),ad_id:utm('ad_id'),ad:utm('utm_content','ad'),campanha:utm('utm_campaign','campaign'),conjunto:utm('utm_medium','adset'),fbp:(document.cookie.match(/_fbp=([^;]+)/)||[])[1]||'',fbc:(document.cookie.match(/_fbc=([^;]+)/)||[])[1]||''});
- try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'lead_submit',form:'lp-v3'});}catch(e){}
+ pushEvent('lead_submit',{form:'lp-v3',faturamento:fat});if(!faixaBaixa)pushEvent('qualified_lead',{faturamento:fat});
  if(faixaBaixa){setTimeout(function(){location.href='https://assessoriaaudens.com.br/mentoria-delivery-growth.html';},150);return;}
  f.style.display='none';done.style.display='block';});
 })();
