@@ -141,8 +141,11 @@ function isEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);}
  f.addEventListener('submit',function(e){e.preventDefault();var g=function(n){return (f.querySelector('[name="'+n+'"]')||{}).value||'';};
  var nome=g('nome').trim(),email=g('email').trim(),tel=g('whats'),fat=g('faturamento');
  if(!(nome&&isEmail(email)&&tel.replace(/\D/g,'').length>=10&&fat)){err.classList.add('on');return;}err.classList.remove('on');
- enviarCRM({nome:nome,email:email,telefone:tel,faturamento:fat,empresa:(f.querySelector('[name="empresa"]')||{}).value||'',origem:'lp-v3',utm_source:utm('utm_source')||'meta',utm_campaign:utm('utm_campaign','campaign'),utm_medium:utm('utm_medium','adset'),utm_content:utm('utm_content','ad'),campaign_id:utm('campaign_id'),adset_id:utm('adset_id'),ad_id:utm('ad_id'),ad:utm('utm_content','ad'),campanha:utm('utm_campaign','campaign'),conjunto:utm('utm_medium','adset'),fbp:(document.cookie.match(/_fbp=([^;]+)/)||[])[1]||'',fbc:(document.cookie.match(/_fbc=([^;]+)/)||[])[1]||''});
- f.style.display='none';done.style.display='block';try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'lead_submit',form:'lp-v3'});}catch(e){}});
+ var LOW=['até 10 mil','10 mil até 20 mil','20 mil até 40 mil'];var faixaBaixa=LOW.indexOf(fat)>-1;
+ enviarCRM({nome:nome,email:email,telefone:tel,faturamento:fat,empresa:(f.querySelector('[name="empresa"]')||{}).value||'',status:faixaBaixa?'vivendo':'',destino:faixaBaixa?'vivendo':'',origem:'lp-v3',utm_source:utm('utm_source')||'meta',utm_campaign:utm('utm_campaign','campaign'),utm_medium:utm('utm_medium','adset'),utm_content:utm('utm_content','ad'),campaign_id:utm('campaign_id'),adset_id:utm('adset_id'),ad_id:utm('ad_id'),ad:utm('utm_content','ad'),campanha:utm('utm_campaign','campaign'),conjunto:utm('utm_medium','adset'),fbp:(document.cookie.match(/_fbp=([^;]+)/)||[])[1]||'',fbc:(document.cookie.match(/_fbc=([^;]+)/)||[])[1]||''});
+ try{window.dataLayer=window.dataLayer||[];window.dataLayer.push({event:'lead_submit',form:'lp-v3'});}catch(e){}
+ if(faixaBaixa){setTimeout(function(){location.href='https://assessoriaaudens.com.br/mentoria-delivery-growth.html';},150);return;}
+ f.style.display='none';done.style.display='block';});
 })();
 </script>
 </body></html>
