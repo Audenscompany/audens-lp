@@ -351,7 +351,7 @@ button,input{font:inherit;color:inherit}
 <script>
 /* ============ CONFIGURAÇÃO ============ */
 const CONFIG = {
-  GOOGLE_MAPS_KEY: "",                 // chave do Google Maps Platform (Maps JavaScript API + Places API New), restrita ao domínio do site
+  GOOGLE_MAPS_KEY: "",                 // chave do Google com a Places API (New) ativa — pode ser a mesma do CRM (prospecção BDR). Restrinja ao domínio do site
   CRM_ENDPOINT: "https://receberlead-471063273836.us-central1.run.app", // mesmo receptor das LPs: cria o card no funil, avisa o João e manda a 1ª mensagem
   CRM_SECRET: "audens2025xk",
   FIREBASE_URL: "https://audens-crm-default-rtdb.firebaseio.com",
@@ -413,22 +413,22 @@ const DEMO_FAR = mkDemo([
   ["Bob's Burger Bar", 4.3, 61, 2600, -1500], ["Lanchão", 4.2, 88, -2500, 1800]
 ]);
 
-/* ---------- Google Places ---------- */
-let PL = null, token = null, gmReady = null;
-function loadGoogle() {
-  if (gmReady) return gmReady;
-  gmReady = new Promise((res, rej) => {
-    window.__gmInit = () => res();
-    window.gm_authFailure = () => searchError("A chave do Google foi recusada. Confira a restrição de domínio e as APIs liberadas.");
-    const s = document.createElement("script");
-    s.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(CONFIG.GOOGLE_MAPS_KEY) + "&v=weekly&loading=async&language=pt-BR&region=BR&callback=__gmInit";
-    s.async = true; s.onerror = () => rej(new Error("maps"));
-    document.head.appendChild(s);
-  }).then(async () => {
-    PL = await google.maps.importLibrary("places");
-    token = new PL.AutocompleteSessionToken();
-  });
-  return gmReady;
+/* ---------- Google Places API (New), via REST — a mesma API que o CRM usa na prospecção ---------- */
+const GP = "https://places.googleapis.com/v1/";
+let token = null;
+const newToken = () => { try { return crypto.randomUUID(); } catch (e) { return String(Date.now()) + Math.random().toString(16).slice(2); } };
+async function gp(path, { method = "GET", body, mask } = {}) {
+  const headers = { "X-Goog-Api-Key": CONFIG.GOOGLE_MAPS_KEY };
+  if (mask) headers["X-Goog-FieldMask"] = mask;
+  if (body) headers["Content-Type"] = "application/json";
+  const r = await fetch(GP + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || d.error) {
+    const msg = (d.error && d.error.message) || ("HTTP " + r.status);
+    if (r.status === 403) searchError("A chave do Google recusou o pedido. Confira se o site está liberado na chave e se a Places API (New) está ativa.");
+    throw new Error(msg);
+  }
+  return d;
 }
 const txt = t => t == null ? "" : (typeof t === "string" ? t : (t.text ?? String(t)));
 
@@ -436,15 +436,15 @@ async function suggest(q) {
   if (DEMO) {
     return [{ main: "Brasa Burger (exemplo)", sec: "Rua Exemplo, 120 · Centro", demo: true }];
   }
-  await loadGoogle();
-  const { suggestions } = await PL.AutocompleteSuggestion.fetchAutocompleteSuggestions({
-    input: q, sessionToken: token, language: "pt-BR", region: "br", includedRegionCodes: ["br"],
+  if (!token) token = newToken();
+  const d = await gp("places:autocomplete", { method: "POST", body: {
+    input: q, sessionToken: token, languageCode: "pt-BR", regionCode: "br", includedRegionCodes: ["br"],
     includedPrimaryTypes: ["restaurant", "meal_delivery", "meal_takeaway", "bakery", "cafe"]
+  } });
+  return (d.suggestions || []).filter(s => s.placePrediction).slice(0, 5).map(s => {
+    const pp = s.placePrediction, sf = pp.structuredFormat || {};
+    return { main: txt(sf.mainText) || txt(pp.text), sec: txt(sf.secondaryText), placeId: pp.placeId };
   });
-  return (suggestions || []).filter(s => s.placePrediction).slice(0, 5).map(s => ({
-    main: txt(s.placePrediction.mainText) || txt(s.placePrediction.text),
-    sec: txt(s.placePrediction.secondaryText), pred: s.placePrediction
-  }));
 }
 
 function haversine(a, b) {
@@ -458,24 +458,25 @@ const SPECIFIC_TYPES = ["hamburger_restaurant", "pizza_restaurant", "japanese_re
 
 async function fetchRestaurant(sug) {
   if (DEMO) return JSON.parse(JSON.stringify(DEMO_REST));
-  const place = sug.pred.toPlace();
-  await place.fetchFields({ fields: ["id", "displayName", "formattedAddress", "location", "rating", "userRatingCount", "reviews", "photos", "regularOpeningHours", "websiteURI", "nationalPhoneNumber", "primaryType", "primaryTypeDisplayName", "googleMapsURI", "addressComponents"] });
-  const comp = t => (place.addressComponents || []).find(c => (c.types || []).includes(t));
-  token = new PL.AutocompleteSessionToken();
-  const reviews = (place.reviews || []).map(r => ({
+  const mask = "id,displayName,formattedAddress,location,rating,userRatingCount,reviews,photos,regularOpeningHours,websiteUri,nationalPhoneNumber,primaryType,primaryTypeDisplayName,googleMapsUri,addressComponents";
+  const p = await gp(`places/${encodeURIComponent(sug.placeId)}?languageCode=pt-BR&regionCode=BR${token ? "&sessionToken=" + token : ""}`, { mask });
+  token = null; // a sessão de busca termina aqui
+  const comp = t => (p.addressComponents || []).find(c => (c.types || []).includes(t));
+  const reviews = (p.reviews || []).map(r => ({
     author: r.authorAttribution?.displayName || "Cliente", rating: r.rating || 0,
-    when: r.relativePublishTimeDescription || "", text: txt(r.text), time: r.publishTime ? new Date(r.publishTime).getTime() : 0
+    when: r.relativePublishTimeDescription || "", text: txt(r.text) || txt(r.originalText), time: r.publishTime ? Date.parse(r.publishTime) : 0
   }));
   const newest = reviews.reduce((m, r) => Math.max(m, r.time || 0), 0);
-  const photos = place.photos || [];
+  const photos = p.photos || [];
   return {
-    id: place.id, name: txt(place.displayName), address: place.formattedAddress || "",
-    typeLabel: txt(place.primaryTypeDisplayName) || "Restaurante", primaryType: place.primaryType || "",
-    rating: place.rating || 0, count: place.userRatingCount || 0,
-    photosCount: photos.length, photoUrls: photos.slice(0, 3).map(p => { try { return p.getURI({ maxWidth: 500, maxHeight: 500 }); } catch (e) { return ""; } }).filter(Boolean),
-    hasHours: !!place.regularOpeningHours, hasPhone: !!place.nationalPhoneNumber, hasWebsite: !!place.websiteURI,
+    id: p.id, name: txt(p.displayName), address: p.formattedAddress || "",
+    typeLabel: txt(p.primaryTypeDisplayName) || "Restaurante", primaryType: p.primaryType || "",
+    rating: p.rating || 0, count: p.userRatingCount || 0,
+    photosCount: photos.length,
+    photoUrls: photos.slice(0, 3).map(ph => `${GP}${ph.name}/media?maxWidthPx=500&key=${encodeURIComponent(CONFIG.GOOGLE_MAPS_KEY)}`),
+    hasHours: !!p.regularOpeningHours, hasPhone: !!p.nationalPhoneNumber, hasWebsite: !!p.websiteUri,
     lastReviewDays: newest ? Math.round((Date.now() - newest) / 864e5) : null,
-    mapsUrl: place.googleMapsURI || "", lat: place.location.lat(), lng: place.location.lng(), reviews, _place: place,
+    mapsUrl: p.googleMapsUri || "", lat: p.location.latitude, lng: p.location.longitude, reviews,
     city: comp("administrative_area_level_2")?.longText || comp("locality")?.longText || "", uf: comp("administrative_area_level_1")?.shortText || ""
   };
 }
@@ -483,16 +484,13 @@ async function fetchRestaurant(sug) {
 async function fetchCompetitors(rest) {
   // devolve { near: concorrentes em 1 km, far: concorrentes entre 1 e 3 km, count3, count3Plus }
   if (DEMO) { const near = DEMO_COMPS.map(c => ({ ...c })), far = DEMO_FAR.map(c => ({ ...c })); return { near, far, count3: near.length + far.length, count3Plus: false }; }
-  const center = rest._place.location;
   const me = { lat: rest.lat, lng: rest.lng };
   const run = async (types, radius) => {
-    const { places } = await PL.Place.searchNearby({
-      fields: ["id", "displayName", "location", "rating", "userRatingCount"],
-      locationRestriction: { center, radius },
-      includedPrimaryTypes: types, maxResultCount: 20, language: "pt-BR", region: "br",
-      rankPreference: PL.SearchNearbyRankPreference.POPULARITY
-    });
-    return places || [];
+    const d = await gp("places:searchNearby", { method: "POST", mask: "places.id,places.displayName,places.location,places.rating,places.userRatingCount", body: {
+      includedPrimaryTypes: types, maxResultCount: 20, rankPreference: "POPULARITY", languageCode: "pt-BR", regionCode: "br",
+      locationRestriction: { circle: { center: { latitude: rest.lat, longitude: rest.lng }, radius } }
+    } });
+    return d.places || [];
   };
   const specific = SPECIFIC_TYPES.includes(rest.primaryType) ? [rest.primaryType] : null;
   const broad = ["restaurant", "meal_delivery", "meal_takeaway"];
@@ -507,7 +505,7 @@ async function fetchCompetitors(rest) {
   let list3 = [];
   try { list3 = await run(types || broad, CONFIG.RAIO_3KM); } catch (e) {}
   const conv = p => {
-    const lat = p.location.lat(), lng = p.location.lng();
+    const lat = p.location.latitude, lng = p.location.longitude;
     return { id: p.id, name: txt(p.displayName), rating: p.rating || 0, count: p.userRatingCount || 0, lat, lng,
       dist: haversine(me, { lat, lng }), dx: (lng - me.lng) * 111320 * Math.cos(me.lat * Math.PI / 180), dy: -(lat - me.lat) * 110540 };
   };
