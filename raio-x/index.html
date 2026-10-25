@@ -5,6 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<script src="config.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <style>
@@ -350,13 +351,16 @@ button,input{font:inherit;color:inherit}
 
 <script>
 /* ============ CONFIGURAÇÃO ============ */
+// A chave do Google fica no arquivo config.js, ao lado deste index.html (criado uma vez, nunca substituído):
+//   window.RAIOX_CONFIG = { GOOGLE_MAPS_KEY: "AIza...", WHATSAPP_AUDENS: "" };
+const LOCAL = window.RAIOX_CONFIG || {};
 const CONFIG = {
-  GOOGLE_MAPS_KEY: "AIzaSyC5XJf-a6lWYDeSEBXlAID82_y4TkTpuAQ",                 // chave do Google com a Places API (New) ativa — pode ser a mesma do CRM (prospecção BDR). Restrinja ao domínio do site
+  GOOGLE_MAPS_KEY: LOCAL.GOOGLE_MAPS_KEY || "",                 // chave do Google com a Places API (New) ativa — pode ser a mesma do CRM (prospecção BDR). Restrinja ao domínio do site
   CRM_ENDPOINT: "https://receberlead-471063273836.us-central1.run.app", // mesmo receptor das LPs: cria o card no funil, avisa o João e manda a 1ª mensagem
   CRM_SECRET: "audens2025xk",
   FIREBASE_URL: "https://audens-crm-default-rtdb.firebaseio.com",
   FIREBASE_NODE: "raiox_leads",        // cópia do diagnóstico completo de cada lead
-  WHATSAPP_AUDENS: "",                 // número do comercial com DDI, ex.: 5531999999999
+  WHATSAPP_AUDENS: LOCAL.WHATSAPP_AUDENS || "",                 // número do comercial com DDI, ex.: 5531999999999
   META_PIXEL_ID: "288150133971064",    // dispara PageView e Lead (padrão)
   RAIO_METROS: 1000,
   RAIO_3KM: 3000,
