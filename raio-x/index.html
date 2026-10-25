@@ -1,0 +1,829 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<title>Raio-X do Delivery</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Descubra em 30 segundos a nota do seu delivery no seu bairro. Diagnóstico gratuito da Audens Company.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: uma coluna estilo "app de scanner", 560px no máximo, uma tela por etapa do funil.
+   Identidade Audens: fundo escuro com viés roxo, acento roxo, Bebas Neue + Barlow. Tema único escuro, por escolha. */
+:root{
+  --bg:#0F0B16;
+  --surface:#18121F;
+  --surface-2:#211A2B;
+  --line:#2E2539;
+  --fg:#F4F0F9;
+  --muted:#A99FB8;
+  --accent:#9B5CFF;
+  --accent-soft:rgba(155,92,255,.16);
+  --good:#3DD68C;
+  --warn:#F5B83D;
+  --bad:#FF6B5A;
+  --display:"Bebas Neue","Barlow Condensed",Impact,"Arial Narrow",sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --label:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.app{max-width:560px;margin:0 auto}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px 10px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+.brand{font-family:var(--display);font-size:28px;letter-spacing:.06em;line-height:1}
+.brand b{color:var(--accent);font-weight:400}
+.tag{font-family:var(--label);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.screen{display:flex;flex-direction:column;gap:20px;padding-top:12px}
+.eyebrow{font-family:var(--label);font-weight:600;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.hero h1{font-family:var(--display);font-weight:400;font-size:clamp(46px,13vw,68px);line-height:.92;letter-spacing:.01em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.lead{color:var(--muted);font-size:17px;max-width:60ch}
+.demo-note{border:1px dashed var(--line);border-radius:10px;padding:12px 14px;color:var(--muted);font-size:14px}
+.demo-note strong{color:var(--fg)}
+
+/* busca */
+.search{position:relative}
+.search-box{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:6px 6px 6px 16px}
+.search-box:focus-within{border-color:var(--accent)}
+.search-box input{flex:1;min-width:0;background:none;border:0;outline:none;font-size:17px;padding:10px 0}
+.search-box input::placeholder{color:var(--muted)}
+.btn-go{flex:none;width:46px;height:46px;border-radius:10px;border:0;background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer}
+.sugs{list-style:none;margin:8px 0 0;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;display:flex;flex-direction:column;gap:2px}
+.sugs button{width:100%;text-align:left;background:none;border:0;border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.sugs button:hover,.sugs button:focus-visible{background:var(--surface-2)}
+.sugs .m{font-weight:600}
+.sugs .s{font-size:13px;color:var(--muted)}
+.trust{display:flex;flex-wrap:wrap;gap:8px 16px;font-family:var(--label);font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.trust span::before{content:"✓ ";color:var(--good)}
+.what{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.what div{background:var(--surface);border-radius:12px;padding:14px}
+.what b{display:block;font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:.03em;line-height:1.05;margin-bottom:4px}
+.what p{font-size:14px;color:var(--muted)}
+.err{color:var(--bad);font-size:14px}
+
+/* análise */
+.radar-wrap{background:var(--surface);border-radius:18px;padding:12px;display:grid;place-items:center}
+.radar{width:100%;max-width:420px;height:auto;display:block}
+.scan{transform-origin:200px 200px;animation:spin 3.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.scan{animation:none}.bar i{transition:none!important}}
+.step-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.step-head{display:flex;justify-content:space-between;font-family:var(--label);font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.step-title{font-size:19px;font-weight:700}
+.step-sub{color:var(--muted);font-size:14px}
+.progress{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .6s ease}
+.review-live{background:var(--surface-2);border-radius:12px;padding:12px 14px;font-size:15px}
+.review-live .who{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);margin-bottom:6px}
+.stars{color:var(--warn);letter-spacing:1px}
+
+/* resultado parcial e final */
+.rest-head{display:flex;flex-direction:column;gap:4px}
+.rest-head h2{font-family:var(--display);font-weight:400;font-size:38px;line-height:1;letter-spacing:.02em}
+.rest-head p{color:var(--muted);font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.kpi{background:var(--surface);border-radius:12px;padding:12px}
+.kpi b{display:block;font-family:var(--display);font-weight:400;font-size:32px;line-height:1;font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:var(--muted)}
+.panel{background:var(--surface);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.panel h3{font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:.03em;line-height:1}
+.panel .sub{color:var(--muted);font-size:14px;margin-top:-8px}
+.pillar{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:baseline}
+.pillar .n{font-weight:600}
+.pillar .v{font-family:var(--label);font-weight:600;font-size:15px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.pillar .d{grid-column:1/-1;font-size:13px;color:var(--muted)}
+.bar{grid-column:1/-1;height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;transition:width .9s ease}
+.chip-s{font-family:var(--label);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:2px}
+.locked{opacity:.75}
+.locked .bar{background:repeating-linear-gradient(-45deg,var(--surface-2) 0 6px,var(--line) 6px 12px)}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:14px;background:var(--accent);color:#fff;font-family:var(--display);font-size:24px;letter-spacing:.05em;padding:16px 18px;cursor:pointer;text-decoration:none;text-align:center}
+.cta:disabled{opacity:.45;cursor:not-allowed}
+.cta.ghost{background:none;border:1.5px solid var(--line);color:var(--fg);font-size:20px}
+.fine{font-size:13px;color:var(--muted)}
+.rankline{font-size:17px}
+.rankline b{color:var(--accent)}
+
+/* formulário */
+.q{display:flex;flex-direction:column;gap:10px;border:0;margin:0;padding:0}
+.q legend{font-weight:700;font-size:17px;padding:0;margin-bottom:10px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.opts label{position:relative;display:block;cursor:pointer}
+.opts input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.opts span{display:flex;align-items:center;min-height:48px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;background:var(--surface)}
+.opts input:checked+span{border-color:var(--accent);background:var(--accent-soft)}
+.opts input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:600;font-size:15px}
+.field input{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-size:17px;outline:none}
+.field input:focus{border-color:var(--accent)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted)}
+.consent input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);flex:none}
+.form-divider{height:1px;background:var(--line)}
+
+/* resultado */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:6px}
+.gauge{width:100%;max-width:300px;height:auto}
+.gauge-label{font-family:var(--display);font-size:40px;letter-spacing:.04em;line-height:1}
+.scale{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.scale span{font-family:var(--label);font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.scale span.on{color:var(--fg);border-color:currentColor}
+.rank{width:100%;border-collapse:collapse;font-size:15px}
+.rank td{padding:9px 4px;border-top:1px solid var(--line);vertical-align:middle}
+.rank tr:first-child td{border-top:0}
+.rank .pos{width:30px;font-family:var(--label);font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.rank .nm{min-width:0;word-break:break-word}
+.rank .num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted)}
+.rank tr.me td{color:var(--fg)}
+.rank tr.me .nm{font-weight:700;color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{font-size:14px;padding:5px 11px;border-radius:99px;background:var(--surface-2)}
+.chips.bad span{background:rgba(255,107,90,.14);color:#FFB3A8}
+.chips.good span{background:rgba(61,214,140,.13);color:#9BEBC3}
+.mini-label{font-family:var(--label);font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.quote{border-left:3px solid var(--line);padding-left:12px;font-size:15px;color:var(--muted)}
+.actions{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:a}
+.actions li{display:grid;grid-template-columns:34px 1fr;gap:4px 12px;counter-increment:a}
+.actions li::before{content:counter(a);grid-row:span 2;width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-size:22px}
+.actions b{font-size:16px}
+.actions p{font-size:15px;color:var(--muted);grid-column:2}
+.photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.photos img,.photos .ph{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;max-width:100%;background:var(--surface-2)}
+.ph{display:grid;place-items:center;font-family:var(--label);font-size:13px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.authority{border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.authority p{font-size:15px;color:var(--muted)}
+.authority strong{color:var(--fg)}
+.attrib{font-size:12px;color:var(--muted);text-align:center}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+</style>
+
+</head><body><div class="app">
+  <header class="top">
+    <div class="brand">AUDENS<b>.</b></div>
+    <span class="tag">Raio-X do Delivery</span>
+  </header>
+
+  <!-- 1. BUSCA -->
+  <section class="screen" id="s-busca">
+    <div class="hero" style="display:flex;flex-direction:column;gap:14px">
+      <p class="eyebrow">Diagnóstico grátis em 30 segundos</p>
+      <h1>Qual é a nota do seu delivery <em>no seu bairro?</em></h1>
+      <p class="lead">Digite o nome do seu restaurante. A gente lê o seu Google, mapeia quem vende perto de você e mostra onde você está perdendo pedido.</p>
+    </div>
+    <p class="demo-note" id="demo-note" hidden><strong>Modo exemplo.</strong> Os dados são fictícios. Com a chave do Google configurada, a busca usa restaurantes reais.</p>
+    <div class="search">
+      <form class="search-box" id="search-form" autocomplete="off">
+        <input id="q" type="search" placeholder="Ex.: Burger do Zé, Pizzaria Bella" aria-label="Nome do seu restaurante" aria-controls="sugs" aria-autocomplete="list">
+        <button class="btn-go" type="submit" aria-label="Buscar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+      <ul class="sugs" id="sugs" role="listbox" hidden></ul>
+      <p class="err" id="search-err" hidden></p>
+    </div>
+    <div class="trust"><span>Grátis</span><span>Sem cadastro pra começar</span><span>Dados públicos do Google</span></div>
+    <div class="what">
+      <div><b>Sua reputação</b><p>Nota, volume e o que os clientes mais elogiam e reclamam.</p></div>
+      <div><b>Seu território</b><p>Quem vende num raio de 1 km e em que posição você está.</p></div>
+      <div><b>Seu perfil</b><p>Fotos, horário, telefone e link do cardápio no Google.</p></div>
+      <div><b>3 ações</b><p>O que fazer essa semana pra vender mais, em ordem.</p></div>
+    </div>
+  </section>
+
+  <!-- 2. ANÁLISE -->
+  <section class="screen" id="s-analise" hidden>
+    <div class="rest-head"><p class="eyebrow">Analisando</p><h2 id="an-name">—</h2><p id="an-addr"></p></div>
+    <div class="radar-wrap" id="an-radar"></div>
+    <div class="step-card" aria-live="polite">
+      <div class="step-head"><span id="st-count">Etapa 1 de 4</span><span id="st-pct">0%</span></div>
+      <div><p class="step-title" id="st-title">Localizando seu restaurante</p><p class="step-sub" id="st-sub">Centralizando o mapa no seu endereço</p></div>
+      <div class="review-live" id="st-review" hidden></div>
+      <div class="progress"><i id="st-bar"></i></div>
+    </div>
+  </section>
+
+  <!-- 3. PRÉVIA -->
+  <section class="screen" id="s-previa" hidden>
+    <div class="rest-head"><p class="eyebrow">Seu delivery no Google</p><h2 id="pv-name">—</h2><p id="pv-addr"></p></div>
+    <div class="kpis" id="pv-kpis"></div>
+    <p class="rankline" id="pv-rank"></p>
+    <div class="panel">
+      <h3>Sua nota até aqui</h3>
+      <p class="sub">3 de 5 pilares calculados com o que o Google mostra.</p>
+      <div id="pv-pillars" style="display:flex;flex-direction:column;gap:14px"></div>
+    </div>
+    <button class="cta" id="go-perguntas" type="button">Completar meu Raio-X</button>
+    <p class="fine" style="text-align:center">São 5 perguntas rápidas. Você recebe o relatório completo e as 3 ações da semana.</p>
+  </section>
+
+  <!-- 4. PERGUNTAS + CAPTURA -->
+  <section class="screen" id="s-perguntas" hidden>
+    <div class="rest-head"><p class="eyebrow">Falta pouco</p><h2>O que o Google não mostra</h2><p>Delivery e marketing pesam 40 pontos na sua nota.</p></div>
+    <form id="lead-form" style="display:flex;flex-direction:column;gap:26px" novalidate>
+      <fieldset class="q"><legend>Quanto o restaurante fatura por mês?</legend><div class="opts">
+        <label><input type="radio" name="faturamento" value="0-40" id="f1"><span>Até R$ 40 mil</span></label>
+        <label><input type="radio" name="faturamento" value="40-60" id="f2"><span>R$ 40 a 60 mil</span></label>
+        <label><input type="radio" name="faturamento" value="60-100" id="f3"><span>R$ 60 a 100 mil</span></label>
+        <label><input type="radio" name="faturamento" value="100+" id="f4"><span>Acima de R$ 100 mil</span></label>
+      </div></fieldset>
+      <fieldset class="q"><legend>Qual a sua nota no iFood?</legend><div class="opts">
+        <label><input type="radio" name="ifood" value="nao" id="i1"><span>Não estou no iFood</span></label>
+        <label><input type="radio" name="ifood" value="b45" id="i2"><span>Abaixo de 4,5</span></label>
+        <label><input type="radio" name="ifood" value="b47" id="i3"><span>Entre 4,5 e 4,7</span></label>
+        <label><input type="radio" name="ifood" value="b48" id="i4"><span>4,8 ou mais</span></label>
+      </div></fieldset>
+      <fieldset class="q"><legend>Tempo médio de entrega no pico</legend><div class="opts">
+        <label><input type="radio" name="tempo" value="ate40" id="t1"><span>Até 40 min</span></label>
+        <label><input type="radio" name="tempo" value="ate60" id="t2"><span>40 a 60 min</span></label>
+        <label><input type="radio" name="tempo" value="mais60" id="t3"><span>Mais de 1 hora</span></label>
+        <label><input type="radio" name="tempo" value="naosei" id="t4"><span>Não sei medir</span></label>
+      </div></fieldset>
+      <fieldset class="q"><legend>Quantas vezes você posta no Instagram por semana?</legend><div class="opts">
+        <label><input type="radio" name="posts" value="nunca" id="p1"><span>Quase nunca</span></label>
+        <label><input type="radio" name="posts" value="p12" id="p2"><span>1 a 2 vezes</span></label>
+        <label><input type="radio" name="posts" value="p35" id="p3"><span>3 a 5 vezes</span></label>
+        <label><input type="radio" name="posts" value="diario" id="p4"><span>Todo dia</span></label>
+      </div></fieldset>
+      <fieldset class="q"><legend>Você faz anúncio pago?</legend><div class="opts">
+        <label><input type="radio" name="trafego" value="nao" id="a1"><span>Não faço</span></label>
+        <label><input type="radio" name="trafego" value="impulsiono" id="a2"><span>Impulsiono às vezes</span></label>
+        <label><input type="radio" name="trafego" value="gestor" id="a3"><span>Tenho gestor ou agência</span></label>
+        <label><input type="radio" name="trafego" value="eu" id="a4"><span>Eu mesmo gerencio</span></label>
+      </div></fieldset>
+      <div class="form-divider"></div>
+      <div class="field"><label for="nome">Seu nome</label><input id="nome" name="nome" autocomplete="name" required></div>
+      <div class="field"><label for="whats">Seu WhatsApp</label><input id="whats" name="whats" type="tel" inputmode="tel" autocomplete="tel" placeholder="(31) 99999-9999" required></div>
+      <label class="consent" for="aceite"><input type="checkbox" id="aceite" name="aceite"><span>Aceito receber o meu relatório e o contato da Audens Company pelo WhatsApp.</span></label>
+      <p class="err" id="form-err" hidden></p>
+      <button class="cta" type="submit" id="btn-ver">Ver meu Raio-X completo</button>
+    </form>
+  </section>
+
+  <!-- 5. RESULTADO -->
+  <section class="screen" id="s-resultado" hidden>
+    <div class="rest-head"><p class="eyebrow">Raio-X completo</p><h2 id="rs-name">—</h2><p id="rs-addr"></p></div>
+    <div class="panel">
+      <div class="gauge-wrap">
+        <div id="rs-gauge" style="width:100%;display:grid;place-items:center"></div>
+        <p class="mini-label">Nota do seu delivery no bairro</p>
+        <p class="gauge-label" id="rs-label">—</p>
+      </div>
+      <div class="scale" id="rs-scale"></div>
+    </div>
+    <div class="panel">
+      <h3>Seus 5 pilares</h3>
+      <div id="rs-pillars" style="display:flex;flex-direction:column;gap:16px"></div>
+    </div>
+    <div class="panel">
+      <h3>3 coisas pra fazer essa semana</h3>
+      <p class="sub">Em ordem do que mais pesa no seu resultado.</p>
+      <ol class="actions" id="rs-actions"></ol>
+    </div>
+    <div class="panel">
+      <h3>Seu território</h3>
+      <p class="sub" id="rs-terr-sub"></p>
+      <div id="rs-radar"></div>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Você</span><span><i style="background:var(--good)"></i>Nota 4,6+</span><span><i style="background:var(--warn)"></i>4,2 a 4,5</span><span><i style="background:var(--bad)"></i>Abaixo de 4,2</span></div>
+      <table class="rank" id="rs-rank"></table>
+    </div>
+    <div class="panel">
+      <h3>O que dizem de você</h3>
+      <p class="sub" id="rs-rev-sub"></p>
+      <div id="rs-reviews" style="display:flex;flex-direction:column;gap:14px"></div>
+    </div>
+    <div class="panel">
+      <h3>O que o cliente vê antes de pedir</h3>
+      <div class="photos" id="rs-photos"></div>
+      <div id="rs-profile" class="chips"></div>
+    </div>
+    <div class="authority">
+      <p class="eyebrow">Quem fez esse Raio-X</p>
+      <p><strong>A Audens nasceu dentro de uma operação, não de uma agência.</strong> Primeiro fizemos no nosso delivery, o Burguer FC e a Pizza FC. Depois levamos pra mais de 200 restaurantes em mais de 50 cidades.</p>
+      <a class="cta" id="rs-cta" href="#" target="_blank" rel="noopener">Quero ajuda pra subir minha nota</a>
+      <p class="fine" id="rs-cta-note"></p>
+    </div>
+    <button class="cta ghost" type="button" id="btn-again">Fazer o Raio-X de outro restaurante</button>
+    <p class="attrib">Dados públicos do Google Maps. A nota é uma estimativa da Audens Company, não do Google.</p>
+  </section>
+</div>
+
+<script>
+/* ============ CONFIGURAÇÃO ============ */
+const CONFIG = {
+  GOOGLE_MAPS_KEY: "",                 // chave do Google Maps Platform (Maps JavaScript API + Places API New), restrita ao domínio do site
+  CRM_ENDPOINT: "https://receberlead-471063273836.us-central1.run.app", // mesmo receptor das LPs: cria o card no funil, avisa o João e manda a 1ª mensagem
+  CRM_SECRET: "audens2025xk",
+  FIREBASE_URL: "https://audens-crm-default-rtdb.firebaseio.com",
+  FIREBASE_NODE: "raiox_leads",        // cópia do diagnóstico completo de cada lead
+  WHATSAPP_AUDENS: "",                 // número do comercial com DDI, ex.: 5531999999999
+  META_PIXEL_ID: "288150133971064",    // dispara PageView e Lead (padrão)
+  RAIO_METROS: 1000
+};
+/* ====================================== */
+
+const DEMO = !CONFIG.GOOGLE_MAPS_KEY || new URLSearchParams(location.search).has("demo");
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const fmt1 = n => (Math.round(n * 10) / 10).toFixed(1).replace(".", ",");
+const S = { rest: null, comps: [], answers: null, lead: null, sugs: [] };
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.hidden = s.id !== id);
+  try { window.scrollTo({ top: 0, behavior: "instant" }); } catch (e) { window.scrollTo(0, 0); }
+}
+
+/* ---------- Pixel ---------- */
+function pixelInit() {
+  if (!CONFIG.META_PIXEL_ID || DEMO) return;
+  try {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq("init", CONFIG.META_PIXEL_ID); fbq("track", "PageView");
+  } catch (e) {}
+}
+function pixel(ev, data, eventID) { try { if (window.fbq) fbq("track", ev, data || {}, eventID ? { eventID } : undefined); } catch (e) {} }
+
+/* ---------- Dados de exemplo (fictícios) ---------- */
+const DEMO_REST = {
+  id: "demo-brasa", name: "Brasa Burger", address: "Rua Exemplo, 120 · Centro (endereço fictício)",
+  typeLabel: "Hamburgueria", rating: 4.4, count: 87, photosCount: 6, photoUrls: [],
+  hasHours: true, hasPhone: true, hasWebsite: false, lastReviewDays: 12, mapsUrl: "",
+  lat: 0, lng: 0,
+  reviews: [
+    { author: "Mariana (exemplo)", rating: 5, when: "há 2 semanas", text: "Hambúrguer muito bem servido, carne no ponto certo. Melhor smash da região." },
+    { author: "Rafael (exemplo)", rating: 1, when: "há 1 mês", text: "Pedi pelo WhatsApp, demorou quase 2 horas e chegou frio. Mandei mensagem e ninguém respondeu." },
+    { author: "Juliana (exemplo)", rating: 4, when: "há 1 mês", text: "Lanche gostoso, preço justo. Só a batata que veio murcha." },
+    { author: "Diego (exemplo)", rating: 5, when: "há 2 meses", text: "Atendimento muito educado e o lanche é delicioso. Virei cliente." },
+    { author: "Patrícia (exemplo)", rating: 3, when: "há 3 meses", text: "Sabor bom, mas o pedido veio errado, faltou o cheddar." }
+  ]
+};
+const DEMO_COMPS = [
+  { name: "Smash do Bairro", rating: 4.7, count: 412, dx: 250, dy: -245 },
+  { name: "Burger House Centro", rating: 4.6, count: 280, dx: -520, dy: 340 },
+  { name: "Point do Lanche", rating: 4.2, count: 95, dx: -120, dy: -135 },
+  { name: "Artesanal 33", rating: 4.8, count: 156, dx: 700, dy: 520 },
+  { name: "Lanchonete Avenida", rating: 4.0, count: 60, dx: 380, dy: 260 },
+  { name: "Rei do X", rating: 4.3, count: 210, dx: -600, dy: -480 }
+].map(c => ({ ...c, dist: Math.hypot(c.dx, c.dy) }));
+
+/* ---------- Google Places ---------- */
+let PL = null, token = null, gmReady = null;
+function loadGoogle() {
+  if (gmReady) return gmReady;
+  gmReady = new Promise((res, rej) => {
+    window.__gmInit = () => res();
+    window.gm_authFailure = () => searchError("A chave do Google foi recusada. Confira a restrição de domínio e as APIs liberadas.");
+    const s = document.createElement("script");
+    s.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(CONFIG.GOOGLE_MAPS_KEY) + "&v=weekly&loading=async&language=pt-BR&region=BR&callback=__gmInit";
+    s.async = true; s.onerror = () => rej(new Error("maps"));
+    document.head.appendChild(s);
+  }).then(async () => {
+    PL = await google.maps.importLibrary("places");
+    token = new PL.AutocompleteSessionToken();
+  });
+  return gmReady;
+}
+const txt = t => t == null ? "" : (typeof t === "string" ? t : (t.text ?? String(t)));
+
+async function suggest(q) {
+  if (DEMO) {
+    return [{ main: "Brasa Burger (exemplo)", sec: "Rua Exemplo, 120 · Centro", demo: true }];
+  }
+  await loadGoogle();
+  const { suggestions } = await PL.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+    input: q, sessionToken: token, language: "pt-BR", region: "br", includedRegionCodes: ["br"],
+    includedPrimaryTypes: ["restaurant", "meal_delivery", "meal_takeaway", "bakery", "cafe"]
+  });
+  return (suggestions || []).filter(s => s.placePrediction).slice(0, 5).map(s => ({
+    main: txt(s.placePrediction.mainText) || txt(s.placePrediction.text),
+    sec: txt(s.placePrediction.secondaryText), pred: s.placePrediction
+  }));
+}
+
+function haversine(a, b) {
+  const R = 6371000, t = x => x * Math.PI / 180;
+  const dLat = t(b.lat - a.lat), dLng = t(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(t(a.lat)) * Math.cos(t(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+const SPECIFIC_TYPES = ["hamburger_restaurant", "pizza_restaurant", "japanese_restaurant", "sushi_restaurant", "brazilian_restaurant", "barbecue_restaurant", "steak_house", "italian_restaurant", "fast_food_restaurant", "acai_shop", "ice_cream_shop", "bakery", "cafe", "sandwich_shop", "chinese_restaurant", "mexican_restaurant", "seafood_restaurant"];
+
+async function fetchRestaurant(sug) {
+  if (DEMO) return JSON.parse(JSON.stringify(DEMO_REST));
+  const place = sug.pred.toPlace();
+  await place.fetchFields({ fields: ["id", "displayName", "formattedAddress", "location", "rating", "userRatingCount", "reviews", "photos", "regularOpeningHours", "websiteURI", "nationalPhoneNumber", "primaryType", "primaryTypeDisplayName", "googleMapsURI"] });
+  token = new PL.AutocompleteSessionToken();
+  const reviews = (place.reviews || []).map(r => ({
+    author: r.authorAttribution?.displayName || "Cliente", rating: r.rating || 0,
+    when: r.relativePublishTimeDescription || "", text: txt(r.text), time: r.publishTime ? new Date(r.publishTime).getTime() : 0
+  }));
+  const newest = reviews.reduce((m, r) => Math.max(m, r.time || 0), 0);
+  const photos = place.photos || [];
+  return {
+    id: place.id, name: txt(place.displayName), address: place.formattedAddress || "",
+    typeLabel: txt(place.primaryTypeDisplayName) || "Restaurante", primaryType: place.primaryType || "",
+    rating: place.rating || 0, count: place.userRatingCount || 0,
+    photosCount: photos.length, photoUrls: photos.slice(0, 3).map(p => { try { return p.getURI({ maxWidth: 500, maxHeight: 500 }); } catch (e) { return ""; } }).filter(Boolean),
+    hasHours: !!place.regularOpeningHours, hasPhone: !!place.nationalPhoneNumber, hasWebsite: !!place.websiteURI,
+    lastReviewDays: newest ? Math.round((Date.now() - newest) / 864e5) : null,
+    mapsUrl: place.googleMapsURI || "", lat: place.location.lat(), lng: place.location.lng(), reviews, _place: place
+  };
+}
+
+async function fetchCompetitors(rest) {
+  if (DEMO) return DEMO_COMPS.map(c => ({ ...c }));
+  const center = rest._place.location;
+  const run = async types => {
+    const { places } = await PL.Place.searchNearby({
+      fields: ["id", "displayName", "location", "rating", "userRatingCount"],
+      locationRestriction: { center, radius: CONFIG.RAIO_METROS },
+      includedPrimaryTypes: types, maxResultCount: 20, language: "pt-BR", region: "br",
+      rankPreference: PL.SearchNearbyRankPreference.POPULARITY
+    });
+    return places || [];
+  };
+  let list = [];
+  if (SPECIFIC_TYPES.includes(rest.primaryType)) list = await run([rest.primaryType]);
+  if (list.filter(p => p.id !== rest.id).length < 3) {
+    const more = await run(["restaurant", "meal_delivery", "meal_takeaway"]);
+    const seen = new Set(list.map(p => p.id));
+    more.forEach(p => { if (!seen.has(p.id)) list.push(p); });
+  }
+  const me = { lat: rest.lat, lng: rest.lng };
+  return list.filter(p => p.id !== rest.id && p.location).map(p => {
+    const lat = p.location.lat(), lng = p.location.lng();
+    return {
+      name: txt(p.displayName), rating: p.rating || 0, count: p.userRatingCount || 0,
+      dist: haversine(me, { lat, lng }),
+      dx: (lng - me.lng) * 111320 * Math.cos(me.lat * Math.PI / 180), dy: -(lat - me.lat) * 110540
+    };
+  }).filter(c => c.dist <= CONFIG.RAIO_METROS * 1.05);
+}
+
+/* ---------- Leitura das avaliações ---------- */
+const norm = s => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const TOPICS = [
+  { neg: true, k: "Tempo de entrega", w: ["atras", "demor", "horas", "nao chegou", "nunca chegou", "cancel", "tempo de entrega"] },
+  { neg: true, k: "Comida chegando fria", w: ["frio", "fria", "gelad", "murch"] },
+  { neg: true, k: "Resposta no WhatsApp", w: ["whats", "mensage", "ninguem respond", "nao respond", "sem resposta"] },
+  { neg: true, k: "Pedido errado", w: ["errad", "faltou", "faltando", "veio sem", "trocad", "esquece"] },
+  { k: "Atendimento", w: ["atend", "educad", "simpat", "grosse", "mal educ", "recep", "acolhe"] },
+  { k: "Sabor", w: ["sabor", "delici", "gostos", "saboros", "maravilh", "melhor", "top"] },
+  { k: "Bem servido", w: ["bem servid", "recheio", "recheada", "recheado", "porcao", "grande", "pequen"] },
+  { k: "Preço", w: ["preco", "caro", "barat", "custo benef", "justo", "valor"] },
+  { k: "Ambiente", w: ["ambiente", "lugar", "limp", "aconcheg", "espaco"] }
+];
+function readReviews(reviews) {
+  const praise = {}, complaints = {};
+  reviews.forEach(r => {
+    const t = norm(r.text);
+    TOPICS.forEach(tp => {
+      if (!tp.w.some(w => t.includes(w))) return;
+      if (r.rating >= 4 && !tp.neg) praise[tp.k] = (praise[tp.k] || 0) + 1;
+      else if (r.rating <= 3 || tp.neg) complaints[tp.k] = (complaints[tp.k] || 0) + 1;
+    });
+  });
+  const order = o => Object.entries(o).sort((a, b) => b[1] - a[1]).map(e => e[0]);
+  const pos = reviews.filter(r => r.rating >= 4).length;
+  return { praise: order(praise), complaints: order(complaints), positivePct: reviews.length ? Math.round(pos / reviews.length * 100) : null, worst: reviews.filter(r => r.rating <= 3).sort((a, b) => a.rating - b.rating)[0] || null };
+}
+
+/* ---------- Nota ---------- */
+const strength = (r, c) => (r || 0) * Math.log10(1 + (c || 0));
+function ptsRating(r) { return r >= 4.7 ? 15 : r >= 4.5 ? 12 : r >= 4.3 ? 9 : r >= 4.0 ? 6 : r > 0 ? 2 : 0; }
+function ptsCount(c) { return c >= 300 ? 10 : c >= 150 ? 8 : c >= 80 ? 6 : c >= 30 ? 4 : c > 0 ? 2 : 0; }
+function ranking(rest, comps) {
+  const all = comps.map(c => ({ ...c, me: false })).concat([{ name: rest.name, rating: rest.rating, count: rest.count, dist: 0, dx: 0, dy: 0, me: true }]);
+  all.sort((a, b) => strength(b.rating, b.count) - strength(a.rating, a.count));
+  return { all, pos: all.findIndex(x => x.me) + 1, n: all.length };
+}
+function scoreGoogle(rest, comps) {
+  const rk = ranking(rest, comps);
+  const reput = ptsRating(rest.rating) + ptsCount(rest.count);
+  let conc;
+  if (rk.n <= 1) conc = 15; else if (rk.pos === 1) conc = 20; else if (rk.pos <= 3) conc = 15; else if (rk.pos <= Math.ceil(rk.n / 2)) conc = 10; else conc = 5;
+  const perfil = (rest.photosCount >= 10 ? 5 : rest.photosCount >= 5 ? 3 : rest.photosCount > 0 ? 1 : 0)
+    + (rest.hasHours ? 3 : 0) + (rest.hasPhone ? 2 : 0) + (rest.hasWebsite ? 3 : 0)
+    + (rest.lastReviewDays != null && rest.lastReviewDays <= 45 ? 2 : 0);
+  return { rk, reput, conc, perfil };
+}
+function scoreAll(rest, comps, ans, rev) {
+  const g = scoreGoogle(rest, comps);
+  let deliv = { nao: 0, b45: 4, b47: 8, b48: 12 }[ans.ifood] + { ate40: 8, ate60: 5, mais60: 2, naosei: 3 }[ans.tempo];
+  if (rev.complaints.includes("Tempo de entrega")) deliv = Math.max(0, deliv - 2);
+  const mkt = { nunca: 0, p12: 4, p35: 7, diario: 10 }[ans.posts] + { nao: 0, impulsiono: 4, gestor: 10, eu: 7 }[ans.trafego];
+  const pillars = [
+    { key: "reput", n: "Reputação no Google", d: "Nota e volume de avaliações", v: g.reput, max: 25 },
+    { key: "conc", n: "Bairro e concorrência", d: "Sua posição no raio de 1 km", v: g.conc, max: 20 },
+    { key: "perfil", n: "Perfil no Google", d: "Fotos, horário, telefone, cardápio, avaliações recentes", v: g.perfil, max: 15 },
+    { key: "deliv", n: "Operação de delivery", d: "Nota no iFood e tempo de entrega", v: deliv, max: 20 },
+    { key: "mkt", n: "Marketing digital", d: "Frequência no Instagram e anúncios", v: mkt, max: 20 }
+  ];
+  return { total: pillars.reduce((s, p) => s + p.v, 0), pillars, rk: g.rk };
+}
+const levelOf = pct => pct < 40 ? { t: "Fraca", c: "var(--bad)" } : pct < 60 ? { t: "Regular", c: "var(--warn)" } : pct < 80 ? { t: "Boa", c: "var(--good)" } : { t: "Ótima", c: "var(--good)" };
+const bandOf = s => s < 40 ? "Crítica" : s < 60 ? "Regular" : s < 80 ? "Boa" : "Ótima";
+const bandColor = s => s < 40 ? "var(--bad)" : s < 60 ? "var(--warn)" : "var(--good)";
+
+/* ---------- Ações da semana ---------- */
+function buildActions(rest, ans, rev, rk) {
+  const list = [];
+  const leader = rk.all.filter(x => !x.me).sort((a, b) => b.count - a.count)[0];
+  const ahead = rk.all.slice(0, rk.pos - 1).filter(x => !x.me);
+  if (rev.complaints.length) list.push({ p: 10, t: "Responda hoje as avaliações negativas", x: `Tem cliente reclamando de ${rev.complaints.slice(0, 2).join(" e ").toLowerCase()}. Responda em público, sem brigar, dizendo o que você mudou. Quem lê a avaliação ruim lê a sua resposta antes de decidir.` });
+  if (leader && rest.count < Math.max(100, leader.count * 0.6)) list.push({ p: 9, t: "Ganhe avaliação toda semana", x: `Você tem ${rest.count} avaliações. ${esc(leader.name)} tem ${leader.count}. Coloque um QR de avaliação no balcão, na embalagem e na mensagem depois do pedido. Peça, mas não dê prêmio em troca: o Google proíbe.` });
+  else if (rest.count < 100) list.push({ p: 8, t: "Ganhe avaliação toda semana", x: `${rest.count} avaliações é pouco pra quem quer aparecer no topo do "perto de mim". Meta: 30 novas em 30 dias, pedindo no balcão, na embalagem e no WhatsApp.` });
+  if (ans.tempo === "mais60" || ans.ifood === "b45") list.push({ p: 9, t: "Ataque o tempo de entrega", x: "Entrega acima de 1 hora derruba nota no iFood e no Google ao mesmo tempo. Meça o tempo de cada etapa no pico (cozinha, montagem, saída) e corte o gargalo antes de investir em anúncio." });
+  else if (ans.ifood === "nao") list.push({ p: 6, t: "Decida seu canal de delivery", x: "Fora do iFood, você depende 100% de canal próprio. Isso é ótimo pra margem, mas exige anúncio e base de clientes no WhatsApp funcionando toda semana." });
+  if (ans.trafego === "nao" || ans.trafego === "impulsiono") list.push({ p: ans.trafego === "nao" ? 8 : 6, t: "Anuncie só pra quem pode pedir de você", x: "Botão de impulsionar joga dinheiro em gente que mora longe. Monte uma campanha num raio de 3 km com o seu carro-chefe e acompanhe quantos pedidos vieram dela." });
+  if (ans.posts === "nunca" || ans.posts === "p12") list.push({ p: ans.posts === "nunca" ? 8 : 6, t: "Volte pro feed do seu bairro", x: "Restaurante que some do Instagram some da cabeça do cliente. Mínimo de 3 posts por semana e story todo dia, com foto real do prato saindo da cozinha." });
+  if (rest.photosCount < 10) list.push({ p: 5, t: "Suba fotos novas no Google", x: `Seu perfil mostra ${rest.photosCount} foto${rest.photosCount === 1 ? "" : "s"}. Suba pelo menos 10: carro-chefe, combo, fachada e ambiente. Foto boa é o que faz o cliente clicar em "Rotas".` });
+  if (!rest.hasWebsite) list.push({ p: 4, t: "Coloque o link do cardápio no Google", x: "Seu perfil não tem link de site ou cardápio. Quem achou você no Maps precisa de um clique pra pedir, senão volta pro iFood." });
+  if (ahead.length) list.push({ p: 5, t: "Estude quem está na sua frente", x: `No seu raio, ${ahead.slice(0, 2).map(a => `${esc(a.name)} (${fmt1(a.rating)}, ${a.count} avaliações)`).join(" e ")} aparecem antes de você. Veja as fotos, o cardápio e o que os clientes elogiam neles.` });
+  return list.sort((a, b) => b.p - a.p).slice(0, 3);
+}
+
+/* ---------- Desenho do radar ---------- */
+function dotColor(r) { return r >= 4.6 ? "var(--good)" : r >= 4.2 ? "var(--warn)" : "var(--bad)"; }
+function radarSVG(comps, opts = {}) {
+  const R = 170, C = 200, sc = R / CONFIG.RAIO_METROS;
+  const rings = [0.25, 0.5, 1].map(f => `<circle cx="${C}" cy="${C}" r="${R * f}" fill="none" stroke="var(--line)" stroke-width="1"/>`).join("");
+  const labels = [[0.5, "500 m"], [1, "1 km"]].map(([f, t]) => `<text x="${C + 4}" y="${C - R * f - 5}" fill="var(--muted)" font-size="12" font-family="Barlow Condensed, sans-serif" letter-spacing="1">${t}</text>`).join("");
+  const dots = comps.map((c, i) => {
+    const x = C + c.dx * sc, y = C + c.dy * sc;
+    const num = opts.numbers ? `<text x="${x}" y="${y + 4}" text-anchor="middle" fill="var(--bg)" font-size="11" font-weight="700" font-family="Barlow, sans-serif">${opts.numbers[i] ?? ""}</text>` : "";
+    return `<g class="dot" style="opacity:${opts.hideDots ? 0 : 1};transition:opacity .4s ${i * 0.12}s"><circle cx="${x}" cy="${y}" r="${opts.numbers ? 10 : 7}" fill="${dotColor(c.rating)}"/>${num}</g>`;
+  }).join("");
+  const scan = opts.scan ? `<g class="scan"><path d="M${C} ${C} L${C} ${C - R} A${R} ${R} 0 0 1 ${C + R * Math.sin(Math.PI / 5)} ${C - R * Math.cos(Math.PI / 5)} Z" fill="var(--accent)" opacity=".18"/></g>` : "";
+  return `<svg class="radar" viewBox="0 0 400 400" role="img" aria-label="Mapa do raio de 1 km com ${comps.length} concorrentes">
+    <circle cx="${C}" cy="${C}" r="${R}" fill="var(--surface-2)"/>${rings}${scan}${labels}${dots}
+    <circle cx="${C}" cy="${C}" r="16" fill="var(--accent)" opacity=".25"/><circle cx="${C}" cy="${C}" r="9" fill="var(--accent)"/>
+    <text x="${C}" y="${C + 32}" text-anchor="middle" fill="var(--fg)" font-size="14" font-weight="700" font-family="Barlow, sans-serif">você</text>
+  </svg>`;
+}
+
+/* ---------- Busca ---------- */
+let debounce;
+function searchError(m) { const e = $("#search-err"); e.textContent = m; e.hidden = !m; }
+function renderSugs(list) {
+  S.sugs = list;
+  const ul = $("#sugs");
+  if (!list.length) { ul.hidden = true; ul.innerHTML = ""; return; }
+  ul.innerHTML = list.map((s, i) => `<li role="option"><button type="button" data-i="${i}"><span class="m">${esc(s.main)}</span><span class="s">${esc(s.sec)}</span></button></li>`).join("");
+  ul.hidden = false;
+}
+$("#q").addEventListener("input", e => {
+  clearTimeout(debounce);
+  const q = e.target.value.trim();
+  searchError("");
+  if (q.length < 3) { renderSugs([]); return; }
+  debounce = setTimeout(async () => {
+    try { renderSugs(await suggest(q)); }
+    catch (err) { searchError("Não consegui buscar agora. Confira sua conexão e tente de novo."); }
+  }, 260);
+});
+$("#search-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const q = $("#q").value.trim();
+  if (q.length < 3) { searchError("Digite pelo menos 3 letras do nome do restaurante."); return; }
+  if (!S.sugs.length) { try { renderSugs(await suggest(q)); } catch (err) {} }
+  if (S.sugs.length) startAnalysis(S.sugs[0]); else searchError("Não achei esse restaurante. Tente o nome como aparece no Google, com o bairro.");
+});
+$("#sugs").addEventListener("click", e => {
+  const b = e.target.closest("button[data-i]"); if (!b) return;
+  startAnalysis(S.sugs[+b.dataset.i]);
+});
+
+/* ---------- Análise animada ---------- */
+function setStep(i, pct, title, sub) {
+  $("#st-count").textContent = `Etapa ${i} de 4`;
+  $("#st-pct").textContent = pct + "%";
+  $("#st-bar").style.width = pct + "%";
+  $("#st-title").textContent = title;
+  $("#st-sub").textContent = sub;
+}
+async function startAnalysis(sug) {
+  renderSugs([]);
+  $("#an-name").textContent = sug.main.replace(" (exemplo)", "");
+  $("#an-addr").textContent = sug.sec;
+  $("#an-radar").innerHTML = radarSVG([], { scan: true });
+  $("#st-review").hidden = true;
+  show("s-analise");
+  setStep(1, 8, "Localizando seu restaurante", "Centralizando o mapa no seu endereço");
+  try {
+    const [rest] = await Promise.all([fetchRestaurant(sug), sleep(1300)]);
+    S.rest = rest;
+    $("#an-name").textContent = rest.name;
+    $("#an-addr").textContent = rest.address;
+    setStep(2, 30, "Encontrando concorrentes", "Restaurantes reais num raio de 1 km no Google");
+    const [comps] = await Promise.all([fetchCompetitors(rest), sleep(1200)]);
+    S.comps = comps;
+    $("#an-radar").innerHTML = radarSVG(comps, { scan: true, hideDots: true });
+    requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll("#an-radar .dot").forEach(d => d.style.opacity = 1)));
+    setStep(2, 45, `${comps.length} concorrente${comps.length === 1 ? "" : "s"} no seu raio`, comps.length ? `O mais forte: ${ranking(rest, comps).all.find(x => !x.me).name}` : "Pouca concorrência mapeada no Google");
+    await sleep(1400);
+    const revs = rest.reviews.slice(0, 5);
+    const box = $("#st-review");
+    for (let i = 0; i < revs.length; i++) {
+      setStep(3, 50 + Math.round((i + 1) / revs.length * 30), `Lendo avaliação ${i + 1} de ${revs.length}`, "O que os clientes falam antes de outro cliente decidir");
+      const r = revs[i];
+      box.innerHTML = `<div class="who"><span>${esc(r.author)} · <span class="stars">${"★".repeat(Math.round(r.rating))}</span></span><span>${esc(r.when)}</span></div>${esc(r.text.length > 170 ? r.text.slice(0, 170) + "…" : r.text)}`;
+      box.hidden = false;
+      await sleep(1000);
+    }
+    box.hidden = true;
+    setStep(4, 92, "Calculando sua nota", "Cruzando reputação, perfil e concorrência");
+    await sleep(1100);
+    renderPreview();
+  } catch (err) {
+    console.error(err);
+    show("s-busca");
+    searchError("Não consegui analisar esse restaurante agora. Tente de novo em instantes.");
+  }
+}
+
+/* ---------- Prévia ---------- */
+function pillarHTML(p, locked) {
+  if (locked) return `<div class="pillar locked"><span class="n">${p.n}</span><span class="v">🔒 ? de ${p.max}</span><div class="bar"></div><span class="d">${p.d}. Responda as perguntas pra liberar.</span></div>`;
+  const pct = p.v / p.max * 100, lv = levelOf(pct);
+  return `<div class="pillar"><span class="n">${p.n}<span class="chip-s" style="color:${lv.c};border:1px solid ${lv.c}">${lv.t}</span></span><span class="v">${p.v} de ${p.max}</span><div class="bar"><i style="width:${pct}%;background:${lv.c}"></i></div><span class="d">${p.d}</span></div>`;
+}
+function renderPreview() {
+  const r = S.rest, g = scoreGoogle(r, S.comps);
+  $("#pv-name").textContent = r.name;
+  $("#pv-addr").textContent = r.address;
+  $("#pv-kpis").innerHTML = `
+    <div class="kpi"><b>${r.rating ? fmt1(r.rating) : "—"}</b><span>nota no Google</span></div>
+    <div class="kpi"><b>${r.count}</b><span>avaliações</span></div>
+    <div class="kpi"><b>${S.comps.length}</b><span>concorrentes em 1 km</span></div>`;
+  $("#pv-rank").innerHTML = g.rk.n > 1 ? `Você está em <b>${g.rk.pos}º lugar</b> entre ${g.rk.n} restaurantes no seu raio.` : "Não encontramos concorrentes do seu tipo no raio de 1 km.";
+  $("#pv-pillars").innerHTML = [
+    pillarHTML({ n: "Reputação no Google", d: "Nota e volume de avaliações", v: g.reput, max: 25 }),
+    pillarHTML({ n: "Bairro e concorrência", d: "Sua posição no raio de 1 km", v: g.conc, max: 20 }),
+    pillarHTML({ n: "Perfil no Google", d: "Fotos, horário, telefone, cardápio", v: g.perfil, max: 15 }),
+    pillarHTML({ n: "Operação de delivery", d: "Nota no iFood e tempo de entrega", max: 20 }, true),
+    pillarHTML({ n: "Marketing digital", d: "Instagram e anúncios", max: 20 }, true)
+  ].join("");
+  show("s-previa");
+}
+$("#go-perguntas").addEventListener("click", () => show("s-perguntas"));
+
+/* ---------- Formulário ---------- */
+$("#whats").addEventListener("input", e => {
+  const d = e.target.value.replace(/\D/g, "").slice(0, 11);
+  let o = d;
+  if (d.length > 2) o = `(${d.slice(0, 2)}) ${d.slice(2)}`;
+  if (d.length > 7) o = `(${d.slice(0, 2)}) ${d.slice(2, d.length - 4)}-${d.slice(-4)}`;
+  e.target.value = o;
+});
+const PLANO = { "0-40": "Mentoria", "40-60": "Starter", "60-100": "Premium", "100+": "Elite" };
+const FAT_LABEL = { "0-40": "Até R$40 mil", "40-60": "De R$40 mil a R$60 mil", "60-100": "De R$60 mil a R$100 mil", "100+": "Acima de R$100 mil" };
+
+function sendCRM(payload, sc) {
+  if (DEMO || !CONFIG.CRM_ENDPOINT) return;
+  const u = payload.utm || {}, ck = n => (document.cookie.match(new RegExp(n + "=([^;]+)")) || [])[1] || "";
+  const body = {
+    nome: payload.nome, telefone: payload.whatsapp, email: "", instagram: "",
+    faturamento: payload.faturamentoLabel, faturamento_estimado: "nao", segmento: payload.restaurante.tipo,
+    faixa: payload.respostas.faturamento, investimento: "", ja_investiu: payload.respostas.trafego,
+    origem: "lp-raio-x", variante_lp: "raio-x", event_id: payload.eventID,
+    utm_campaign: u.utm_campaign || "", utm_content: u.utm_content || "", utm_medium: u.utm_medium || "", utm_source: u.utm_source || "",
+    ad: u.utm_content || "", campanha: u.utm_campaign || "", conjunto: u.utm_medium || "",
+    campaign_id: u.campaign_id || "", adset_id: u.adset_id || "", ad_id: u.ad_id || "",
+    fbp: ck("_fbp"), fbc: ck("_fbc") || (u.fbclid ? "fb.1." + Date.now() + "." + u.fbclid : ""),
+    restaurante: payload.restaurante.nome, raiox_nota: sc.total, raiox_faixa: payload.faixa,
+    raiox_pilar_fraco: payload.pilarMaisFraco, raiox_posicao: payload.posicaoRaio + "/" + payload.restaurantesNoRaio,
+    raiox_resumo: `Raio-X ${sc.total}/100 (${payload.faixa}) · Google ${payload.restaurante.notaGoogle} com ${payload.restaurante.avaliacoes} aval. · ${payload.posicaoRaio}º de ${payload.restaurantesNoRaio} no raio · mais fraco: ${payload.pilarMaisFraco}`
+  };
+  try { fetch(CONFIG.CRM_ENDPOINT, { method: "POST", mode: "cors", keepalive: true, headers: { "Content-Type": "application/json", "X-Webhook-Secret": CONFIG.CRM_SECRET }, body: JSON.stringify(body) }).catch(() => {}); } catch (e) {}
+}
+async function saveLead(payload) {
+  if (DEMO || !CONFIG.FIREBASE_URL) return { skipped: true };
+  const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 5000);
+  try {
+    const res = await fetch(`${CONFIG.FIREBASE_URL}/${CONFIG.FIREBASE_NODE}.json`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: ctrl.signal });
+    return { ok: res.ok };
+  } catch (e) { return { ok: false }; } finally { clearTimeout(t); }
+}
+
+$("#lead-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const f = e.target, err = $("#form-err");
+  const val = n => (f.querySelector(`input[name="${n}"]:checked`) || {}).value;
+  const ans = { faturamento: val("faturamento"), ifood: val("ifood"), tempo: val("tempo"), posts: val("posts"), trafego: val("trafego") };
+  const nome = $("#nome").value.trim(), digits = $("#whats").value.replace(/\D/g, "");
+  let msg = "";
+  if (Object.values(ans).some(v => !v)) msg = "Responda as 5 perguntas pra gente calcular sua nota completa.";
+  else if (nome.length < 2) msg = "Digite o seu nome.";
+  else if (digits.length < 10) msg = "Digite o WhatsApp com DDD, ex.: (31) 99999-9999.";
+  else if (!$("#aceite").checked) msg = "Marque o aceite pra receber o relatório pelo WhatsApp.";
+  err.textContent = msg; err.hidden = !msg;
+  if (msg) return;
+
+  const btn = $("#btn-ver"); btn.disabled = true; btn.textContent = "Montando seu relatório…";
+  const rev = readReviews(S.rest.reviews);
+  const sc = scoreAll(S.rest, S.comps, ans, rev);
+  const actions = buildActions(S.rest, ans, rev, sc.rk);
+  S.answers = ans;
+  const utm = {}; new URLSearchParams(location.search).forEach((v, k) => { if (/^(utm_|fbclid|gclid|campaign_id|adset_id|ad_id)/.test(k)) utm[k] = v; });
+  const eventID = "raiox_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+  const weakest = sc.pillars.slice().sort((a, b) => a.v / a.max - b.v / b.max)[0];
+  const payload = {
+    criadoEm: new Date().toISOString(), origem: "raio-x", status: "novo", eventID,
+    nome, whatsapp: "55" + digits,
+    restaurante: { nome: S.rest.name, endereco: S.rest.address, placeId: S.rest.id, tipo: S.rest.typeLabel, notaGoogle: S.rest.rating, avaliacoes: S.rest.count, mapsUrl: S.rest.mapsUrl },
+    respostas: ans, faturamentoLabel: FAT_LABEL[ans.faturamento], planoSugerido: PLANO[ans.faturamento],
+    nota: sc.total, faixa: bandOf(sc.total), pilares: Object.fromEntries(sc.pillars.map(p => [p.key, p.v])), pilarMaisFraco: weakest.n,
+    posicaoRaio: sc.rk.pos, restaurantesNoRaio: sc.rk.n,
+    concorrentesTop: sc.rk.all.filter(x => !x.me).slice(0, 5).map(c => ({ nome: c.name, nota: c.rating, avaliacoes: c.count, distanciaM: Math.round(c.dist) })),
+    reclamacoes: rev.complaints, elogios: rev.praise, acoes: actions.map(a => a.t), utm
+  };
+  sendCRM(payload, sc);
+  await saveLead(payload);
+  pixel("Lead", { content_name: "Raio-X do Delivery", value: sc.total }, eventID);
+  renderResult(sc, rev, actions, weakest, nome);
+  btn.disabled = false; btn.textContent = "Ver meu Raio-X completo";
+});
+
+/* ---------- Resultado ---------- */
+function gaugeSVG(score) {
+  const r = 110, cx = 140, cy = 140, len = Math.PI * r, pct = Math.max(0, Math.min(100, score)) / 100;
+  return `<svg class="gauge" viewBox="0 0 280 160" role="img" aria-label="Nota ${score} de 100">
+    <path d="M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy}" fill="none" stroke="var(--surface-2)" stroke-width="18" stroke-linecap="round"/>
+    <path d="M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy}" fill="none" stroke="${bandColor(score)}" stroke-width="18" stroke-linecap="round" stroke-dasharray="${len * pct} ${len}"/>
+    <text x="${cx}" y="${cy - 12}" text-anchor="middle" fill="var(--fg)" font-family="Bebas Neue, Impact, sans-serif" font-size="78">${score}</text>
+    <text x="${cx}" y="${cy + 14}" text-anchor="middle" fill="var(--muted)" font-family="Barlow Condensed, sans-serif" font-size="15" letter-spacing="2">DE 100</text>
+  </svg>`;
+}
+function renderResult(sc, rev, actions, weakest, nome) {
+  const r = S.rest;
+  $("#rs-name").textContent = r.name;
+  $("#rs-addr").textContent = r.address;
+  $("#rs-gauge").innerHTML = gaugeSVG(sc.total);
+  const lbl = $("#rs-label"); lbl.textContent = bandOf(sc.total); lbl.style.color = bandColor(sc.total);
+  const bands = [["Crítica", "0–39"], ["Regular", "40–59"], ["Boa", "60–79"], ["Ótima", "80+"]];
+  $("#rs-scale").innerHTML = bands.map(([b, rg]) => `<span class="${b === bandOf(sc.total) ? "on" : ""}" style="${b === bandOf(sc.total) ? "color:" + bandColor(sc.total) : ""}">${b} · ${rg}</span>`).join("");
+  $("#rs-pillars").innerHTML = sc.pillars.map(p => pillarHTML(p)).join("");
+  $("#rs-actions").innerHTML = actions.map(a => `<li><b>${a.t}</b><p>${a.x}</p></li>`).join("");
+
+  // território
+  const numbers = S.comps.map(c => sc.rk.all.findIndex(o => !o.me && o.name === c.name && o.count === c.count) + 1);
+  $("#rs-terr-sub").textContent = sc.rk.n > 1 ? `Você está em ${sc.rk.pos}º de ${sc.rk.n} no raio de 1 km, pelo peso da nota e do volume de avaliações.` : "Não encontramos concorrentes do seu tipo no raio de 1 km.";
+  $("#rs-radar").innerHTML = radarSVG(S.comps, { numbers });
+  let n = 0;
+  const rows = sc.rk.all.slice(0, 8).map((x, i) => {
+    if (!x.me) n++;
+    return `<tr class="${x.me ? "me" : ""}"><td class="pos">${i + 1}º</td><td class="nm">${x.me ? "Você · " : ""}${esc(x.name)}</td><td class="num">${x.rating ? "★ " + fmt1(x.rating) : "—"}</td><td class="num">${x.count} aval.</td><td class="num">${x.me ? "" : (x.dist < 1000 ? Math.round(x.dist / 10) * 10 + " m" : fmt1(x.dist / 1000) + " km")}</td></tr>`;
+  });
+  if (sc.rk.pos > 8) rows.push(`<tr class="me"><td class="pos">${sc.rk.pos}º</td><td class="nm">Você · ${esc(r.name)}</td><td class="num">★ ${fmt1(r.rating)}</td><td class="num">${r.count} aval.</td><td class="num"></td></tr>`);
+  $("#rs-rank").innerHTML = rows.join("");
+
+  // avaliações
+  $("#rs-rev-sub").textContent = r.reviews.length ? `Lemos as ${r.reviews.length} avaliações mais relevantes que o Google mostra. ${rev.positivePct}% são positivas.` : "O Google não mostrou avaliações com texto pra esse restaurante.";
+  let revHTML = "";
+  if (rev.praise.length) revHTML += `<div style="display:flex;flex-direction:column;gap:8px"><span class="mini-label">Mais elogiado</span><div class="chips good">${rev.praise.slice(0, 4).map(t => `<span>${t}</span>`).join("")}</div></div>`;
+  if (rev.complaints.length) revHTML += `<div style="display:flex;flex-direction:column;gap:8px"><span class="mini-label">O que pesa contra</span><div class="chips bad">${rev.complaints.slice(0, 4).map(t => `<span>${t}</span>`).join("")}</div></div>`;
+  if (rev.worst) revHTML += `<div style="display:flex;flex-direction:column;gap:8px"><span class="mini-label">A avaliação que mais custa pedido</span><p class="quote">"${esc(rev.worst.text.length > 220 ? rev.worst.text.slice(0, 220) + "…" : rev.worst.text)}"<br><span class="fine">${esc(rev.worst.author)} · ${"★".repeat(Math.round(rev.worst.rating))} · ${esc(rev.worst.when)}</span></p></div>`;
+  $("#rs-reviews").innerHTML = revHTML || `<p class="fine">Sem dados suficientes pra ler o que os clientes falam.</p>`;
+
+  // fotos e perfil
+  const imgs = r.photoUrls.length ? r.photoUrls.map((u, i) => `<img src="${esc(u)}" alt="Foto ${i + 1} do perfil no Google" loading="lazy">`) : [1, 2, 3].map(i => `<div class="ph">foto ${i}</div>`);
+  while (imgs.length < 3) imgs.push(`<div class="ph">sem foto</div>`);
+  $("#rs-photos").innerHTML = imgs.join("");
+  const chk = (ok, t) => `<span style="${ok ? "" : "background:rgba(255,107,90,.14);color:#FFB3A8"}">${ok ? "✓" : "✕"} ${t}</span>`;
+  $("#rs-profile").innerHTML = [chk(r.photosCount >= 10, `${r.photosCount}${r.photosCount >= 10 ? "+" : ""} fotos`), chk(r.hasHours, "Horário"), chk(r.hasPhone, "Telefone"), chk(r.hasWebsite, "Link do cardápio/site"), chk(r.lastReviewDays != null && r.lastReviewDays <= 45, "Avaliação recente")].join("");
+
+  // CTA
+  const cta = $("#rs-cta"), note = $("#rs-cta-note");
+  if (CONFIG.WHATSAPP_AUDENS) {
+    const text = `Oi! Sou ${nome}, do ${r.name}. Fiz o Raio-X do Delivery e deu ${sc.total}/100. Quero ajuda pra melhorar ${weakest.n.toLowerCase()}.`;
+    cta.href = `https://wa.me/${CONFIG.WHATSAPP_AUDENS}?text=${encodeURIComponent(text)}`;
+    cta.hidden = false;
+    note.textContent = "Abre o WhatsApp do time da Audens com o seu resultado.";
+  } else {
+    cta.hidden = true;
+    note.textContent = DEMO ? "No modo exemplo nenhum dado é enviado." : "Um especialista da Audens vai te chamar no WhatsApp com o seu relatório.";
+  }
+  show("s-resultado");
+}
+$("#btn-again").addEventListener("click", () => { $("#q").value = ""; renderSugs([]); show("s-busca"); $("#q").focus(); });
+
+/* ---------- Início ---------- */
+$("#demo-note").hidden = !DEMO;
+pixelInit();
+// Entrada vinda da LP: raio-x/?q=Nome+da+loja já abre com a busca feita
+(() => {
+  const q = new URLSearchParams(location.search).get("q");
+  if (!q) return;
+  $("#q").value = q;
+  $("#q").dispatchEvent(new Event("input"));
+})();
+</script>
+</body></html>
