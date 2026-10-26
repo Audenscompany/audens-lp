@@ -1224,8 +1224,10 @@ function sendCRM(payload, sc) {
     fbp: ck("_fbp") || A.fbp || "", fbc: ck("_fbc") || A.fbc || (u.fbclid ? "fb.1." + Date.now() + "." + u.fbclid : ""),
     campaign_name: u.campaign_name || u.utm_campaign || "", adset_name: u.adset_name || u.utm_medium || "", ad_name: u.ad_name || u.utm_content || "",
     first_touch: A.first_touch || null, last_touch: A.last_touch || null, sid: window.__sid || "",
+    empresa: payload.restaurante.nome, cidade: S.rest.city || "", canal: (S.rest.orderLink || {}).label || "",
     restaurante: payload.restaurante.nome, raiox_nota: sc.total, raiox_faixa: payload.faixa,
     raiox_pilar_fraco: payload.pilarMaisFraco, raiox_posicao: payload.posicaoRaio + "/" + payload.restaurantesNoRaio,
+    desafio: `Raio-X ${sc.total}/100 (${payload.faixa}) · mais fraco: ${payload.pilarMaisFraco} · ${payload.posicaoRaio}º de ${payload.restaurantesNoRaio} em 1 km · Google ${String(payload.restaurante.notaGoogle).replace(".", ",")} (${payload.restaurante.avaliacoes} aval.)`,
     raiox_resumo: `Raio-X ${sc.total}/100 (${payload.faixa}) · Google ${payload.restaurante.notaGoogle} com ${payload.restaurante.avaliacoes} aval. · ${payload.posicaoRaio}º de ${payload.restaurantesNoRaio} em 1 km · ${S.count3} concorrentes em 3 km · mais fraco: ${payload.pilarMaisFraco}`
   };
   try { fetch(CONFIG.CRM_ENDPOINT, { method: "POST", mode: "cors", keepalive: true, headers: { "Content-Type": "application/json", "X-Webhook-Secret": CONFIG.CRM_SECRET }, body: JSON.stringify(body) }).catch(() => {}); } catch (e) {}
