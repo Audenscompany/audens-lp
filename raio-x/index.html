@@ -1,4 +1,8 @@
 <!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>[hidden]{display:none!important}body{margin:0}img{max-width:100%}</style>
+<script>
+/* Atribuição (UTMs do anúncio + fbp/fbc) — captura na 1ª visita e persiste p/ não perder na navegação */
+(function(){var KEYS=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','campaign_id','adset_id','ad_id','campaign_name','adset_name','ad_name'];var qs;try{qs=new URLSearchParams(window.location.search);}catch(e){qs={get:function(){return null;}};}var salvo={};try{salvo=JSON.parse(localStorage.getItem('audens_attrib')||'{}');}catch(e){}var cur={};KEYS.forEach(function(k){var v=qs.get(k);if(v){cur[k]=v;salvo[k]=v;}});try{var r=document.referrer;if(r)cur.ref=r;}catch(e){}cur.ts=Date.now();var m;m=document.cookie.match(/_fbp=([^;]+)/);if(m)salvo.fbp=m[1];m=document.cookie.match(/_fbc=([^;]+)/);if(m)salvo.fbc=m[1];if(!salvo.fbc&&salvo.fbclid)salvo.fbc='fb.1.'+Date.now()+'.'+salvo.fbclid;var sig=false;for(var kk in cur){if(kk!=='ts'&&kk!=='ref'){sig=true;break;}}if(cur.ref)sig=true;if(sig&&!salvo.first_touch)salvo.first_touch=cur;if(sig)salvo.last_touch=cur;try{localStorage.setItem('audens_attrib',JSON.stringify(salvo));}catch(e){}window.__audensAttrib=salvo;})();
+</script>
 <title>Raio-X do Delivery</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Descubra em 30 segundos a nota do seu delivery no seu bairro. Diagnóstico gratuito da Audens Company.">
@@ -6,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap">
 <script src="config.js"></script>
+<script>(function(){var CLARITY_ID=(window.RAIOX_CONFIG||{}).CLARITY_ID||'';if(!CLARITY_ID)return;(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script",CLARITY_ID);})();</script>
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <style>
@@ -470,6 +475,46 @@ function pixelInit() {
 }
 function pixel(ev, data, eventID) { try { if (window.fbq) fbq("track", ev, data || {}, eventID ? { eventID } : undefined); } catch (e) {} }
 
+/* ---------- Métricas: mesmo padrão das LPs (Pixel + /track do CRM + dataLayer) ---------- */
+// Eventos que viram evento PADRÃO no Meta; o resto vai como evento personalizado.
+const FBQ_STANDARD = { lead_submit: "Lead", result_view: "ViewContent", club_click: "InitiateCheckout", analise_click: "Contact" };
+(function () {
+  if (DEMO) { window.__ownTrack = () => {}; return; }
+  const TRACK_URL = CONFIG.CRM_ENDPOINT + "/track";
+  const rid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  let sid; try { sid = sessionStorage.getItem("audens_sid"); if (!sid) { sid = rid(); sessionStorage.setItem("audens_sid", sid); } } catch (e) { sid = rid(); }
+  window.__sid = sid;
+  const A = window.__audensAttrib || {}, Q = new URLSearchParams(location.search);
+  const u = k => Q.get(k) || A[k] || "";
+  const UTMS = { source: u("utm_source"), medium: u("utm_medium"), campaign: u("utm_campaign"), content: u("utm_content"), term: u("utm_term") };
+  const device = () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? "mobile" : "desktop";
+  let queue = [], timer = null;
+  function flush(beacon) {
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (!queue.length) return;
+    const payload = JSON.stringify({ sid, page: location.pathname, variante: "raio-x", device: device(), ref: document.referrer || "", utms: UTMS, events: queue.splice(0) });
+    try {
+      if (beacon && navigator.sendBeacon) navigator.sendBeacon(TRACK_URL, new Blob([payload], { type: "text/plain" }));
+      else fetch(TRACK_URL, { method: "POST", mode: "cors", keepalive: true, headers: { "Content-Type": "application/json" }, body: payload }).catch(() => {});
+    } catch (e) {}
+  }
+  window.__ownTrack = (name, params) => {
+    queue.push({ e: name, p: params || {}, t: Date.now() });
+    if (/^(lead_submit|qualified_lead|club_click|analise_click|lp_view)$/.test(name)) { flush(); return; }
+    if (!timer) timer = setTimeout(() => flush(), 4000);
+  };
+  addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") flush(true); });
+  addEventListener("pagehide", () => flush(true));
+})();
+const _once = {};
+function pushEvent(name, params, opts = {}) {
+  if (opts.once) { if (_once[name + (opts.once === true ? "" : opts.once)]) return; _once[name + (opts.once === true ? "" : opts.once)] = 1; }
+  params = Object.assign({ variante: "raio-x" }, params || {});
+  try { if (window.fbq && !DEMO) { const std = FBQ_STANDARD[name]; if (std) fbq("track", std, params, opts.eventID ? { eventID: opts.eventID } : undefined); else fbq("trackCustom", name, params); } } catch (e) {}
+  try { window.__ownTrack && window.__ownTrack(name, params); } catch (e) {}
+  try { (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: name }, params)); } catch (e) {}
+}
+
 /* ---------- Dados de exemplo (fictícios, posicionados no centro de Santa Luzia-MG) ---------- */
 const DEMO_CENTER = { lat: -19.7697, lng: -43.8513 };
 const DEMO_REST = {
@@ -779,6 +824,7 @@ $("#q").addEventListener("input", e => {
   clearTimeout(debounce);
   const q = e.target.value.trim();
   searchError("");
+  if (q.length >= 3) pushEvent("search_start", {}, { once: true });
   if (q.length < 3) { renderSugs([]); return; }
   debounce = setTimeout(async () => {
     try { renderSugs(await suggest(q)); }
@@ -906,6 +952,7 @@ function addComp(c, withLabel) {
 /* ---------- Análise animada ---------- */
 function setStep(i, pct, title, sub, chip) {
   $("#st-count").textContent = `Etapa ${i} de 6`;
+  if (i !== _lastStep) { _lastStep = i; pushEvent("analysis_step", { etapa: i, nome: ["", "localizando", "concorrentes_1km", "raio_3km", "moradores", "fotos", "avaliacoes"][i] || "" }); }
   $("#st-pct").textContent = pct + "%";
   $("#st-bar").style.width = pct + "%";
   $("#st-title").textContent = title;
@@ -949,8 +996,11 @@ function countUp(el, to, ms, render) {
     requestAnimationFrame(f);
   });
 }
+let _lastStep = 0;
 async function startAnalysis(sug) {
   renderSugs([]);
+  _lastStep = 0;
+  pushEvent("restaurant_selected", { restaurante: sug.main, place_id: sug.placeId || "" });
   $("#an-name").textContent = sug.main.replace(" (exemplo)", "");
   $("#an-addr").textContent = sug.sec;
   $("#an-chip").textContent = "Localizando";
@@ -1076,6 +1126,7 @@ async function startAnalysis(sug) {
     setTab("res");
     saveLast();
     $("#dn-text").textContent = doneSentence(rest, readReviews(rest.reviews));
+    pushEvent("analysis_complete", { restaurante: rest.name, concorrentes_1km: S.comps.length, concorrentes_3km: S.count3 });
     show("s-concluido");
     await sleep(2800);
     renderPreview();
@@ -1083,6 +1134,7 @@ async function startAnalysis(sug) {
     console.error(err);
     show("s-busca");
     searchError("Não consegui analisar esse restaurante agora. Tente de novo em instantes.");
+    pushEvent("analysis_error", { msg: String(err && err.message || err).slice(0, 120) });
   }
 }
 
@@ -1099,7 +1151,7 @@ function initResume() {
   const d = loadLast(); const box = $("#resume");
   if (!d) { box.hidden = true; return; }
   $("#resume-name").textContent = d.rest.name; box.hidden = false;
-  $("#resume-go").onclick = () => { Object.assign(S, { rest: d.rest, comps: d.comps || [], far: d.far || [], count3: d.count3 || 0, count3Plus: !!d.count3Plus, pop: d.pop || null }); renderPreview(); };
+  $("#resume-go").onclick = () => { pushEvent("resume_click", { restaurante: d.rest.name }); Object.assign(S, { rest: d.rest, comps: d.comps || [], far: d.far || [], count3: d.count3 || 0, count3Plus: !!d.count3Plus, pop: d.pop || null }); renderPreview(); };
   $("#resume-new").onclick = () => { try { localStorage.removeItem(LAST_KEY); } catch (e) {} box.hidden = true; $("#q").focus(); };
 }
 
@@ -1141,8 +1193,10 @@ function renderPreview() {
     pillarHTML({ n: "Marketing digital", d: "Instagram e anúncios", max: 20 }, true)
   ].join("");
   show("s-previa");
+  pushEvent("preview_view", { restaurante: r.name, nota_google: r.rating, avaliacoes: r.count, posicao: g.rk.pos + "/" + g.rk.n, concorrentes_1km: S.comps.length });
 }
-$("#go-perguntas").addEventListener("click", () => show("s-perguntas"));
+$("#go-perguntas").addEventListener("click", () => { pushEvent("form_start", {}); show("s-perguntas"); });
+$("#lead-form").addEventListener("change", e => { if (e.target && e.target.type === "radio") pushEvent("form_answer", { pergunta: e.target.name, resposta: e.target.value || "" }, { once: e.target.name }); });
 
 /* ---------- Formulário ---------- */
 $("#whats").addEventListener("input", e => {
@@ -1157,7 +1211,8 @@ const FAT_LABEL = { "0-40": "Até R$40 mil", "40-60": "De R$40 mil a R$60 mil", 
 
 function sendCRM(payload, sc) {
   if (DEMO || !CONFIG.CRM_ENDPOINT) return;
-  const u = payload.utm || {}, ck = n => (document.cookie.match(new RegExp(n + "=([^;]+)")) || [])[1] || "";
+  const A = window.__audensAttrib || {};
+  const u = Object.assign({}, A, payload.utm || {}), ck = n => (document.cookie.match(new RegExp(n + "=([^;]+)")) || [])[1] || "";
   const body = {
     nome: payload.nome, telefone: payload.whatsapp, email: "", instagram: payload.instagram || "",
     faturamento: payload.faturamentoLabel, faturamento_estimado: "nao", segmento: payload.restaurante.tipo,
@@ -1166,7 +1221,9 @@ function sendCRM(payload, sc) {
     utm_campaign: u.utm_campaign || "", utm_content: u.utm_content || "", utm_medium: u.utm_medium || "", utm_source: u.utm_source || "",
     ad: u.utm_content || "", campanha: u.utm_campaign || "", conjunto: u.utm_medium || "",
     campaign_id: u.campaign_id || "", adset_id: u.adset_id || "", ad_id: u.ad_id || "",
-    fbp: ck("_fbp"), fbc: ck("_fbc") || (u.fbclid ? "fb.1." + Date.now() + "." + u.fbclid : ""),
+    fbp: ck("_fbp") || A.fbp || "", fbc: ck("_fbc") || A.fbc || (u.fbclid ? "fb.1." + Date.now() + "." + u.fbclid : ""),
+    campaign_name: u.campaign_name || u.utm_campaign || "", adset_name: u.adset_name || u.utm_medium || "", ad_name: u.ad_name || u.utm_content || "",
+    first_touch: A.first_touch || null, last_touch: A.last_touch || null, sid: window.__sid || "",
     restaurante: payload.restaurante.nome, raiox_nota: sc.total, raiox_faixa: payload.faixa,
     raiox_pilar_fraco: payload.pilarMaisFraco, raiox_posicao: payload.posicaoRaio + "/" + payload.restaurantesNoRaio,
     raiox_resumo: `Raio-X ${sc.total}/100 (${payload.faixa}) · Google ${payload.restaurante.notaGoogle} com ${payload.restaurante.avaliacoes} aval. · ${payload.posicaoRaio}º de ${payload.restaurantesNoRaio} em 1 km · ${S.count3} concorrentes em 3 km · mais fraco: ${payload.pilarMaisFraco}`
@@ -1195,7 +1252,7 @@ $("#lead-form").addEventListener("submit", async e => {
   else if (digits.length < 10) msg = "Digite o WhatsApp com DDD, ex.: (31) 99999-9999.";
   else if (!$("#aceite").checked) msg = "Marque o aceite pra receber o relatório pelo WhatsApp.";
   err.textContent = msg; err.hidden = !msg;
-  if (msg) return;
+  if (msg) { pushEvent("form_error", { motivo: msg.slice(0, 60) }); return; }
 
   const btn = $("#btn-ver"); btn.disabled = true; btn.textContent = "Montando seu relatório…";
   const rev = readReviews(S.rest.reviews);
@@ -1219,7 +1276,8 @@ $("#lead-form").addEventListener("submit", async e => {
   };
   sendCRM(payload, sc);
   await saveLead(payload);
-  pixel("Lead", { content_name: "Raio-X do Delivery", value: sc.total }, eventID);
+  pushEvent("lead_submit", { content_name: "Raio-X do Delivery", faixa: ans.faturamento, nota: sc.total, restaurante: S.rest.name }, { eventID });
+  if (ans.faturamento !== "0-40") pushEvent("qualified_lead", { faixa: ans.faturamento, nota: sc.total });
   renderResult(sc, rev, actions, weakest, nome, ans);
   btn.disabled = false; btn.textContent = "Ver meu Raio-X completo";
 });
@@ -1239,7 +1297,8 @@ function renderNext(sc, weakest, nome, ans) {
   const r = S.rest, first = (nome || "").split(" ")[0];
   const qualifica = ans && ans.faturamento && ans.faturamento !== "0-40";
   const linkAn = CONFIG.LINK_ANALISE || waLink(`Oi! Sou ${first}, do ${r.name}. Fiz o Raio-X do Delivery (${sc.total}/100) e quero agendar a Análise Estratégica.`);
-  const linkClub = CONFIG.LINK_CLUB || waLink(`Oi! Sou ${first}, do ${r.name}. Fiz o Raio-X do Delivery e quero saber como entrar no Audens Club.`);
+  const sck = "raiox_" + (((ans || {}).faturamento) || "na").replace("+", "mais");
+  const linkClub = CONFIG.LINK_CLUB ? CONFIG.LINK_CLUB.replace(/([?&])sck=[^&]*/, "$1sck=" + sck) : waLink(`Oi! Sou ${first}, do ${r.name}. Fiz o Raio-X do Delivery e quero saber como entrar no Audens Club.`);
   const analise = (main) => `<div class="offer ${main ? "main" : "small"}">
       <p class="eyebrow">${main ? "Seu próximo passo" : "Quer ir além?"}</p>
       <h3>Análise Estratégica do seu delivery</h3>
@@ -1256,10 +1315,12 @@ function renderNext(sc, weakest, nome, ans) {
       <a class="cta${main ? "" : " ghost"}" href="${esc(linkClub)}" target="_blank" rel="noopener" data-ev="raiox_club_click">Quero entrar no Audens Club</a>
     </div>`;
   $("#rs-next").innerHTML = qualifica ? analise(true) + club(false) : club(true);
-  $("#rs-next").querySelectorAll("a[data-ev]").forEach(a => a.addEventListener("click", () => { try { if (window.fbq) fbq("trackCustom", a.dataset.ev); } catch (e) {} }));
+  const evOf = a => a.dataset.ev === "raiox_club_click" ? "club_click" : "analise_click";
+  $("#rs-next").querySelectorAll("a[data-ev]").forEach(a => a.addEventListener("click", () => pushEvent(evOf(a), { posicao: "card", nota: sc.total, faixa_fat: (ans || {}).faturamento || "" })));
   const st = $("#sticky");
   $("#sticky-txt").textContent = qualifica ? `Nota ${sc.total}/100. Vamos montar o plano pra subir?` : `Nota ${sc.total}/100. Aprenda a subir no Audens Club por R$ 9,90/mês.`;
   const sa = $("#sticky-a"); sa.textContent = qualifica ? "Quero a análise" : "Entrar no Club"; sa.href = qualifica ? linkAn : linkClub;
+  sa.onclick = () => pushEvent(qualifica ? "analise_click" : "club_click", { posicao: "rodape", nota: sc.total, faixa_fat: (ans || {}).faturamento || "" });
   st.dataset.ready = "1";
 }
 function renderResult(sc, rev, actions, weakest, nome, ans) {
@@ -1307,12 +1368,24 @@ function renderResult(sc, rev, actions, weakest, nome, ans) {
 
   renderNext(sc, weakest, nome, ans);
   show("s-resultado");
+  pushEvent("result_view", { nota: sc.total, faixa_nota: bandOf(sc.total), faixa_fat: (ans || {}).faturamento || "" });
+  trackScroll();
 }
-$("#btn-again").addEventListener("click", () => { $("#q").value = ""; renderSugs([]); try { localStorage.removeItem(LAST_KEY); } catch (e) {} $("#resume").hidden = true; show("s-busca"); $("#q").focus(); });
+let _scrollOn = false;
+function trackScroll() {
+  if (_scrollOn) return; _scrollOn = true;
+  addEventListener("scroll", () => {
+    if ($("#s-resultado").hidden) return;
+    const h = document.documentElement, pct = (h.scrollTop + innerHeight) / h.scrollHeight * 100;
+    [25, 50, 75, 100].forEach(m => { if (pct >= m - 2) pushEvent("scroll_depth", { percent: m, tela: "resultado" }, { once: "res" + m }); });
+  }, { passive: true });
+}
+$("#btn-again").addEventListener("click", () => { pushEvent("again_click", {}); $("#q").value = ""; renderSugs([]); try { localStorage.removeItem(LAST_KEY); } catch (e) {} $("#resume").hidden = true; show("s-busca"); $("#q").focus(); });
 
 /* ---------- Início ---------- */
 $("#demo-note").hidden = !DEMO;
 pixelInit();
+pushEvent("lp_view", { referrer: document.referrer || "" });
 initResume();
 // Entrada vinda da LP: raio-x/?q=Nome+da+loja já abre com a busca feita
 (() => {
