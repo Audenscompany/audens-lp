@@ -291,6 +291,26 @@ body.has-sticky{padding-bottom:96px}
     </div>
   </section>
 
+  <!-- 1b. CAPTURA (antes da análise) -->
+  <section class="screen" id="s-captura" hidden>
+    <div class="rest-head"><p class="eyebrow">Seu Raio-X</p><h2 id="cap-name">—</h2><p>Pra montar o diagnóstico certo pro tamanho do seu delivery, preciso de 4 dados. Leva 20 segundos.</p></div>
+    <form id="cap-form" style="display:flex;flex-direction:column;gap:22px" novalidate>
+      <div class="field"><label for="nome">Seu nome</label><input id="nome" name="nome" autocomplete="name" required></div>
+      <div class="field"><label for="whats">Seu WhatsApp</label><input id="whats" name="whats" type="tel" inputmode="tel" autocomplete="tel" placeholder="(31) 99999-9999" required></div>
+      <div class="field"><label for="insta">Instagram do restaurante</label><input id="insta" name="insta" autocomplete="off" placeholder="@seurestaurante" autocapitalize="off"></div>
+      <fieldset class="q"><legend>Quanto o restaurante fatura por mês?</legend><div class="opts">
+        <label><input type="radio" name="faturamento" value="0-40" id="f1"><span>Até R$ 40 mil</span></label>
+        <label><input type="radio" name="faturamento" value="40-60" id="f2"><span>R$ 40 a 60 mil</span></label>
+        <label><input type="radio" name="faturamento" value="60-100" id="f3"><span>R$ 60 a 100 mil</span></label>
+        <label><input type="radio" name="faturamento" value="100+" id="f4"><span>Acima de R$ 100 mil</span></label>
+      </div></fieldset>
+      <label class="consent" for="aceite"><input type="checkbox" id="aceite" name="aceite"><span>Aceito receber o meu Raio-X e o contato da Audens Company pelo WhatsApp.</span></label>
+      <p class="err" id="cap-err" hidden></p>
+      <button class="cta" type="submit" id="btn-cap">Gerar meu Raio-X</button>
+      <p class="fine" style="text-align:center">Seus dados ficam só com a Audens. Nada de spam.</p>
+    </form>
+  </section>
+
   <!-- 2. ANÁLISE -->
   <section class="screen" id="s-analise" hidden>
     <div class="rest-head"><p class="eyebrow">Analisando</p><h2 id="an-name">—</h2></div>
@@ -333,19 +353,13 @@ body.has-sticky{padding-bottom:96px}
       <div id="pv-pillars" style="display:flex;flex-direction:column;gap:14px"></div>
     </div>
     <button class="cta" id="go-perguntas" type="button">Completar meu Raio-X</button>
-    <p class="fine" style="text-align:center">São 5 perguntas rápidas. Você recebe o relatório completo e as 3 ações da semana.</p>
+    <p class="fine" style="text-align:center">São 4 perguntas rápidas. Você recebe o relatório completo e as 3 ações da semana.</p>
   </section>
 
   <!-- 4. PERGUNTAS + CAPTURA -->
   <section class="screen" id="s-perguntas" hidden>
-    <div class="rest-head"><p class="eyebrow">Falta pouco</p><h2>O que o Google não mostra</h2><p>Delivery e marketing pesam 40 pontos na sua nota.</p></div>
+    <div class="rest-head"><p class="eyebrow">Falta pouco</p><h2>O que o Google não mostra</h2><p>4 perguntas rápidas. Delivery e marketing pesam 40 pontos na sua nota.</p></div>
     <form id="lead-form" style="display:flex;flex-direction:column;gap:26px" novalidate>
-      <fieldset class="q"><legend>Quanto o restaurante fatura por mês?</legend><div class="opts">
-        <label><input type="radio" name="faturamento" value="0-40" id="f1"><span>Até R$ 40 mil</span></label>
-        <label><input type="radio" name="faturamento" value="40-60" id="f2"><span>R$ 40 a 60 mil</span></label>
-        <label><input type="radio" name="faturamento" value="60-100" id="f3"><span>R$ 60 a 100 mil</span></label>
-        <label><input type="radio" name="faturamento" value="100+" id="f4"><span>Acima de R$ 100 mil</span></label>
-      </div></fieldset>
       <fieldset class="q"><legend>Qual a sua nota no iFood?</legend><div class="opts">
         <label><input type="radio" name="ifood" value="nao" id="i1"><span>Não estou no iFood</span></label>
         <label><input type="radio" name="ifood" value="b45" id="i2"><span>Abaixo de 4,5</span></label>
@@ -370,11 +384,6 @@ body.has-sticky{padding-bottom:96px}
         <label><input type="radio" name="trafego" value="gestor" id="a3"><span>Tenho gestor ou agência</span></label>
         <label><input type="radio" name="trafego" value="eu" id="a4"><span>Eu mesmo gerencio</span></label>
       </div></fieldset>
-      <div class="form-divider"></div>
-      <div class="field"><label for="nome">Seu nome</label><input id="nome" name="nome" autocomplete="name" required></div>
-      <div class="field"><label for="insta">Instagram do restaurante <span class="fine">(opcional)</span></label><input id="insta" name="insta" autocomplete="off" placeholder="@seurestaurante" autocapitalize="off"></div>
-      <div class="field"><label for="whats">Seu WhatsApp</label><input id="whats" name="whats" type="tel" inputmode="tel" autocomplete="tel" placeholder="(31) 99999-9999" required></div>
-      <label class="consent" for="aceite"><input type="checkbox" id="aceite" name="aceite"><span>Aceito receber o meu relatório e o contato da Audens Company pelo WhatsApp.</span></label>
       <p class="err" id="form-err" hidden></p>
       <button class="cta" type="submit" id="btn-ver">Ver meu Raio-X completo</button>
     </form>
@@ -836,11 +845,11 @@ $("#search-form").addEventListener("submit", async e => {
   const q = $("#q").value.trim();
   if (q.length < 3) { searchError("Digite pelo menos 3 letras do nome do restaurante."); return; }
   if (!S.sugs.length) { try { renderSugs(await suggest(q)); } catch (err) {} }
-  if (S.sugs.length) startAnalysis(S.sugs[0]); else searchError("Não achei esse restaurante. Tente o nome como aparece no Google, com o bairro.");
+  if (S.sugs.length) chooseRestaurant(S.sugs[0]); else searchError("Não achei esse restaurante. Tente o nome como aparece no Google, com o bairro.");
 });
 $("#sugs").addEventListener("click", e => {
   const b = e.target.closest("button[data-i]"); if (!b) return;
-  startAnalysis(S.sugs[+b.dataset.i]);
+  chooseRestaurant(S.sugs[+b.dataset.i]);
 });
 
 /* ---------- Mapa 3D ---------- */
@@ -1141,7 +1150,7 @@ async function startAnalysis(sug) {
 /* ---------- Retomar a última análise (fica só neste navegador, por 24h) ---------- */
 const LAST_KEY = "raiox_last_v1";
 function saveLast() {
-  try { localStorage.setItem(LAST_KEY, JSON.stringify({ ts: Date.now(), demo: DEMO, rest: S.rest, comps: S.comps, far: S.far, count3: S.count3, count3Plus: S.count3Plus, pop: S.pop })); } catch (e) {}
+  try { localStorage.setItem(LAST_KEY, JSON.stringify({ ts: Date.now(), demo: DEMO, lead: S.lead || null, rest: S.rest, comps: S.comps, far: S.far, count3: S.count3, count3Plus: S.count3Plus, pop: S.pop })); } catch (e) {}
 }
 function loadLast() {
   try { const d = JSON.parse(localStorage.getItem(LAST_KEY) || "null"); if (d && d.rest && d.demo === DEMO && Date.now() - d.ts < 864e5) return d; } catch (e) {}
@@ -1151,7 +1160,7 @@ function initResume() {
   const d = loadLast(); const box = $("#resume");
   if (!d) { box.hidden = true; return; }
   $("#resume-name").textContent = d.rest.name; box.hidden = false;
-  $("#resume-go").onclick = () => { pushEvent("resume_click", { restaurante: d.rest.name }); Object.assign(S, { rest: d.rest, comps: d.comps || [], far: d.far || [], count3: d.count3 || 0, count3Plus: !!d.count3Plus, pop: d.pop || null }); renderPreview(); };
+  $("#resume-go").onclick = () => { pushEvent("resume_click", { restaurante: d.rest.name }); if (d.lead && !S.lead) { S.lead = d.lead; try { sessionStorage.setItem(LEAD_KEY, JSON.stringify(d.lead)); } catch (e) {} } Object.assign(S, { rest: d.rest, comps: d.comps || [], far: d.far || [], count3: d.count3 || 0, count3Plus: !!d.count3Plus, pop: d.pop || null }); renderPreview(); };
   $("#resume-new").onclick = () => { try { localStorage.removeItem(LAST_KEY); } catch (e) {} box.hidden = true; $("#q").focus(); };
 }
 
@@ -1197,6 +1206,69 @@ function renderPreview() {
 }
 $("#go-perguntas").addEventListener("click", () => { pushEvent("form_start", {}); show("s-perguntas"); });
 $("#lead-form").addEventListener("change", e => { if (e.target && e.target.type === "radio") pushEvent("form_answer", { pergunta: e.target.name, resposta: e.target.value || "" }, { once: e.target.name }); });
+
+/* ---------- Captura do lead ANTES da análise ---------- */
+const LEAD_KEY = "raiox_lead_v1";
+function getLead() { if (S.lead) return S.lead; try { const d = JSON.parse(sessionStorage.getItem(LEAD_KEY) || "null"); if (d && d.digits) S.lead = d; } catch (e) {} return S.lead || null; }
+function chooseRestaurant(sug) {
+  renderSugs([]);
+  S.pendingSug = sug;
+  if (getLead()) { sendEarlyLead(sug, S.lead, true); startAnalysis(sug); return; }   // já deixou contato nesta visita
+  $("#cap-name").textContent = sug.main.replace(" (exemplo)", "");
+  $("#cap-err").hidden = true;
+  show("s-captura");
+  pushEvent("capture_view", { restaurante: sug.main });
+  setTimeout(() => { try { $("#nome").focus(); } catch (e) {} }, 50);
+}
+const cleanInsta = v => String(v || "").trim().replace(/^(https?:\/\/)?(www\.)?instagram\.com\//i, "").replace(/[/?].*$/, "").replace(/^@?/, "@").replace(/^@$/, "");
+$("#cap-form").addEventListener("change", e => { if (e.target && e.target.type === "radio") pushEvent("form_answer", { pergunta: e.target.name, resposta: e.target.value || "" }, { once: e.target.name }); });
+$("#cap-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const f = e.target, err = $("#cap-err");
+  const faixa = (f.querySelector('input[name="faturamento"]:checked') || {}).value;
+  const nome = $("#nome").value.trim(), digits = $("#whats").value.replace(/\D/g, ""), insta = cleanInsta($("#insta").value);
+  let msg = "";
+  if (nome.length < 2) msg = "Digite o seu nome.";
+  else if (digits.length < 10) msg = "Digite o WhatsApp com DDD, ex.: (31) 99999-9999.";
+  else if (insta.length < 3) msg = "Digite o @ do Instagram do restaurante.";
+  else if (!faixa) msg = "Escolha quanto o restaurante fatura por mês.";
+  else if (!$("#aceite").checked) msg = "Marque o aceite pra receber o seu Raio-X pelo WhatsApp.";
+  err.textContent = msg; err.hidden = !msg;
+  if (msg) { pushEvent("form_error", { motivo: msg.slice(0, 60), tela: "captura" }); return; }
+  S.lead = { nome, digits, insta, faixa, eventID: "raiox_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8) };
+  try { sessionStorage.setItem(LEAD_KEY, JSON.stringify(S.lead)); } catch (e) {}
+  sendEarlyLead(S.pendingSug, S.lead, false);
+  startAnalysis(S.pendingSug);
+});
+// Manda o lead pro CRM na hora (cai no Kanban + mensagem do WhatsApp), antes da análise rodar.
+function sendEarlyLead(sug, L, repeat) {
+  const restName = (sug && sug.main || "").replace(" (exemplo)", "");
+  if (!repeat) {
+    pushEvent("lead_submit", { content_name: "Raio-X do Delivery", faixa: L.faixa, restaurante: restName }, { eventID: L.eventID });
+    if (L.faixa !== "0-40") pushEvent("qualified_lead", { faixa: L.faixa, restaurante: restName });
+  } else {
+    pushEvent("raiox_again", { restaurante: restName });
+    return; // mesma pessoa analisando outro restaurante: não reenvia pro CRM (evita mensagem duplicada)
+  }
+  if (DEMO || !CONFIG.CRM_ENDPOINT) return;
+  const A = window.__audensAttrib || {}, Q = new URLSearchParams(location.search);
+  const u = k => Q.get(k) || A[k] || "";
+  const ck = n => (document.cookie.match(new RegExp(n + "=([^;]+)")) || [])[1] || "";
+  const body = {
+    nome: L.nome, telefone: "55" + L.digits, email: "", instagram: L.insta,
+    faturamento: FAT_LABEL[L.faixa], faturamento_estimado: "nao", faixa: L.faixa, investimento: "",
+    origem: "lp-raio-x", variante_lp: "raio-x", event_id: L.eventID,
+    empresa: restName, restaurante: restName,
+    desafio: `Raio-X do Delivery · ${restName}${sug && sug.sec ? " · " + sug.sec : ""}`,
+    utm_campaign: u("utm_campaign"), utm_content: u("utm_content"), utm_medium: u("utm_medium"), utm_source: u("utm_source"),
+    ad: u("utm_content"), campanha: u("utm_campaign"), conjunto: u("utm_medium"),
+    campaign_id: u("campaign_id"), adset_id: u("adset_id"), ad_id: u("ad_id"),
+    campaign_name: u("campaign_name") || u("utm_campaign"), adset_name: u("adset_name") || u("utm_medium"), ad_name: u("ad_name") || u("utm_content"),
+    fbp: ck("_fbp") || A.fbp || "", fbc: ck("_fbc") || A.fbc || (u("fbclid") ? "fb.1." + Date.now() + "." + u("fbclid") : ""),
+    first_touch: A.first_touch || null, last_touch: A.last_touch || null, sid: window.__sid || ""
+  };
+  try { fetch(CONFIG.CRM_ENDPOINT, { method: "POST", mode: "cors", keepalive: true, headers: { "Content-Type": "application/json", "X-Webhook-Secret": CONFIG.CRM_SECRET }, body: JSON.stringify(body) }).catch(() => {}); } catch (e) {}
+}
 
 /* ---------- Formulário ---------- */
 $("#whats").addEventListener("input", e => {
@@ -1245,14 +1317,12 @@ $("#lead-form").addEventListener("submit", async e => {
   e.preventDefault();
   const f = e.target, err = $("#form-err");
   const val = n => (f.querySelector(`input[name="${n}"]:checked`) || {}).value;
-  const ans = { faturamento: val("faturamento"), ifood: val("ifood"), tempo: val("tempo"), posts: val("posts"), trafego: val("trafego") };
-  const nome = $("#nome").value.trim(), digits = $("#whats").value.replace(/\D/g, "");
-  const insta = $("#insta").value.trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, "").replace(/[/?].*$/, "").replace(/^@?/, "@").replace(/^@$/, "");
+  const L = getLead() || {};
+  const ans = { faturamento: L.faixa, ifood: val("ifood"), tempo: val("tempo"), posts: val("posts"), trafego: val("trafego") };
+  const nome = L.nome || "", digits = L.digits || "", insta = L.insta || "";
   let msg = "";
-  if (Object.values(ans).some(v => !v)) msg = "Responda as 5 perguntas pra gente calcular sua nota completa.";
-  else if (nome.length < 2) msg = "Digite o seu nome.";
-  else if (digits.length < 10) msg = "Digite o WhatsApp com DDD, ex.: (31) 99999-9999.";
-  else if (!$("#aceite").checked) msg = "Marque o aceite pra receber o relatório pelo WhatsApp.";
+  if (!L.digits) { chooseRestaurant(S.pendingSug || { main: S.rest.name, sec: S.rest.address }); return; }
+  if (Object.values(ans).some(v => !v)) msg = "Responda as 4 perguntas pra gente calcular sua nota completa.";
   err.textContent = msg; err.hidden = !msg;
   if (msg) { pushEvent("form_error", { motivo: msg.slice(0, 60) }); return; }
 
@@ -1262,7 +1332,7 @@ $("#lead-form").addEventListener("submit", async e => {
   const actions = buildActions(S.rest, ans, rev, sc.rk);
   S.answers = ans;
   const utm = {}; new URLSearchParams(location.search).forEach((v, k) => { if (/^(utm_|fbclid|gclid|campaign_id|adset_id|ad_id)/.test(k)) utm[k] = v; });
-  const eventID = "raiox_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+  const eventID = L.eventID || ("raiox_" + Date.now());
   const weakest = sc.pillars.slice().sort((a, b) => a.v / a.max - b.v / b.max)[0];
   const payload = {
     criadoEm: new Date().toISOString(), origem: "raio-x", status: "novo", eventID,
@@ -1276,10 +1346,8 @@ $("#lead-form").addEventListener("submit", async e => {
     linkPedido: (S.rest.orderLink || {}).label || "", fotosDoDono: S.rest.ownerPhotos || 0, deliveryNoGoogle: !!S.rest.hasDelivery,
     reclamacoes: rev.complaints, elogios: rev.praise, acoes: actions.map(a => a.t), utm
   };
-  sendCRM(payload, sc);
-  await saveLead(payload);
-  pushEvent("lead_submit", { content_name: "Raio-X do Delivery", faixa: ans.faturamento, nota: sc.total, restaurante: S.rest.name }, { eventID });
-  if (ans.faturamento !== "0-40") pushEvent("qualified_lead", { faixa: ans.faturamento, nota: sc.total });
+  await saveLead(payload);   // diagnóstico completo (o lead já foi pro CRM na captura)
+  pushEvent("questions_complete", { faixa: ans.faturamento, nota: sc.total, restaurante: S.rest.name });
   renderResult(sc, rev, actions, weakest, nome, ans);
   btn.disabled = false; btn.textContent = "Ver meu Raio-X completo";
 });
