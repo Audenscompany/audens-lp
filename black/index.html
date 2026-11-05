@@ -59,11 +59,12 @@ p{margin:0}
 
 /* ===== hero ===== */
 .hero{position:relative;overflow:hidden;padding-block:34px 70px;background:var(--bg)}
-.hero-bg{position:absolute;inset:0;background:url('hero.webp') center 20%/cover no-repeat;opacity:.38;filter:saturate(.9)}
-.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(70% 60% at 15% 30%,rgba(139,61,255,.35),transparent 70%),linear-gradient(180deg,rgba(7,5,12,.55) 0%,rgba(7,5,12,.82) 55%,var(--bg) 100%)}
+.hero-bg{position:absolute;inset:0;background:url('hero.webp') center 20%/cover no-repeat}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,5,12,.96) 0%,rgba(7,5,12,.86) 38%,rgba(7,5,12,.4) 68%,rgba(7,5,12,.55) 100%),linear-gradient(180deg,transparent 70%,var(--bg) 100%)}
 .hero .wrap{position:relative;z-index:1}
 .hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
-.logo{height:40px;width:auto}
+.logo{height:110px;width:auto}
+@media (max-width:900px){.logo{height:76px}}
 .tag-bf{font-family:var(--cond);font-weight:800;font-size:13px;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;border-radius:99px;background:rgba(229,36,43,.15);border:1px solid rgba(229,36,43,.6);color:#ff8d90;white-space:nowrap}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:44px;align-items:start}
 .bf-word{font-family:var(--display);font-size:clamp(54px,11vw,104px);line-height:.86;letter-spacing:.01em}
@@ -238,7 +239,7 @@ p{margin:0}
 .final .lead{margin-inline:auto}
 .final .btn{margin-top:26px}
 footer{border-top:1px solid var(--line);padding-block:26px;color:var(--muted);font-size:14px;text-align:center}
-footer img{height:30px;width:auto;margin:0 auto 10px}
+footer img{height:56px;width:auto;margin:0 auto 10px}
 
 /* barra fixa mobile */
 .sticky{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none;gap:10px;align-items:center;background:rgba(7,5,12,.95);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px max(14px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px))}
@@ -247,6 +248,11 @@ footer img{height:30px;width:auto;margin:0 auto 10px}
 .sticky .btn{width:auto;font-size:19px;padding:11px 16px}
 .sticky.on{display:flex}
 
+@media (min-width:901px){
+  .hero-grid{grid-template-columns:minmax(0,580px)}
+  .hero-bg{background:url('hero.webp') right top/max(1600px,100%) auto no-repeat;-webkit-mask-image:linear-gradient(180deg,#000 70%,transparent 100%);mask-image:linear-gradient(180deg,#000 70%,transparent 100%)}
+  .hero::after{background:linear-gradient(90deg,rgba(7,5,12,.97) 0%,rgba(7,5,12,.9) 38%,rgba(7,5,12,.35) 58%,rgba(7,5,12,.1) 100%),linear-gradient(180deg,transparent 80%,var(--bg) 100%)}
+}
 @media (max-width:900px){
   .hero-grid,.offer-grid,.about-grid{grid-template-columns:1fr}
   .gal{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -255,6 +261,8 @@ footer img{height:30px;width:auto;margin:0 auto 10px}
   .deliv{grid-template-columns:1fr}
   .sec{padding-block:56px}
   .hero{padding-block:24px 50px}
+  .hero-bg{background-position:62% top;background-size:auto 640px}
+  .hero::after{background:linear-gradient(180deg,rgba(7,5,12,.35) 0%,rgba(7,5,12,.75) 300px,rgba(7,5,12,.94) 520px,var(--bg) 640px)}
   .about-img{order:-1}
   body{padding-bottom:76px}
 }
@@ -328,7 +336,7 @@ footer img{height:30px;width:auto;margin:0 auto 10px}
   <div class="hero-bg"></div>
   <div class="wrap">
     <div class="hero-top">
-      <img class="logo" src="https://audenscompany.com.br/wp-content/uploads/2025/03/AUDENS-7.png" alt="Audens Company">
+      <img class="logo" src="/images/logo-full.webp" alt="Audens Company">
       <span class="tag-bf">Só até 30/11</span>
     </div>
     <div class="hero-grid">
@@ -604,7 +612,7 @@ footer img{height:30px;width:auto;margin:0 auto 10px}
 
 <footer>
   <div class="wrap">
-    <img src="https://audenscompany.com.br/wp-content/uploads/2025/03/AUDENS-7.png" alt="Audens Company">
+    <img src="/images/logo-full.webp" alt="Audens Company">
     Audens Company LTDA · 55.470.635/0001-44 · Todos os direitos reservados.
   </div>
 </footer>
