@@ -144,6 +144,23 @@ p{margin:0}
 .ceo-tag{color:var(--purple2);font-weight:800}
 .ads-note{margin-top:18px;color:var(--muted);font-size:15px}
 
+/* ===== comparativo ===== */
+.cmp-sec{background:var(--bg2)}
+.cmp-wrap{margin-top:30px;overflow-x:auto;border-radius:18px;border:1px solid var(--line);background:var(--card)}
+.cmp{width:100%;min-width:560px;border-collapse:collapse;font-size:16px}
+.cmp th,.cmp td{padding:14px 16px;text-align:center;border-bottom:1px solid var(--line);vertical-align:middle}
+.cmp th:first-child,.cmp td:first-child{text-align:left;color:#ddd6ea}
+.cmp thead th{font-family:var(--cond);font-weight:800;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cmp thead th.bk{color:#fff;background:var(--purple);font-size:15px}
+.cmp td.bk{background:rgba(139,61,255,.12);color:#fff;border-left:1px solid rgba(166,107,255,.35);border-right:1px solid rgba(166,107,255,.35)}
+.cmp td:nth-child(2){color:var(--muted)}
+.cmp tr.new td:first-child{color:#fff;font-weight:700}
+.cmp tr.new td:first-child::after{content:"Só na Black";margin-left:8px;font-family:var(--cond);font-weight:800;font-size:11px;letter-spacing:.08em;text-transform:uppercase;background:var(--red);color:#fff;border-radius:5px;padding:2px 6px;vertical-align:2px;white-space:nowrap}
+.cmp tr.price td{border-bottom:0;font-weight:700}
+.cmp tr.price td.bk b{color:var(--red2);font-size:18px}
+.cmp .y{color:var(--green);font-weight:800;font-size:18px}
+.cmp .n{color:#5a5170}
+@media (max-width:600px){.cmp{font-size:14px;min-width:0}.cmp th,.cmp td{padding:11px 9px}.cmp tr.new td:first-child::after{display:block;margin:4px 0 0;width:max-content}}
 /* ===== 10x ===== */
 .roi{text-align:center;background:radial-gradient(50% 70% at 50% 50%,rgba(229,36,43,.22),transparent 70%),var(--bg)}
 .roi-big{font-family:var(--display);font-size:clamp(140px,30vw,260px);line-height:.8;margin-top:14px;background:linear-gradient(180deg,#fff 20%,var(--red2));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 30px rgba(229,36,43,.35))}
@@ -382,7 +399,7 @@ footer img{height:30px;width:auto;margin:0 auto 10px}
         <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg></div>
         <h3>Criativo e cardápio que vendem</h3>
         <ul>
-          <li>Edição de até <b>5 criativos</b><span class="bonus">+2 bônus Black</span></li>
+          <li>Edição de até <b>5 criativos por mês</b><span class="bonus">+2 bônus Black</span></li>
           <li><b>1 otimização do cardápio digital</b>, pra vender mais por pedido</li>
         </ul>
       </div>
@@ -398,7 +415,7 @@ footer img{height:30px;width:auto;margin:0 auto 10px}
         <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg></div>
         <h3>Gestão e acompanhamento</h3>
         <ul>
-          <li>Assinatura anual do <b>Audens Finance</b></li>
+          <li>Assinatura anual do <b>Audens Finance</b>, o nosso sistema de precificação</li>
           <li><b>Relatório semanal</b> com as métricas do seu delivery</li>
           <li><b>Suporte no WhatsApp</b> com o time da Audens</li>
         </ul>
@@ -406,6 +423,34 @@ footer img{height:30px;width:auto;margin:0 auto 10px}
     </div>
     <p class="ads-note">O investimento em anúncios é à parte e vai direto pra Meta, não pra Audens.</p>
     <a class="btn inline" href="#form" style="margin-top:24px" data-cta="entregaveis">QUERO O PREMIUM COM 50% OFF</a>
+  </div>
+</section>
+
+<!-- COMPARATIVO -->
+<section class="sec cmp-sec" id="comparativo">
+  <div class="wrap">
+    <p class="eyb">Não é só o desconto</p>
+    <h2 class="h2">O Premium da Black vem <em>mais completo</em> que o normal.</h2>
+    <p class="lead">Além de pagar metade nos 6 meses, quem fecha em novembro leva precificação com o CEO, o Audens Finance e mais criativos.</p>
+    <div class="cmp-wrap">
+      <table class="cmp">
+        <thead><tr><th scope="col">O que você recebe</th><th scope="col">Premium normal</th><th scope="col" class="bk">Premium Black</th></tr></thead>
+        <tbody>
+          <tr><td>Gestão de tráfego pago (Meta Ads)</td><td><span class="y">✓</span></td><td class="bk"><span class="y">✓</span></td></tr>
+          <tr><td>Estratégias de captação de novos clientes</td><td><span class="y">✓</span></td><td class="bk"><span class="y">✓</span></td></tr>
+          <tr><td>Estratégias de retenção dos clientes</td><td><span class="y">✓</span></td><td class="bk"><span class="y">✓</span></td></tr>
+          <tr><td>Otimização do cardápio digital</td><td>1</td><td class="bk">1</td></tr>
+          <tr><td>Suporte no WhatsApp</td><td><span class="y">✓</span></td><td class="bk"><span class="y">✓</span></td></tr>
+          <tr><td>Relatório de métricas</td><td>Das campanhas</td><td class="bk"><b>Semanal</b></td></tr>
+          <tr><td>Edição de criativos</td><td>Até 3 por mês</td><td class="bk"><b>Até 5 por mês + 2 de bônus</b></td></tr>
+          <tr class="new"><td>Mentorias de precificação com o CEO Lucas Siqueira</td><td><span class="n">—</span></td><td class="bk"><b>2 mentorias</b></td></tr>
+          <tr class="new"><td>Audens Finance, o nosso sistema de precificação</td><td><span class="n">—</span></td><td class="bk"><b>Assinatura anual</b></td></tr>
+          <tr class="new"><td>Estratégia de promoções com o CEO Lucas Siqueira</td><td><span class="n">—</span></td><td class="bk"><span class="y">✓</span></td></tr>
+          <tr class="price"><td>Mensalidade</td><td>Preço cheio</td><td class="bk"><b>50% off nos 6 meses</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <a class="btn inline" href="#form" style="margin-top:24px" data-cta="comparativo">QUERO O PREMIUM BLACK</a>
   </div>
 </section>
 
@@ -464,6 +509,7 @@ footer img{height:30px;width:auto;margin:0 auto 10px}
     <div class="faq">
       <details><summary>Até quando vale a condição de Black Friday?</summary><p>Até 30/11. Depois disso, a condição de novembro deixa de valer e o plano volta ao preço normal.</p></details>
       <details><summary>Como funciona o desconto?</summary><p>Você fecha o plano Premium semestral e paga 50% do valor em cada uma das 6 mensalidades. O desconto vale pelos 6 meses inteiros, não só no primeiro.</p></details>
+      <details><summary>Qual a diferença pro Premium normal?</summary><p>Além dos 50% de desconto nos 6 meses, o Premium da Black inclui 2 mentorias de precificação e a estratégia de promoções com o CEO Lucas Siqueira, a assinatura anual do Audens Finance (nosso sistema de precificação), relatório semanal e mais criativos: até 5 por mês, mais 2 de bônus, contra 3 do plano normal.</p></details>
       <details><summary>Dá pra parcelar?</summary><p>Sim. O semestral pode ser pago em até 6x sem juros no cartão de crédito.</p></details>
       <details><summary>O investimento em anúncios está incluso?</summary><p>Não. A verba dos anúncios é paga direto pra Meta e fica separada do valor da assessoria. Na reunião a gente te mostra quanto faz sentido investir pro seu momento.</p></details>
       <details><summary>Pra quem é a assessoria?</summary><p>Pra hamburguerias, pizzarias e deliveries que já faturam a partir de R$40 mil por mês e querem crescer com tráfego pago e canal próprio. Se você fatura menos, a gente te indica o Audens Club, feito pra essa fase.</p></details>
