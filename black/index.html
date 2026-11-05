@@ -166,6 +166,21 @@ p{margin:0}
 .roi-big{font-family:var(--display);font-size:clamp(140px,30vw,260px);line-height:.8;margin-top:14px;background:linear-gradient(180deg,#fff 20%,var(--red2));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 30px rgba(229,36,43,.35))}
 .roi-txt{font-size:clamp(22px,3.4vw,30px);font-weight:700;margin-top:10px}
 .roi-txt b{color:var(--red2)}
+.roi-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;max-width:900px;margin:28px auto 0}
+.roi-stats div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 10px}
+.roi-stats b{display:block;font-family:var(--display);font-size:clamp(24px,3.2vw,34px);line-height:1;color:#fff}
+.roi-stats span{display:block;color:var(--muted);font-size:14px;margin-top:6px}
+.roi-sub{margin-top:40px;font-weight:700;font-size:20px}
+.roi-wrap{max-width:900px;margin:16px auto 0;max-height:460px;overflow:auto}
+.roi-t{min-width:0}
+.roi-t thead th{position:sticky;top:0;background:#120b20;z-index:1}
+.roi-t thead th.bk{background:var(--purple)}
+.roi-t td:nth-child(2){color:var(--muted)}
+.roi-t td:nth-child(3){color:#fff}
+.roi-t td.rx{color:var(--green);font-weight:800;font-size:18px}
+.roi-t td:not(:first-child){white-space:nowrap}
+.roi-note{color:var(--muted);font-size:13px;margin-top:10px}
+@media (max-width:600px){.roi-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.roi-t{font-size:13px}.roi-t th,.roi-t td{padding:10px 7px}.roi-t td.rx{font-size:15px}}
 /* ===== cases ===== */
 .gal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:30px}
 .rcard{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;text-decoration:none;transition:transform .15s,border-color .15s}
@@ -470,10 +485,38 @@ footer img{height:30px;width:auto;margin:0 auto 10px}
 <!-- 10X -->
 <section class="sec roi">
   <div class="wrap">
-    <p class="eyb">A média dos nossos clientes</p>
+    <p class="eyb">Últimos 30 dias, todos os clientes</p>
     <div class="roi-big">10x</div>
-    <p class="roi-txt">é o <b>retorno médio</b> dos clientes da Audens.</p>
-    <p class="lead" style="margin-inline:auto">Resultado de quem trabalha tráfego, cardápio, preço e recompra junto, e não só anúncio.</p>
+    <p class="roi-txt">Cada R$1 investido em anúncio voltou <b>R$10,41 em vendas</b>.</p>
+    <div class="roi-stats">
+      <div><b>R$ 99 mil</b><span>investidos em anúncios</span></div>
+      <div><b>R$ 1,03 mi</b><span>em vendas pelos anúncios</span></div>
+      <div><b>14.581</b><span>pedidos</span></div>
+      <div><b>R$ 6,80</b><span>de custo por pedido</span></div>
+    </div>
+    <p class="roi-sub">Os clientes que mais retornaram no mês:</p>
+    <div class="cmp-wrap roi-wrap">
+      <table class="cmp roi-t">
+        <thead><tr><th scope="col">Cliente</th><th scope="col">Investido</th><th scope="col">Vendas</th><th scope="col" class="bk">Retorno</th></tr></thead>
+        <tbody>
+          <tr><td>Wel Wel Burgers</td><td>R$ 923,69</td><td>R$ 31.080,20</td><td class="rx">33,65x</td></tr>
+          <tr><td>Burguerlândia</td><td>R$ 2.478,77</td><td>R$ 80.994,45</td><td class="rx">32,68x</td></tr>
+          <tr><td>House Burger - São Félix</td><td>R$ 1.273,51</td><td>R$ 28.769,55</td><td class="rx">22,59x</td></tr>
+          <tr><td>Vinne Lanches</td><td>R$ 1.601,15</td><td>R$ 34.515,70</td><td class="rx">21,56x</td></tr>
+          <tr><td>63 Burguer</td><td>R$ 2.715,74</td><td>R$ 58.235,79</td><td class="rx">21,44x</td></tr>
+          <tr><td>Kydelicia PizzaBurguer</td><td>R$ 31,51</td><td>R$ 630,40</td><td class="rx">20,01x</td></tr>
+          <tr><td>Danky Burguer Oficinas</td><td>R$ 1.124,40</td><td>R$ 22.245,92</td><td class="rx">19,78x</td></tr>
+          <tr><td>Banha Burger's</td><td>R$ 973,82</td><td>R$ 17.694,24</td><td class="rx">18,17x</td></tr>
+          <tr><td>Burger House</td><td>R$ 1.809,56</td><td>R$ 30.148,26</td><td class="rx">16,66x</td></tr>
+          <tr><td>O Santo Burger</td><td>R$ 1.676,87</td><td>R$ 27.135,81</td><td class="rx">16,18x</td></tr>
+          <tr><td>Perto do Fogo</td><td>R$ 4.074,75</td><td>R$ 65.753,45</td><td class="rx">16,14x</td></tr>
+          <tr><td>Arena Play Beach</td><td>R$ 39,19</td><td>R$ 583,39</td><td class="rx">14,89x</td></tr>
+          <tr><td>Novo Sabor</td><td>R$ 654,54</td><td>R$ 9.285,92</td><td class="rx">14,19x</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="roi-note">Dados das campanhas de Meta Ads gerenciadas pela Audens nos últimos 30 dias.</p>
+    <a class="btn inline" href="#form" style="margin-top:24px" data-cta="resultados">QUERO ESSE RESULTADO NO MEU DELIVERY</a>
   </div>
 </section>
 
