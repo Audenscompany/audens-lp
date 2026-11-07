@@ -144,6 +144,13 @@ p{margin:0}
 .ceo-tag{color:var(--purple2);font-weight:800}
 .ads-note{margin-top:18px;color:var(--muted);font-size:15px}
 
+/* ===== confirmação de quem veio do Raio-X ===== */
+.rxc{display:grid;gap:12px}
+.rxc[hidden]{display:none}
+.rxc-hi{font-size:17px;color:#2a2238;margin:0}
+.rxc-data{background:#f3f0f8;border:1px solid #e4def0;border-radius:12px;padding:12px 14px;display:grid;gap:4px;font-size:15px;color:#3a3150}
+.rxc-data b{color:#16111f}
+.rxc-alt{background:none;border:0;color:#6b6280;text-decoration:underline;font:inherit;font-size:14px;cursor:pointer;padding:4px}
 /* ===== comparativo ===== */
 .cmp-sec{background:var(--bg2)}
 .cmp-wrap{margin-top:30px;overflow-x:auto;border-radius:18px;border:1px solid var(--line);background:var(--card)}
@@ -352,6 +359,13 @@ footer img{height:56px;width:auto;margin:0 auto 10px}
         <span class="ft">Black Friday · 50% off por 6 meses</span>
         <h3>Garanta sua condição de novembro</h3>
         <p class="fs">Preencha e um especialista te chama no WhatsApp.</p>
+        <div class="rxc" id="rxc" hidden>
+          <p class="rxc-hi" id="rxc-hi"></p>
+          <div class="rxc-data" id="rxc-data"></div>
+          <button type="button" class="btn" id="rxc-ok">CONFIRMAR MEUS 50% OFF</button>
+          <button type="button" class="rxc-alt" id="rxc-alt">Não é você? Preencher outro cadastro</button>
+          <p class="fnote">Condição válida pra quem fechar até 30/11.</p>
+        </div>
         <form id="lead" novalidate>
           <div class="fld"><input name="nome" type="text" autocomplete="name" required placeholder="Seu nome completo"></div>
           <div class="fld"><input name="email" type="email" autocomplete="email" required placeholder="Seu melhor e-mail"></div>
@@ -616,7 +630,7 @@ footer img{height:56px;width:auto;margin:0 auto 10px}
 (function(){
   var TRACK_URL='https://receberlead-471063273836.us-central1.run.app/track';
   function rid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,10);}
-  var sid;try{sid=sessionStorage.getItem('audens_sid');if(!sid){sid=rid();sessionStorage.setItem('audens_sid',sid);}}catch(e){sid=rid();}
+  var sid;try{sid=sessionStorage.getItem('audens_sid_black');if(!sid){sid=rid();sessionStorage.setItem('audens_sid_black',sid);}}catch(e){sid=rid();}
   var Q;try{Q=new URLSearchParams(location.search);}catch(e){Q={get:function(){return '';}};}
   function utm(k){try{var A=window.__audensAttrib||{};return A[k]||Q.get(k)||'';}catch(e){return '';}}
   var UTMS={source:utm('utm_source'),medium:utm('utm_medium'),campaign:utm('utm_campaign'),content:utm('utm_content'),term:utm('utm_term')};
@@ -735,6 +749,29 @@ function cleanInsta(v){v=String(v||'').trim().replace(/^(https?:\/\/)?(www\.)?in
  pushEvent('lead_submit',{form:'lp-black',faturamento:fat});if(!faixaBaixa)pushEvent('qualified_lead',{faturamento:fat});
  if(faixaBaixa){pushEvent('comunidade_view',{faturamento:fat});done.innerHTML='<div class="ok">Valeu pela sinceridade! 🙌</div><p>Pelo seu momento, investir em anúncios ainda não é o próximo passo, e a gente fala isso de dono pra dono. Mas tem um lugar feito pra essa fase: o <b>Audens Club</b>, onde donos de delivery aprendem a crescer com estrutura (precificação, marketing, gestão e finanças).</p><a href="https://www.audensclub.com.br/" target="_blank" rel="noopener" class="btn" onclick="try{pushEvent(\'comunidade_click\')}catch(e){}">QUERO ENTRAR NO AUDENS CLUB</a>';}
  f.style.display='none';done.style.display='block';document.getElementById('sticky').classList.remove('on');});
+})();
+
+/* ===== veio do Raio-X: confirma com os dados que ele já deu (sem novo formulário, sem 2ª mensagem) ===== */
+(function(){
+ var RX=null;try{RX=JSON.parse(localStorage.getItem('audens_raiox_black')||'null');}catch(e){}
+ if(!RX||!RX.digits||RX.faixa==='0-40'||!RX.ts||Date.now()-RX.ts>72*3600*1000)return;
+ var FAT={'40-60':'De R$40 mil a R$60 mil','60-100':'De R$60 mil a R$100 mil','100+':'Acima de R$100 mil'};
+ var box=document.getElementById('rxc'),f=document.getElementById('lead'),done=document.getElementById('done');
+ var first=String(RX.nome||'').split(' ')[0];
+ var d=String(RX.digits),tel='('+d.slice(0,2)+') •••••-'+d.slice(-4);
+ var esc=function(t){return String(t||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+ document.getElementById('rxc-hi').innerHTML=(first?'Oi, <b>'+esc(first)+'</b>! ':'')+'Seus dados do Raio-X já estão com a gente. É só confirmar:';
+ document.getElementById('rxc-data').innerHTML=(RX.empresa?'<span>Restaurante: <b>'+esc(RX.empresa)+'</b></span>':'')+'<span>WhatsApp: <b>'+tel+'</b></span>'+(FAT[RX.faixa]?'<span>Faturamento: <b>'+FAT[RX.faixa]+'</b></span>':'');
+ f.style.display='none';box.hidden=false;try{document.querySelector('#form .fs').style.display='none';}catch(e){}
+ pushEvent('raiox_black_view',{faixa:RX.faixa||''});
+ document.getElementById('rxc-alt').addEventListener('click',function(){try{localStorage.removeItem('audens_raiox_black');}catch(e){}box.hidden=true;f.style.display='';pushEvent('raiox_black_outro',{});});
+ document.getElementById('rxc-ok').addEventListener('click',function(){
+  enviarCRM({veio_de:'raio-x',nome:RX.nome||'',telefone:'55'+d,faturamento:FAT[RX.faixa]||'',faixa:RX.faixa||'',instagram:RX.insta||'',empresa:RX.empresa||'',desafio:'Raio-X → Black Friday: 50% off por 6 meses (Premium semestral)',origem:'lp-black',variante_lp:'lp-black',variante:'lp-black'});
+  pushEvent('raiox_black_confirm',{faixa:RX.faixa||'',nota:RX.nota||null});
+  try{localStorage.removeItem('audens_raiox_black');}catch(e){}
+  box.hidden=true;done.innerHTML='<div class="ok">✅ Condição reservada!</div><p>Já avisamos o time. Em alguns minutos um especialista da Audens te chama no WhatsApp pra agendar sua reunião e garantir os 50% da Black.</p>';done.style.display='block';
+  try{document.getElementById('sticky').classList.remove('on');}catch(e){}
+ });
 })();
 </script>
 </body>

@@ -246,6 +246,21 @@ button,input{font:inherit;color:inherit}
 .offer li::before{content:"✓";color:var(--good);font-weight:700}
 .offer .price{font-family:var(--label);font-weight:700;font-size:15px;letter-spacing:.06em;color:var(--fg)}
 .offer.small h3{font-size:26px}
+/* Black Friday: faixa do topo + card da oferta */
+.bf-bar{background:#E5322D;color:#fff;overflow:hidden;white-space:nowrap;font-family:var(--label);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:8px 0;position:relative;z-index:5}
+.bf-bar .tr{display:inline-flex;gap:28px;animation:bfmove 28s linear infinite;padding-left:28px}
+.bf-bar .tr span{display:inline-flex;align-items:center;gap:28px}
+.bf-bar .tr span::after{content:"✦";opacity:.8}
+.bf-bar .pulse{animation:bfpulse 1.6s ease-in-out infinite}
+@keyframes bfmove{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes bfpulse{0%,100%{opacity:1}50%{opacity:.55}}
+@media (prefers-reduced-motion:reduce){.bf-bar .tr,.bf-bar .pulse{animation:none}}
+.offer.bf{background:linear-gradient(160deg,rgba(229,50,45,.24),rgba(155,92,255,.10) 65%),var(--surface);border-color:rgba(229,50,45,.6)}
+.offer.bf .eyebrow{color:#FF6A64}
+.offer.bf .bf-tag{align-self:flex-start;background:#E5322D;color:#fff;font-family:var(--label);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;border-radius:6px;padding:4px 9px}
+.offer.bf h3 em{font-style:normal;color:#FF6A64}
+.offer.bf .cta{background:#E5322D;border-color:#E5322D;color:#fff}
+.offer.bf .fine{color:var(--muted);font-size:13px;margin:0}
 .sticky{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(15,11,22,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);
   padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .sticky .in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:12px}
@@ -254,7 +269,8 @@ button,input{font:inherit;color:inherit}
 body.has-sticky{padding-bottom:96px}
 </style>
 
-</head><body><div class="app">
+</head><body><div class="bf-bar" id="bf-bar" hidden aria-label="Black Friday Audens: 50% de desconto na assessoria de marketing durante 6 meses, até 30/11"><div class="tr" aria-hidden="true"></div></div>
+<div class="app">
   <header class="top">
     <div class="brand">AUDENS<b>.</b></div>
     <span class="tag">Raio-X do Delivery</span>
@@ -1362,6 +1378,22 @@ function gaugeSVG(score) {
     <text x="${cx}" y="${cy + 14}" text-anchor="middle" fill="var(--muted)" font-family="Barlow Condensed, sans-serif" font-size="15" letter-spacing="2">DE 100</text>
   </svg>`;
 }
+const BLACK_FIM = Date.parse("2026-12-01T00:00:00-03:00");
+const BLACK_URL = "/black/";
+function blackAtiva() { return Date.now() < BLACK_FIM; }
+(function bfBar() {
+  if (!blackAtiva()) return;
+  const bar = document.getElementById("bf-bar"); if (!bar) return;
+  const item = '<span><b class="pulse">Estamos na Black</b></span><span>50% de desconto na assessoria de marketing por 6 meses</span><span>Só até 30/11</span>';
+  bar.querySelector(".tr").innerHTML = item + item + item + item;
+  bar.hidden = false;
+})();
+// guarda os dados do Raio-X pra LP Black confirmar sem pedir tudo de novo (fica só no navegador; nada vai na URL)
+function goBlack(r, ans, posicao, nota) {
+  const L = getLead() || {};
+  try { localStorage.setItem("audens_raiox_black", JSON.stringify({ nome: L.nome || "", digits: L.digits || "", insta: L.insta || "", faixa: (ans && ans.faturamento) || L.faixa || "", empresa: (r && r.name) || "", nota: nota || null, ts: Date.now() })); } catch (e) {}
+  pushEvent("black_click", { posicao, nota, faixa_fat: (ans || {}).faturamento || "" });
+}
 function waLink(text) { return `https://wa.me/${CONFIG.WHATSAPP_DUVIDAS}?text=${encodeURIComponent(text)}`; }
 function renderNext(sc, weakest, nome, ans) {
   const r = S.rest, first = (nome || "").split(" ")[0];
@@ -1384,13 +1416,27 @@ function renderNext(sc, weakest, nome, ans) {
       ${CONFIG.CLUB_PRECO ? `<p class="price">${esc(CONFIG.CLUB_PRECO)}</p><p class="fine">Sem fidelidade. 7 dias de garantia pela Hotmart.</p>` : ""}
       <a class="cta${main ? "" : " ghost"}" href="${esc(linkClub)}" target="_blank" rel="noopener" data-ev="raiox_club_click">Quero entrar no Audens Club</a>
     </div>`;
-  $("#rs-next").innerHTML = qualifica ? analise(true) + club(false) : club(true);
+  const black = () => `<div class="offer main bf">
+      <span class="bf-tag">Black Friday Audens · até 30/11</span>
+      <p class="eyebrow">Seu delivery tem o perfil da assessoria</p>
+      <h3>Assessoria Premium com <em>50% off por 6 meses</em></h3>
+      <p class="sub">A gente cuida do seu tráfego, dos criativos, do cardápio e da precificação, começando pelo ponto mais fraco do seu Raio-X: ${esc(weakest.n.charAt(0).toLowerCase() + weakest.n.slice(1))}.</p>
+      <ul><li>Metade do preço em todas as 6 mensalidades do plano semestral</li><li>2 mentorias de precificação com o CEO Lucas Siqueira</li><li>Assinatura anual do Audens Finance, o nosso sistema de precificação</li><li>Feita por quem opera o Burguer FC e a Pizza FC</li></ul>
+      <a class="cta" href="${BLACK_URL}?src=raiox" data-ev="raiox_black_click">Quero meus 50% off</a>
+      <p class="fine">Seus dados do Raio-X já vão junto. É só confirmar.</p>
+    </div>`;
+  const bf = qualifica && blackAtiva();
+  $("#rs-next").innerHTML = bf ? black() : (qualifica ? analise(true) + club(false) : club(true));
   const evOf = a => a.dataset.ev === "raiox_club_click" ? "club_click" : "analise_click";
-  $("#rs-next").querySelectorAll("a[data-ev]").forEach(a => a.addEventListener("click", () => pushEvent(evOf(a), { posicao: "card", nota: sc.total, faixa_fat: (ans || {}).faturamento || "" })));
+  $("#rs-next").querySelectorAll("a[data-ev]").forEach(a => a.addEventListener("click", () => {
+    if (a.dataset.ev === "raiox_black_click") return goBlack(r, ans, "card", sc.total);
+    pushEvent(evOf(a), { posicao: "card", nota: sc.total, faixa_fat: (ans || {}).faturamento || "" });
+  }));
   const st = $("#sticky");
-  $("#sticky-txt").textContent = qualifica ? `Nota ${sc.total}/100. Vamos montar o plano pra subir?` : `Nota ${sc.total}/100. Aprenda a subir no Audens Club por R$ 9,90/mês.`;
-  const sa = $("#sticky-a"); sa.textContent = qualifica ? "Quero a análise" : "Entrar no Club"; sa.href = qualifica ? linkAn : linkClub;
-  sa.onclick = () => pushEvent(qualifica ? "analise_click" : "club_click", { posicao: "rodape", nota: sc.total, faixa_fat: (ans || {}).faturamento || "" });
+  $("#sticky-txt").textContent = bf ? `Nota ${sc.total}/100. Na Black, a assessoria sai com 50% off por 6 meses.` : (qualifica ? `Nota ${sc.total}/100. Vamos montar o plano pra subir?` : `Nota ${sc.total}/100. Aprenda a subir no Audens Club por R$ 9,90/mês.`);
+  const sa = $("#sticky-a"); sa.textContent = bf ? "Quero os 50%" : (qualifica ? "Quero a análise" : "Entrar no Club"); sa.href = bf ? BLACK_URL + "?src=raiox" : (qualifica ? linkAn : linkClub);
+  if (bf) sa.removeAttribute("target"); else sa.setAttribute("target", "_blank");
+  sa.onclick = () => bf ? goBlack(r, ans, "rodape", sc.total) : pushEvent(qualifica ? "analise_click" : "club_click", { posicao: "rodape", nota: sc.total, faixa_fat: (ans || {}).faturamento || "" });
   st.dataset.ready = "1";
 }
 function renderResult(sc, rev, actions, weakest, nome, ans) {
