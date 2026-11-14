@@ -39,8 +39,10 @@ window.addEventListener('load',function(){pushEvent('lp_view',{path:location.pat
 :root{--bg:#07050c;--card:#120d1d;--card2:#18112a;--line:rgba(255,255,255,.09);--fg:#f6f3fb;--muted:#a99fbd;--purple:#8b3dff;--purple2:#a66bff;--red:#e5242b;--red2:#ff4a4e;--green:#3ad07e;--display:"Bebas Neue",Impact,sans-serif;--body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--cond:"Barlow Condensed","Arial Narrow",sans-serif}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);-webkit-font-smoothing:antialiased}
-body{min-height:100vh;background:radial-gradient(90% 50% at 50% -5%,rgba(139,61,255,.32),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(139,61,255,.12),transparent 70%),var(--bg)}
+body{position:relative;min-height:100vh;background:radial-gradient(90% 50% at 50% -5%,rgba(139,61,255,.32),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(139,61,255,.12),transparent 70%),var(--bg)}
 a{color:inherit;text-decoration:none}
+.bgph{position:absolute;inset:0 0 auto 0;height:640px;background:url('bg.webp') 62% 18%/cover no-repeat;opacity:.22;filter:grayscale(.35) saturate(.8);-webkit-mask-image:linear-gradient(180deg,#000 30%,transparent 100%);mask-image:linear-gradient(180deg,#000 30%,transparent 100%);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1}
 .wrap{max-width:520px;margin:0 auto;padding:28px 16px 40px}
 .logo{display:block;height:46px;width:auto;margin:0 auto 22px;opacity:.95}
 .head{text-align:center}
@@ -113,6 +115,7 @@ footer a{color:#8d83a3;text-decoration:underline}
 </head>
 <body>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=288150133971064&ev=PageView&noscript=1"/></noscript>
+<div class="bgph" aria-hidden="true"></div>
 <main class="wrap">
   <img class="logo" src="/images/logo-full.webp" alt="Audens Company" width="440" height="310">
   <header class="head">
@@ -130,7 +133,7 @@ footer a{color:#8d83a3;text-decoration:underline}
   <div class="proof">
     <div><b>+R$500 mil</b><span>por mês no meu delivery</span></div>
     <div><b>+200</b><span>marcas atendidas</span></div>
-    <div><b>10x</b><span>retorno médio dos clientes</span></div>
+    <div><b>+10x</b><span>de retorno médio entre os clientes</span></div>
   </div>
 
   <a class="bf" id="bf" href="/black/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=black-2026" data-l="black" hidden>
