@@ -62,6 +62,24 @@ h1 svg{width:22px;height:22px}
 .ic{flex:0 0 48px;height:48px;border-radius:13px;display:grid;place-items:center;background:rgba(139,61,255,.16);color:var(--purple2)}
 .ic svg{width:24px;height:24px}
 .ic img{width:100%;height:100%;object-fit:cover;border-radius:13px}
+.ic.brand{background:none;padding:0;overflow:hidden}
+.ic.ass{background:linear-gradient(145deg,#5b21b6,#3b0f78);padding:7px}
+.ic.ass img{object-fit:contain;border-radius:0}
+.ic.rx{background:#0d0a14;border:1px solid rgba(155,92,255,.45);color:#b48cff}
+.ic.yt{background:#ff0033;color:#fff}
+.lk.ass:hover{border-color:rgba(166,107,255,.7)}
+.lk.rx:hover{border-color:rgba(155,92,255,.7)}
+.lk.club{background:linear-gradient(100deg,rgba(232,98,44,.10),transparent 55%),var(--card)}
+.lk.club:hover{border-color:rgba(232,98,44,.7)}
+.lk.club .tx b em{font-style:normal;color:#e8622c}
+.lk.fin{background:linear-gradient(100deg,rgba(124,92,255,.12),transparent 55%),var(--card)}
+.lk.fin:hover{border-color:rgba(124,92,255,.75)}
+.lk.fin .tx b em{font-style:normal;color:#8f7bff}
+.lk.yt:hover{border-color:rgba(255,0,51,.6)}
+.soc{display:flex;justify-content:center;gap:10px;margin-top:14px}
+.soc a{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--fg);transition:border-color .15s,background .15s}
+.soc a:hover{border-color:rgba(166,107,255,.6);background:rgba(139,61,255,.12)}
+.soc svg{width:20px;height:20px}
 .tx{flex:1;min-width:0}
 .tx b{display:block;font-size:17px;font-weight:700;line-height:1.2}
 .tx span{display:block;color:var(--muted);font-size:14px;line-height:1.35;margin-top:2px}
@@ -102,6 +120,11 @@ footer a{color:#8d83a3;text-decoration:underline}
     <h1>Lucas Ramon</h1>
     <p class="role">CEO da Audens Company</p>
     <p class="bio">Dono do Burguer FC e da Pizza FC. Ajudo hamburguerias e pizzarias a vender mais no delivery.</p>
+    <nav class="soc" aria-label="Redes sociais">
+      <a href="https://instagram.com/lucasramong_" target="_blank" rel="noopener" aria-label="Instagram" data-l="instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+      <a href="https://www.youtube.com/@LucasRamong" target="_blank" rel="noopener" aria-label="YouTube" data-l="youtube-icone"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1c.4-1.6.5-3.2.5-4.8s-.1-3.2-.5-4.8zM9.8 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg></a>
+      <a href="https://tiktok.com/@lucas.gestao.deh" target="_blank" rel="noopener" aria-label="TikTok" data-l="tiktok"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M16.6 3c.4 2.2 1.8 3.7 4 4v3.1c-1.5 0-2.9-.4-4-1.1v6.6a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.2a2.9 2.9 0 1 0 2 2.7V3h3z"/></svg></a>
+    </nav>
   </header>
 
   <div class="proof">
@@ -119,24 +142,33 @@ footer a{color:#8d83a3;text-decoration:underline}
 
   <p class="lbl">Para o seu delivery</p>
   <div class="list">
-    <a class="lk" href="/black/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="assessoria">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>
+    <a class="lk ass" href="/black/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="assessoria">
+      <span class="ic ass"><img src="/images/logo-mark.webp" alt="" width="360" height="163"></span>
       <span class="tx"><b>Assessoria de marketing</b><span>Tráfego pago, criativos e cardápio feitos por quem tem delivery</span></span>
       <span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
     </a>
-    <a class="lk" href="/raio-x/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="raio-x">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M8 11h6M11 8v6"/></svg></span>
+    <a class="lk rx" href="/raio-x/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="raio-x">
+      <span class="ic rx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M8 11h6M11 8v6"/></svg></span>
       <span class="tx"><b>Raio-X do Delivery <span class="tag">Grátis</span></b><span>Descubra a nota do seu delivery no seu bairro em 30 segundos</span></span>
       <span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
     </a>
-    <a class="lk" href="https://www.audensclub.com.br/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="club" rel="noopener">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.9.2 5 2.6 5 5.8"/></svg></span>
-      <span class="tx"><b>Audens Club</b><span>Comunidade de donos de delivery, com aulas e cursos pra crescer</span></span>
+    <a class="lk club" href="https://www.audensclub.com.br/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="club" rel="noopener">
+      <span class="ic brand"><img src="club.svg" alt="" width="48" height="48"></span>
+      <span class="tx"><b>Audens <em>Club</em></b><span>Comunidade de donos de delivery, com aulas e cursos pra crescer</span></span>
       <span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
     </a>
-    <a class="lk" href="https://audensfinance.com.br/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="finance" rel="noopener">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 15l3-3 2.5 2.5L17 10"/></svg></span>
-      <span class="tx"><b>Audens Finance</b><span>Preço, caixa e DRE do seu delivery num sistema só</span></span>
+    <a class="lk fin" href="https://audensfinance.com.br/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="finance" rel="noopener">
+      <span class="ic brand"><img src="finance.webp" alt="" width="48" height="48"></span>
+      <span class="tx"><b>Audens <em>Finance</em></b><span>Preço, caixa e DRE do seu delivery num sistema só</span></span>
+      <span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+    </a>
+  </div>
+
+  <p class="lbl">Conteúdo grátis</p>
+  <div class="list">
+    <a class="lk yt" href="https://www.youtube.com/@LucasRamong" target="_blank" rel="noopener" data-l="youtube">
+      <span class="ic yt"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.5 6.2v11.6L18 12z"/></svg></span>
+      <span class="tx"><b>Meu canal no YouTube</b><span>Gestão, marketing e bastidores das minhas lojas</span></span>
       <span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
     </a>
   </div>

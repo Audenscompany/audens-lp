@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Ícone do Audens Club: "A" + a barra laranja da marca (Audens/Club). Cores da direção visual. -->
+  <rect width="64" height="64" rx="14" fill="#0b0b0c"/>
+  <path fill="#f5f5f2" fill-rule="evenodd" d="M9 51 19.5 13h9L39 51h-8.6l-2-7.6h-8.8L17.6 51H9Zm12.3-14.6h5.4L24 26.4l-2.7 10Z"/>
+  <path fill="#e8622c" d="M38.5 53 50 11h6.5L45 53h-6.5Z"/>
+</svg>
