@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>(function(){try{var K=['utm_source','utm_medium','utm_campaign','utm_content','utm_term','fbclid','campaign_id','adset_id','ad_id'];var q=new URLSearchParams(location.search);var a=JSON.parse(localStorage.getItem('audens_attrib')||'{}');var ch=false;K.forEach(function(k){var v=q.get(k);if(v){a[k]=v;ch=true;}});if(ch)localStorage.setItem('audens_attrib',JSON.stringify(a));window.__audensAttrib=a;}catch(e){}})();</script><script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init','288150133971064');fbq('track','PageView');
+</script><script>
+/* Analytics próprio Audens — funil visita->form->lead (variante bio) */
+(function(){
+  var TRACK_URL='https://receberlead-471063273836.us-central1.run.app/track';
+  function rid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,10);}
+  var sid;try{sid=sessionStorage.getItem('audens_sid_bio');if(!sid){sid=rid();sessionStorage.setItem('audens_sid_bio',sid);}}catch(e){sid=rid();}
+  var Q;try{Q=new URLSearchParams(location.search);}catch(e){Q={get:function(){return '';}};}
+  function utm(k){try{var A=window.__audensAttrib||{};return A[k]||Q.get(k)||'';}catch(e){return '';}}
+  var UTMS={source:utm('utm_source'),medium:utm('utm_medium'),campaign:utm('utm_campaign'),content:utm('utm_content'),term:utm('utm_term')};
+  function device(){return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)?'mobile':'desktop';}
+  var queue=[],timer=null;
+  function flush(beacon){if(timer){clearTimeout(timer);timer=null;}if(!queue.length)return;var batch=queue.splice(0,queue.length);var payload=JSON.stringify({sid:sid,page:location.pathname,device:device(),ref:(document.referrer||''),utms:UTMS,variante:'bio',events:batch});try{if(beacon&&navigator.sendBeacon){navigator.sendBeacon(TRACK_URL,new Blob([payload],{type:'text/plain'}));}else{fetch(TRACK_URL,{method:'POST',mode:'cors',keepalive:true,headers:{'Content-Type':'application/json'},body:payload}).catch(function(){});}}catch(e){}}
+  function enqueue(name,params){queue.push({e:name,p:params||{},t:Date.now()});if(name==='lead_submit'||name==='qualified_lead'){flush();return;}if(!timer)timer=setTimeout(flush,4000);}
+  addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')flush(true);});
+  addEventListener('pagehide',function(){flush(true);});
+  window.__ownTrack=enqueue;
+})();
+window.dataLayer=window.dataLayer||[];
+function pushEvent(name,params){params=Object.assign({lp_variant:'bio',experiment_id:'bio-2026'},params||{});try{window.dataLayer.push(Object.assign({event:name},params));}catch(e){}try{if(window.fbq){if(name==='lead_submit')fbq('track','Lead',params);else fbq('trackCustom',name,params);}}catch(e){}try{if(window.__ownTrack)window.__ownTrack(name,params);}catch(e){}}
+window.addEventListener('load',function(){pushEvent('lp_view',{path:location.pathname});});
+</script><title>Lucas Ramon · Audens Company</title>
+<meta name="description" content="Assessoria de marketing para hamburguerias e pizzarias, Audens Club e Audens Finance. De quem fatura +R$500 mil/mês no próprio delivery.">
+<meta name="theme-color" content="#07050c">
+<meta property="og:title" content="Lucas Ramon · Audens Company">
+<meta property="og:description" content="Assessoria de marketing para hamburguerias e pizzarias, Audens Club e Audens Finance.">
+<meta property="og:image" content="https://assessoriaaudens.com.br/links/lucas.webp">
+<link rel="icon" href="/images/logo-mark.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<style>
+:root{--bg:#07050c;--card:#120d1d;--card2:#18112a;--line:rgba(255,255,255,.09);--fg:#f6f3fb;--muted:#a99fbd;--purple:#8b3dff;--purple2:#a66bff;--red:#e5242b;--red2:#ff4a4e;--green:#3ad07e;--display:"Bebas Neue",Impact,sans-serif;--body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--cond:"Barlow Condensed","Arial Narrow",sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);-webkit-font-smoothing:antialiased}
+body{min-height:100vh;background:radial-gradient(90% 50% at 50% -5%,rgba(139,61,255,.32),transparent 70%),radial-gradient(60% 40% at 100% 100%,rgba(139,61,255,.12),transparent 70%),var(--bg)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:520px;margin:0 auto;padding:28px 16px 40px}
+.logo{display:block;height:46px;width:auto;margin:0 auto 22px;opacity:.95}
+.head{text-align:center}
+.av{width:116px;height:116px;border-radius:50%;padding:3px;background:linear-gradient(140deg,var(--purple2),var(--purple) 50%,#3b1a78);margin:0 auto;box-shadow:0 12px 40px rgba(139,61,255,.35)}
+.av img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;border:3px solid var(--bg)}
+h1{font-family:var(--display);font-weight:400;font-size:40px;letter-spacing:.02em;line-height:1;margin:16px 0 6px;display:inline-flex;align-items:center;gap:8px}
+h1 svg{width:22px;height:22px}
+.role{margin:0;color:var(--fg);font-weight:600;font-size:16px}
+.bio{margin:6px auto 0;color:var(--muted);font-size:15px;line-height:1.45;max-width:36ch}
+.proof{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:20px 0 26px}
+.proof div{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center}
+.proof b{display:block;font-family:var(--display);font-weight:400;font-size:26px;line-height:1;letter-spacing:.02em}
+.proof span{display:block;color:var(--muted);font-size:12px;margin-top:4px;line-height:1.25}
+.lbl{font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:26px 2px 10px}
+.list{display:grid;gap:10px}
+.lk{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 14px 14px 14px;transition:transform .15s,border-color .15s,background .15s}
+.lk:hover{transform:translateY(-2px);border-color:rgba(166,107,255,.55);background:var(--card2)}
+.lk:active{transform:scale(.99)}
+.ic{flex:0 0 48px;height:48px;border-radius:13px;display:grid;place-items:center;background:rgba(139,61,255,.16);color:var(--purple2)}
+.ic svg{width:24px;height:24px}
+.ic img{width:100%;height:100%;object-fit:cover;border-radius:13px}
+.tx{flex:1;min-width:0}
+.tx b{display:block;font-size:17px;font-weight:700;line-height:1.2}
+.tx span{display:block;color:var(--muted);font-size:14px;line-height:1.35;margin-top:2px}
+.ar{flex:0 0 auto;color:var(--muted);transition:transform .15s,color .15s}
+.ar svg{width:20px;height:20px;display:block}
+.lk:hover .ar{transform:translateX(3px);color:var(--fg)}
+.tx .tag{display:inline-block;margin-top:0;font-family:var(--cond);font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border-radius:5px;padding:2px 6px;margin-left:6px;vertical-align:2px;background:rgba(58,208,126,.15);color:var(--green)}
+/* destaque Black */
+.bf{position:relative;overflow:hidden;display:block;border-radius:20px;padding:18px 18px 16px;background:linear-gradient(135deg,#2a0709,#140409 55%,#1b0b2c);border:1px solid rgba(255,74,78,.55);box-shadow:0 14px 40px rgba(229,36,43,.22)}
+.bf::before{content:"";position:absolute;inset:-40% -20% auto auto;width:240px;height:240px;background:radial-gradient(closest-side,rgba(255,74,78,.35),transparent);pointer-events:none}
+.bf .top{display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative}
+.bf .pill{font-family:var(--cond);font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;background:var(--red);color:#fff;border-radius:6px;padding:4px 9px}
+.bf .cd{font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.06em;color:#ffb3b5;white-space:nowrap}
+.bf h2{position:relative;font-family:var(--display);font-weight:400;font-size:34px;line-height:.98;letter-spacing:.01em;margin:12px 0 6px}
+.bf h2 em{font-style:normal;color:var(--red2)}
+.bf p{position:relative;margin:0;color:#e9dfe6;font-size:15px;line-height:1.4}
+.bf .go{position:relative;display:flex;justify-content:center;align-items:center;gap:8px;margin-top:14px;background:var(--red);color:#fff;border-radius:12px;padding:13px;font-family:var(--cond);font-weight:800;font-size:18px;letter-spacing:.06em;text-transform:uppercase}
+.bf .go svg{width:18px;height:18px}
+.stores{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.st{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;transition:border-color .15s}
+.st:hover{border-color:rgba(166,107,255,.55)}
+.st img{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:0 0 44px;border:2px solid rgba(255,255,255,.85)}
+.st b{display:block;font-size:15px}
+.st span{display:block;color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st div{min-width:0}
+footer{text-align:center;color:#6f6584;font-size:12.5px;margin-top:34px;line-height:1.6}
+footer a{color:#8d83a3;text-decoration:underline}
+@media (max-width:380px){h1{font-size:34px}.proof b{font-size:22px}.bf h2{font-size:30px}.tx b{font-size:16px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=288150133971064&ev=PageView&noscript=1"/></noscript>
+<main class="wrap">
+  <img class="logo" src="/images/logo-full.webp" alt="Audens Company" width="440" height="310">
+  <header class="head">
+    <div class="av"><img src="lucas.webp" alt="Lucas Ramon" width="360" height="360"></div>
+    <h1>Lucas Ramon</h1>
+    <p class="role">CEO da Audens Company</p>
+    <p class="bio">Dono do Burguer FC e da Pizza FC. Ajudo hamburguerias e pizzarias a vender mais no delivery.</p>
+  </header>
+
+  <div class="proof">
+    <div><b>+R$500 mil</b><span>por mês no meu delivery</span></div>
+    <div><b>+200</b><span>marcas atendidas</span></div>
+    <div><b>10x</b><span>retorno médio dos clientes</span></div>
+  </div>
+
+  <a class="bf" id="bf" href="/black/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=black-2026" data-l="black" hidden>
+    <div class="top"><span class="pill">Black Friday</span><span class="cd" id="cd">Só até 30/11</span></div>
+    <h2>Assessoria com <em>50% off</em><br>durante 6 meses</h2>
+    <p>Tráfego, criativos, cardápio e precificação com o time da Audens, pagando metade no plano semestral.</p>
+    <span class="go">Quero os 50% <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+  </a>
+
+  <p class="lbl">Para o seu delivery</p>
+  <div class="list">
+    <a class="lk" href="/lpv3/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="assessoria">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>
+      <span class="tx"><b>Assessoria de marketing</b><span>Tráfego pago, criativos e cardápio feitos por quem tem delivery</span></span>
+      <span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="lk" href="/raio-x/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="raio-x">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/><path d="M8 11h6M11 8v6"/></svg></span>
+      <span class="tx"><b>Raio-X do Delivery <span class="tag">Grátis</span></b><span>Descubra a nota do seu delivery no seu bairro em 30 segundos</span></span>
+      <span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="lk" href="https://www.audensclub.com.br/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="club" rel="noopener">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.9.2 5 2.6 5 5.8"/></svg></span>
+      <span class="tx"><b>Audens Club</b><span>Comunidade de donos de delivery, com aulas e cursos pra crescer</span></span>
+      <span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="lk" href="https://audensfinance.com.br/?utm_source=instagram&amp;utm_medium=bio&amp;utm_campaign=perfil" data-l="finance" rel="noopener">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 15l3-3 2.5 2.5L17 10"/></svg></span>
+      <span class="tx"><b>Audens Finance</b><span>Preço, caixa e DRE do seu delivery num sistema só</span></span>
+      <span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+    </a>
+  </div>
+
+  <p class="lbl">Minhas lojas</p>
+  <div class="stores">
+    <a class="st" href="https://www.instagram.com/burguer_fc/" target="_blank" rel="noopener" data-l="insta-burguer"><img src="/images/clientes/burguer-fc-logo.webp" alt="" width="44" height="44"><div><b>Burguer FC</b><span>@burguer_fc</span></div></a>
+    <a class="st" href="https://www.instagram.com/pizzafccentrohistorico/" target="_blank" rel="noopener" data-l="insta-pizza"><img src="/images/clientes/pizza-fc-logo.webp" alt="" width="44" height="44"><div><b>Pizza FC</b><span>@pizzafccentrohistorico</span></div></a>
+  </div>
+
+  <footer>Audens Company · Marketing para food service<br><a href="/privacidade.html">Política de privacidade</a></footer>
+</main>
+<script>
+(function(){
+  var FIM=Date.parse('2026-12-01T00:00:00-03:00'),bf=document.getElementById('bf');
+  if(Date.now()<FIM){bf.hidden=false;
+    var d=Math.ceil((FIM-Date.now())/86400000),cd=document.getElementById('cd');
+    cd.textContent=d<=1?'Último dia!':(d<=7?'Faltam '+d+' dias':'Só até 30/11');}
+  document.querySelectorAll('a[data-l]').forEach(function(a){a.addEventListener('click',function(){pushEvent('bio_click',{destino:a.getAttribute('data-l')});});});
+})();
+</script>
+
+</body>
+</html>
